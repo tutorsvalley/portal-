@@ -3,134 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
+    <title>Tutors Valley</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Login Page -->
-    <div id="loginPage" class="page">
+    <div id="loginPage" class="page active">
         <div class="login-container">
             <div class="login-header">
                 <h1>Tutors Valley</h1>
                 <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             </div>
             
-            <div class="login-options">
-                <button class="login-btn tutor-btn" onclick="showGoogleLogin('tutor')">
+            <div class="login-buttons">
+                <button class="login-btn tutor-btn" id="tutorBtn">
                     <i class="fas fa-chalkboard-teacher"></i> টিউটর লগইন
                 </button>
-                <button class="login-btn guardian-btn" onclick="showGoogleLogin('guardian')">
+                <button class="login-btn guardian-btn" id="guardianBtn">
                     <i class="fas fa-user-shield"></i> অভিভাবক লগইন
                 </button>
-                <button class="login-btn guest-btn" onclick="loginAsGuest()">
+                <button class="login-btn guest-btn" id="guestBtn">
                     <i class="fas fa-user"></i> গেস্ট লগইন
                 </button>
-                <button class="login-btn admin-btn" onclick="showGoogleLogin('admin')">
+                <button class="login-btn admin-btn" id="adminBtn">
                     <i class="fas fa-user-cog"></i> এডমিন লগইন
                 </button>
-            </div>
-
-            <div id="googleLoginModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal('googleLoginModal')">&times;</span>
-                    <h2 id="googleLoginTitle">লগইন</h2>
-                    <button id="googleSignInBtn" class="google-btn">
-                        <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Homepage -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 id="modalTitle">লগইন</h2>
+            <button id="googleBtn" class="google-btn">
+                <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- Homepage -->
     <div id="homePage" class="page" style="display:none;">
-        <!-- Control Panel Gear Icon -->
-        <div id="controlPanelIcon" class="control-panel-icon" onclick="toggleControlPanel()" style="display:none;">
+        <!-- Control Panel Icon (Admin Only) -->
+        <div id="controlIcon" class="control-icon" style="display:none;">
             <i class="fas fa-cog"></i>
         </div>
 
         <!-- Control Panel -->
         <div id="controlPanel" class="control-panel">
-            <div class="control-panel-header">
-                <h3>কন্ট্রোল প্যানেল</h3>
-                <span class="close" onclick="toggleControlPanel()">&times;</span>
+            <div class="control-header">
+                <h3>সেটিংস</h3>
+                <span class="close" id="closeControl">&times;</span>
             </div>
-            <div class="control-panel-content">
-                <div class="control-section">
-                    <h4>সাধারণ সেটিংস</h4>
-                    <div class="control-group">
-                        <label>লোগো ইমেজ:</label>
-                        <input type="file" id="logoUpload" accept="image/*" onchange="uploadImage('logo')">
-                        <input type="range" id="logoSize" min="50" max="200" value="100" oninput="updateLogoSize(this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>ব্র্যান্ডিং:</label>
-                        <input type="text" id="brandingInput" oninput="updateText('brandingText', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>মotto:</label>
-                        <input type="text" id="mottoInput" oninput="updateText('mottoText', this.value)">
-                    </div>
+            <div class="control-body">
+                <div class="control-group">
+                    <label>লোগো:</label>
+                    <input type="file" id="logoInput" accept="image/*">
                 </div>
-                <button onclick="saveAllSettings()" class="save-btn">সেটিংস সংরক্ষণ</button>
+                <div class="control-group">
+                    <label>ব্র্যান্ডিং:</label>
+                    <input type="text" id="brandingInput">
+                </div>
+                <div class="control-group">
+                    <label>মotto:</label>
+                    <input type="text" id="mottoInput">
+                </div>
+                <button class="save-btn" id="saveBtn">সেভ করুন</button>
             </div>
         </div>
 
         <!-- Header -->
-        <header class="main-header">
+        <header class="header">
             <div class="header-content">
                 <div class="header-center">
-                    <div class="logo-container">
-                        <img id="siteLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo-img">
-                    </div>
-                    <h1 id="brandingText" class="branding">Tutors Valley</h1>
-                    <p id="mottoText" class="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+                    <img id="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230074D9'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo">
+                    <h1 id="branding">Tutors Valley</h1>
+                    <p id="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
                 </div>
                 <div class="header-right">
-                    <div class="fb-page-btn">
-                        <a href="#" target="_blank" id="fbLink">
-                            <i class="fab fa-facebook"></i> <span>fb page</span>
-                        </a>
-                    </div>
-                    <button onclick="logout()" class="logout-btn-small">
+                    <a href="#" class="fb-btn" id="fbBtn">
+                        <i class="fab fa-facebook"></i> fb page
+                    </a>
+                    <button class="logout-btn" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i> লগআউট
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Zone Cards Section -->
+        <!-- Zone Cards -->
         <section class="zone-section">
             <h2 class="section-title">আমাদের এলাকা সমূহ</h2>
-            <div id="zoneCardsContainer" class="zone-cards-container">
-                <!-- Cards will be loaded here -->
-            </div>
+            <div id="zoneCards" class="zone-cards"></div>
         </section>
 
-        <!-- Reviews Section -->
+        <!-- Reviews -->
         <section class="reviews-section">
             <h2 class="section-title">রিভিউ সমূহ</h2>
-            <div id="reviewFormContainer" class="review-form-container" style="display:none;">
-                <h3>আপনার রিভিউ দিন</h3>
-                <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা লিখুন..." class="review-input"></textarea>
-                <button onclick="submitReview()" class="submit-review-btn">রিভিউ দিন</button>
+            <div id="reviewForm" class="review-form" style="display:none;">
+                <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..."></textarea>
+                <button id="submitReviewBtn">জমা দিন</button>
             </div>
-            <div id="reviewsContainer" class="reviews-container">
-                <!-- Reviews will be loaded here -->
-            </div>
+            <div id="reviewsList" class="reviews-list"></div>
         </section>
 
-        <!-- CEO Section -->
+        <!-- CEO -->
         <section class="ceo-section">
-            <div class="ceo-container">
-                <div class="ceo-image-wrapper">
-                    <img id="ceoImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
-                </div>
-                <h3 id="ceoNameText" class="ceo-name">CEO Name</h3>
-                <p id="ceoTitleText" class="ceo-title">Founder & CEO</p>
-                <p id="ceoDescText" class="ceo-desc">CEO description here...</p>
+            <div class="ceo-card">
+                <img id="ceoImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='80' font-size='60' text-anchor='middle' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
+                <h3 id="ceoName">CEO Name</h3>
+                <p id="ceoTitle">Founder & CEO</p>
+                <p id="ceoDesc">CEO description here...</p>
             </div>
         </section>
 
@@ -140,7 +126,7 @@
         </footer>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
