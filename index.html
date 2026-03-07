@@ -171,7 +171,7 @@
                     </div>
                     <div class="control-group">
                         <label>বাটন টেক্সট:</label>
-                        <input type="text" id="fbButtonTextInput" value="আমাদের ফেসবুক পেজ" oninput="updateText('fbButtonText', this.value)">
+                        <input type="text" id="fbButtonTextInput" value="fb page" oninput="updateText('fbButtonText', this.value)">
                     </div>
                 </div>
 
@@ -199,11 +199,11 @@
             </div>
         </div>
 
-        <!-- Header - Updated with Right Side Buttons -->
+        <!-- Header - Updated -->
         <header class="main-header">
             <div class="header-content">
                 <div class="header-center">
-                    <div class="logo-container">
+                    <div class="logo-wrapper">
                         <img id="siteLogo" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo-img">
                     </div>
                     <h1 id="brandingText" class="branding">Tutors Valley</h1>
@@ -212,16 +212,12 @@
                 <div class="header-right">
                     <div id="fbPageBtn" class="fb-page-btn">
                         <a href="#" target="_blank" id="fbLink">
-                            <i class="fab fa-facebook"></i> <span id="fbButtonText">আমাদের ফেসবুক পেজ</span>
+                            <i class="fab fa-facebook"></i> <span id="fbButtonText">fb page</span>
                         </a>
                     </div>
-                    <div class="user-info">
-                        <span id="userName"></span>
-                        <span id="userRole" class="user-role-badge"></span>
-                        <button onclick="logout()" class="logout-btn-small">
-                            <i class="fas fa-sign-out-alt"></i> লগআউট
-                        </button>
-                    </div>
+                    <button onclick="logout()" class="logout-btn-small">
+                        <i class="fas fa-sign-out-alt"></i> লগআউট
+                    </button>
                 </div>
             </div>
         </header>
@@ -243,11 +239,11 @@
                 <button onclick="submitReview()" class="submit-review-btn">রিভিউ দিন</button>
             </div>
             <div id="reviewsContainer" class="reviews-container">
-                <!-- Reviews will be loaded here -->            </div>
+                <!-- Reviews will be loaded here -->
+            </div>
         </section>
 
-        <!-- CEO Section -->
-        <section class="ceo-section">
+        <!-- CEO Section -->        <section class="ceo-section">
             <div class="ceo-container">
                 <div class="ceo-image-wrapper">
                     <img id="ceoImage" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
