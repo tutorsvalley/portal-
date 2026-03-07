@@ -30,17 +30,12 @@
                 <button class="login-btn admin-btn" onclick="showGoogleLogin('admin')">
                     <i class="fas fa-user-cog"></i> এডমিন লগইন
                 </button>
-                <div id="hiddenAdminIcon" class="hidden-admin-icon" onclick="showGoogleLogin('admin')">
-                    <i class="fas fa-lock"></i>
-                </div>
             </div>
 
-            <!-- Google Login Modal -->
             <div id="googleLoginModal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal('googleLoginModal')">&times;</span>
                     <h2 id="googleLoginTitle">লগইন</h2>
-                    <p id="googleLoginDesc" class="login-desc"></p>
                     <button id="googleSignInBtn" class="google-btn">
                         <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
                     </button>
@@ -48,194 +43,76 @@
             </div>
         </div>
     </div>
+
     <!-- Main Homepage -->
     <div id="homePage" class="page" style="display:none;">
-        <!-- Control Panel Gear Icon (Admin Only) -->
-        <div id="controlPanelIcon" class="control-panel-icon" onclick="toggleControlPanel()" style="display:none;">
-            <i class="fas fa-cog"></i>
+        <!-- Control Panel Gear Icon -->
+        <div id="controlPanelIcon" class="control-panel-icon" onclick="toggleControlPanel()" style="display:none;">            <i class="fas fa-cog"></i>
         </div>
 
-        <!-- Control Panel Modal -->
+        <!-- Control Panel -->
         <div id="controlPanel" class="control-panel">
             <div class="control-panel-header">
                 <h3>কন্ট্রোল প্যানেল</h3>
                 <span class="close" onclick="toggleControlPanel()">&times;</span>
             </div>
             <div class="control-panel-content">
-                <!-- General Settings -->
                 <div class="control-section">
                     <h4>সাধারণ সেটিংস</h4>
                     <div class="control-group">
                         <label>লোগো ইমেজ:</label>
                         <input type="file" id="logoUpload" accept="image/*" onchange="uploadImage('logo')">
-                        <input type="range" id="logoSize" min="50" max="200" value="100" oninput="updateElementStyle('siteLogo', 'width', this.value + 'px'); document.getElementById('logoSizeVal').innerText = this.value">
-                        <label>Size: <span id="logoSizeVal">100</span>px</label>
+                        <input type="range" id="logoSize" min="50" max="200" value="100" oninput="updateLogoSize(this.value)">
                     </div>
                     <div class="control-group">
-                        <label>ব্র্যান্ডিং টেক্সট:</label>
-                        <input type="text" id="brandingTextInput" oninput="updateText('brandingText', this.value)">
+                        <label>ব্র্যান্ডিং:</label>
+                        <input type="text" id="brandingInput" oninput="updateText('brandingText', this.value)">
                     </div>
                     <div class="control-group">
                         <label>মotto:</label>
-                        <input type="text" id="mottoTextInput" oninput="updateText('mottoText', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>ফন্ট সিলেক্ট:</label>
-                        <select id="fontSelect" onchange="updateFont(this.value)" class="font-selector">
-                            <option value="'Hind Siliguri', sans-serif">Hind Siliguri (Bangla)</option>
-                            <option value="'Poppins', sans-serif">Poppins (English)</option>
-                            <option value="'Roboto', sans-serif">Roboto</option>
-                            <option value="'Open Sans', sans-serif">Open Sans</option>
-                            <option value="'Lato', sans-serif">Lato</option>
-                            <option value="'Montserrat', sans-serif">Montserrat</option>
-                            <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
-                            <option value="Arial, sans-serif">Arial</option>
-                            <option value="'Times New Roman', serif">Times New Roman</option>
-                            <option value="Calibri, sans-serif">Calibri</option>
-                            <option value="Georgia, serif">Georgia</option>
-                            <option value="Verdana, sans-serif">Verdana</option>
-                            <option value="Tahoma, sans-serif">Tahoma</option>
-                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                            <option value="Impact, sans-serif">Impact</option>                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
-                            <option value="'Courier New', monospace">Courier New</option>
-                            <option value="'Palatino Linotype', serif">Palatino</option>
-                            <option value="'Garamond', serif">Garamond</option>
-                            <option value="'SolaimanLipi', sans-serif">SolaimanLipi</option>
-                        </select>
+                        <input type="text" id="mottoInput" oninput="updateText('mottoText', this.value)">
                     </div>
                 </div>
-
-                <!-- Banner Settings -->
-                <div class="control-section">
-                    <h4>ব্যানার সেটিংস</h4>
-                    <div class="control-group">
-                        <label>ব্যানার ব্যাকগ্রাউন্ড কালার:</label>
-                        <input type="color" id="bannerColor" value="#001f3f" onchange="updateElementStyle('bannerSection', 'backgroundColor', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>ওয়াটারমার্ক ইমেজ:</label>
-                        <input type="file" id="watermarkUpload" accept="image/*" onchange="uploadWatermark()">
-                    </div>
-                    <div class="control-group">
-                        <label>ওয়াটারমার্ক Opacity:</label>
-                        <input type="range" id="watermarkOpacity" min="0" max="100" value="20" oninput="updateWatermarkOpacity(this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>ব্যানার শিরোনাম:</label>
-                        <input type="text" id="bannerTitleInput" oninput="updateText('bannerTitle', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>ব্যানার সাবটাইটেল:</label>
-                        <input type="text" id="bannerSubtitleInput" oninput="updateText('bannerSubtitle', this.value)">
-                    </div>
-                </div>
-
-                <!-- Zone Cards Settings -->
-                <div class="control-section">
-                    <h4>জোন কার্ড সেটিংস</h4>
-                    <div class="control-group">
-                        <label>সেকশন শিরোনাম:</label>
-                        <input type="text" id="zoneSectionTitleInput" oninput="updateText('zoneSectionTitle', this.value)">
-                    </div>
-                    <div id="zoneCardsSettings"></div>
-                    <button onclick="addNewZoneCard()" class="add-btn">+ নতুন জোন যোগ করুন</button>
-                </div>
-
-                <!-- CEO Settings -->
-                <div class="control-section">
-                    <h4>CEO তথ্য</h4>
-                    <div class="control-group">
-                        <label>CEO ইমেজ:</label>                        <input type="file" id="ceoUpload" accept="image/*" onchange="uploadImage('ceo')">
-                        <input type="range" id="ceoSize" min="50" max="200" value="100" oninput="updateElementStyle('ceoImage', 'width', this.value + 'px'); updateElementStyle('ceoImage', 'height', this.value + 'px')">
-                    </div>
-                    <div class="control-group">
-                        <label>CEO নাম:</label>
-                        <input type="text" id="ceoNameInput" oninput="updateText('ceoNameText', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>CEO পদবী:</label>
-                        <input type="text" id="ceoTitleInput" oninput="updateText('ceoTitleText', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>CEO বিবরণ:</label>
-                        <textarea id="ceoDescInput" oninput="updateText('ceoDescText', this.value)"></textarea>
-                    </div>
-                </div>
-
-                <!-- Facebook Settings -->
-                <div class="control-section">
-                    <h4>ফেসবুক সেটিংস</h4>
-                    <div class="control-group">
-                        <label>ফেসবুক পেজ লিঙ্ক:</label>
-                        <input type="url" id="fbPageLink" placeholder="https://facebook.com/...">
-                    </div>
-                    <div class="control-group">
-                        <label>বাটন টেক্সট:</label>
-                        <input type="text" id="fbButtonTextInput" value="fb page" oninput="updateText('fbButtonText', this.value)">
-                    </div>
-                </div>
-
-                <!-- Sub-admin Settings -->
-                <div class="control-section">
-                    <h4>সাব-এডমিন</h4>
-                    <div class="control-group">
-                        <label>ইমেইল দিয়ে আমন্ত্রণ:</label>
-                        <input type="email" id="subAdminEmail" placeholder="subadmin@example.com">
-                        <button onclick="inviteSubAdmin()" class="invite-btn">আমন্ত্রণ পাঠান</button>
-                    </div>
-                    <div id="subAdminList"></div>
-                </div>
-
-                <!-- Page Color Settings -->
-                <div class="control-section">
-                    <h4>পেজ কালার</h4>
-                    <div class="control-group">
-                        <label>ব্যাকগ্রাউন্ড কালার:</label>
-                        <input type="color" id="pageBgColor" value="#ffffff" onchange="updatePageColor(this.value)">
-                    </div>
-                </div>
-                <!-- Save Button -->
-                <button onclick="saveAllSettings()" class="save-btn">সেটিংস সংরক্ষণ করুন</button>
+                <button onclick="saveAllSettings()" class="save-btn">সেটিংস সংরক্ষণ</button>
             </div>
         </div>
 
-        <!-- Header - Updated -->
+        <!-- Header -->
         <header class="main-header">
             <div class="header-content">
                 <div class="header-center">
-                    <div class="logo-wrapper">
-                        <img id="siteLogo" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo-img">
+                    <div class="logo-container">
+                        <img id="siteLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo-img">
                     </div>
                     <h1 id="brandingText" class="branding">Tutors Valley</h1>
                     <p id="mottoText" class="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
                 </div>
                 <div class="header-right">
-                    <div id="fbPageBtn" class="fb-page-btn">
+                    <div class="fb-page-btn">
                         <a href="#" target="_blank" id="fbLink">
-                            <i class="fab fa-facebook"></i> <span id="fbButtonText">fb page</span>
+                            <i class="fab fa-facebook"></i> <span>fb page</span>
                         </a>
                     </div>
                     <button onclick="logout()" class="logout-btn-small">
                         <i class="fas fa-sign-out-alt"></i> লগআউট
                     </button>
-                </div>
-            </div>
+                </div>            </div>
         </header>
 
         <!-- Zone Cards Section -->
         <section class="zone-section">
-            <h2 id="zoneSectionTitle" class="section-title">আমাদের এলাকা সমূহ</h2>
+            <h2 class="section-title">আমাদের এলাকা সমূহ</h2>
             <div id="zoneCardsContainer" class="zone-cards-container">
-                <!-- Cards will be generated dynamically -->
+                <!-- Cards will be loaded here -->
             </div>
         </section>
 
         <!-- Reviews Section -->
         <section class="reviews-section">
-            <h2 id="reviewsSectionTitle" class="section-title">রিভিউ সমূহ</h2>
+            <h2 class="section-title">রিভিউ সমূহ</h2>
             <div id="reviewFormContainer" class="review-form-container" style="display:none;">
                 <h3>আপনার রিভিউ দিন</h3>
-                <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা শেয়ার করুন..." class="review-input"></textarea>
+                <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা লিখুন..." class="review-input"></textarea>
                 <button onclick="submitReview()" class="submit-review-btn">রিভিউ দিন</button>
             </div>
             <div id="reviewsContainer" class="reviews-container">
@@ -243,10 +120,11 @@
             </div>
         </section>
 
-        <!-- CEO Section -->        <section class="ceo-section">
+        <!-- CEO Section -->
+        <section class="ceo-section">
             <div class="ceo-container">
                 <div class="ceo-image-wrapper">
-                    <img id="ceoImage" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
+                    <img id="ceoImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
                 </div>
                 <h3 id="ceoNameText" class="ceo-name">CEO Name</h3>
                 <p id="ceoTitleText" class="ceo-title">Founder & CEO</p>
@@ -256,20 +134,8 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p id="copyrightText">&copy; 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।</p>
+            <p>&copy; 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।</p>
         </footer>
-    </div>
-
-    <!-- Group Join Page -->
-    <div id="groupJoinPage" class="page" style="display:none;">
-        <div class="group-join-container">
-            <h2>গ্রুপে যোগদান করুন</h2>
-            <p id="groupInfo"></p>
-            <a id="groupJoinLink" href="#" target="_blank" class="join-group-btn">
-                <i class="fab fa-whatsapp"></i> গ্রুপে যোগ দিন
-            </a>
-            <button onclick="goBackHome()" class="back-btn">ফিরে যান</button>
-        </div>
     </div>
 
     <!-- Firebase SDK -->
