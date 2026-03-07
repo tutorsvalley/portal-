@@ -40,9 +40,8 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", mixedLink: "" }
 ];
 
-// ✅ Professional Loading Screen
+// ✅ Professional Loading Screen - WHITE BACKGROUND
 function showLoading(message = "লোড হচ্ছে...") {
-    // Remove existing loading screen if any
     hideLoading();
     
     const loadingDiv = document.createElement('div');
@@ -53,7 +52,7 @@ function showLoading(message = "লোড হচ্ছে...") {
         left:0;
         width:100%;
         height:100%;
-        background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background:#ffffff;
         z-index:9999;
         display:flex;
         align-items:center;
@@ -63,12 +62,12 @@ function showLoading(message = "লোড হচ্ছে...") {
     `;
     
     loadingDiv.innerHTML = `
-        <div style="width:60px;height:60px;border:4px solid rgba(255,255,255,0.3);border-top:4px solid #ffffff;border-radius:50%;animation:spin 1s linear infinite;"></div>
-        <p style="margin-top:20px;color:#ffffff;font-family:'Hind Siliguri',sans-serif;font-size:18px;font-weight:500;letter-spacing:1px;">${message}</p>
-        <div style="margin-top:30px;display:flex;gap:10px;">
-            <div style="width:10px;height:10px;background:#ffffff;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both;"></div>
-            <div style="width:10px;height:10px;background:#ffffff;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.16s;"></div>
-            <div style="width:10px;height:10px;background:#ffffff;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.32s;"></div>
+        <div style="width:60px;height:60px;border:4px solid #e0e0e0;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:20px;color:#333;font-family:'Hind Siliguri',sans-serif;font-size:16px;font-weight:500;letter-spacing:0.5px;">${message}</p>
+        <div style="margin-top:20px;display:flex;gap:8px;">
+            <div style="width:8px;height:8px;background:#0074D9;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both;"></div>
+            <div style="width:8px;height:8px;background:#0074D9;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.16s;"></div>
+            <div style="width:8px;height:8px;background:#0074D9;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.32s;"></div>
         </div>
         <style>
             @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
@@ -78,16 +77,23 @@ function showLoading(message = "লোড হচ্ছে...") {
     
     document.body.appendChild(loadingDiv);
     
-    // Fade in effect
     setTimeout(() => {
         loadingDiv.style.opacity = '1';
     }, 10);
+    
+    // ✅ Auto-hide after 5 seconds
+    loadingDiv.autoHideTimeout = setTimeout(() => {
+        hideLoading();
+    }, 5000);
 }
 
-// ✅ Hide Loading Screen with Fade Out
+// ✅ Hide Loading Screen
 function hideLoading() {
     const loadingDiv = document.getElementById('loadingScreen');
     if (loadingDiv) {
+        if (loadingDiv.autoHideTimeout) {
+            clearTimeout(loadingDiv.autoHideTimeout);
+        }
         loadingDiv.style.opacity = '0';
         setTimeout(() => {
             loadingDiv.remove();
@@ -95,7 +101,7 @@ function hideLoading() {
     }
 }
 
-// ✅ Fade In Page Content
+// ✅ Fade In Page
 function fadeInPage() {
     const activePage = document.querySelector('.page.active');
     if (activePage) {
@@ -141,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("Page loaded, checking auth...");
     showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // Check for redirect result first
     auth.getRedirectResult().then((result) => {
         if (result.user) {
             console.log("Redirect login successful");
@@ -154,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
         hideLoading();
     });
     
-    // Auth state observer with timeout
     let authTimeout = setTimeout(() => {
         console.log("Auth timeout - forcing login page");
         authReady = true;
@@ -296,7 +300,6 @@ function showHome() {
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
-    // Load data in parallel
     Promise.all([
         loadAllSettings(),
         loadZones(),
@@ -387,7 +390,6 @@ function loadAllSettings() {
     ]).then(results => {
         const [headerDoc, zonesDoc, reviewsDoc, ceoDoc, footerDoc] = results;
         
-        // Header
         if (headerDoc.exists) {
             const d = headerDoc.data();
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
@@ -404,7 +406,6 @@ function loadAllSettings() {
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
         
-        // Zones
         if (zonesDoc.exists) {
             const d = zonesDoc.data();
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
@@ -413,7 +414,6 @@ function loadAllSettings() {
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
         
-        // Reviews
         if (reviewsDoc.exists) {
             const d = reviewsDoc.data();
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
@@ -422,7 +422,6 @@ function loadAllSettings() {
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
         
-        // CEO
         if (ceoDoc.exists) {
             const d = ceoDoc.data();
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
@@ -436,7 +435,6 @@ function loadAllSettings() {
             if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
         }
         
-        // Footer
         if (footerDoc.exists) {
             const d = footerDoc.data();
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
@@ -800,7 +798,6 @@ function renderZones(zones) {
         container.appendChild(card);
     });
     
-    // Load Tutor Note
     if (currentUserRole === 'tutor') {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
