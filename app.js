@@ -772,7 +772,7 @@ function loadZones() {
     });
 }
 
-// Render Zones
+// ✅ Render Zones - Tutor Note শুধু Tutor & Admin দেখবে
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
@@ -798,11 +798,13 @@ function renderZones(zones) {
         container.appendChild(card);
     });
     
-    if (currentUserRole === 'tutor') {
+    // ✅ Tutor Note - শুধু Tutor & Admin দেখবে
+    if (currentUserRole === 'tutor' || currentUserRole === 'admin') {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
                 const zoneTitle = document.getElementById('zoneTitle');
                 if (zoneTitle) {
+                    // Remove existing note if any
                     const existingNote = zoneTitle.parentNode.querySelector('.tutor-note');
                     if (existingNote) existingNote.remove();
                     
