@@ -10,9 +10,24 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+// Set persistence to LOCAL (more reliable than SESSION)
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch((error) => {
+        console.warn("Persistence setup failed:", error);
+        // Continue anyway with default persistence
+    });
+
 const auth = firebase.auth();
 const db = firebase.firestore();
+
+// Configure Google Provider
 const provider = new firebase.auth.GoogleAuthProvider();
+provider.addScope('profile');
+provider.addScope('email');
+provider.setCustomParameters({
+    'prompt': 'select_account'
+});
 
 // Variables
 let currentUser = null;
@@ -20,13 +35,12 @@ let currentUserRole = null;
 let currentLoginRole = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Fonts (10 English + 10 Bangla)
+// Fonts
 const fonts = {
     english: ['Poppins','Roboto','Open Sans','Lato','Montserrat','Arial','Georgia','Verdana','Calibri','Times New Roman'],
     bangla: ['Hind Siliguri','Noto Sans Bengali','SolaimanLipi','Baloo Da 2','Mukta','Poppins','Roboto','Open Sans','Lato','Montserrat']
 };
 
-// Default Zones
 const defaultZones = [
     { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "", mixedLink: "" },
     { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "", mixedLink: "" },
@@ -38,31 +52,70 @@ const defaultZones = [
 
 // Guest Login
 function guestLogin() {
-    auth.signInAnonymously().then((userCredential) => {
-        currentUser = userCredential.user;
-        currentUserRole = 'guest';
-        return db.collection('users').doc(userCredential.user.uid).set({
-            email: 'guest@tutorsvalley.com',
-            displayName: 'Guest User',
-            role: 'guest',
-            isGuest: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-    }).then(() => { showHome(); })
-    .catch((error) => { alert("গেস্ট লগইন ব্যর্থ: " + error.message); });
+    auth.signInAnonymously()
+        .then((userCredential) => {
+            currentUser = userCredential.user;
+            currentUserRole = 'guest';
+            return db.collection('users').doc(userCredential.user.uid).set({
+                email: 'guest@tutorsvalley.com',
+                displayName: 'Guest User',
+                role: 'guest',
+                isGuest: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        })
+        .then(() => { showHome(); })
+        .catch((error) => { 
+            console.error("Guest login error:", error);
+            alert("গেস্ট লগইন ব্যর্থ: " + error.message); 
+        });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for redirect result FIRST
+    auth.getRedirectResult().then((result) => {
+        if (result.user) {
+            console.log("Redirect login successful");
+            handleLoginSuccess(result.user);
+        }
+    }).catch((error) => {
+        console.error("Redirect error:", error);
+        // Clear any broken auth state
+        auth.signOut().catch(() => {});
+    });
+    
+    // Then check current auth state
     auth.onAuthStateChanged(user => {
         if (user) {
+            console.log("Auth state changed:", user.email);
             currentUser = user;
             loadUser(user.uid);
         } else {
+            console.log("No user - showing login");
             showPage('loginPage');
         }
     });
 });
+
+// Handle Login Success
+function handleLoginSuccess(user) {
+    if (currentLoginRole === 'admin' && user.email !== OWNER_EMAIL) {
+        alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
+        auth.signOut();
+        closeModal();
+        return;
+    }
+    
+    db.collection('users').doc(user.uid).set({
+        email: user.email,
+        displayName: user.displayName,
+        role: currentLoginRole,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(() => {
+        closeModal();
+    });
+}
 
 // Load User Data
 function loadUser(uid) {
@@ -70,7 +123,11 @@ function loadUser(uid) {
         if (doc.exists) {
             currentUserRole = doc.data().role;
             showHome();
-        } else { logout(); }
+        } else { 
+            logout(); 
+        }
+    }).catch(error => {
+        console.error("Load user error:", error);
     });
 }
 
@@ -100,23 +157,39 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none';
 }
 
-// Google Login
+// Google Login - FIXED VERSION
 function googleLogin() {
-    auth.signInWithPopup(provider).then(result => {
-        const user = result.user;
-        if (currentLoginRole === 'admin' && user.email !== OWNER_EMAIL) {
-            alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
-            auth.signOut();
-            closeModal();
-            return;
-        }
-        db.collection('users').doc(user.uid).set({
-            email: user.email,
-            displayName: user.displayName,
-            role: currentLoginRole,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).then(() => { closeModal(); });
-    }).catch(error => { alert("Login failed: " + error.message); });
+    console.log("Starting Google login...");
+    
+    // First try popup (works better in most browsers)
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            console.log("Popup login successful");
+            handleLoginSuccess(result.user);
+        })
+        .catch((error) => {
+            console.error("Popup login failed:", error);
+            
+            // If popup fails, try redirect (fallback)
+            if (error.code === 'auth/popup-closed-by-user' || 
+                error.code === 'auth/cancelled-popup-request' ||
+                error.code === 'auth/popup-blocked') {
+                console.log("Trying redirect method...");
+                // Store the login role in sessionStorage before redirect
+                try {
+                    sessionStorage.setItem('loginRole', currentLoginRole);
+                } catch(e) {
+                    console.warn("sessionStorage not available");
+                }
+                auth.signInWithRedirect(provider);
+            } else if (error.code === 'auth/internal-error' || 
+                       error.message.includes('missing initial state')) {
+                // Storage issue - show helpful message
+                alert("লগইন সমস্যা: অনুগ্রহ করে Chrome বা Firefox browser ব্যবহার করুন। Facebook Messenger বা WhatsApp থেকে চেষ্টা করবেন না।");
+            } else {
+                alert("Login failed: " + error.message);
+            }
+        });
 }
 
 // Show Home
@@ -147,6 +220,8 @@ function logout() {
         const controlPanel = document.getElementById('controlPanel');
         if (controlPanel) controlPanel.style.display = 'none';
         showPage('loginPage');
+    }).catch(error => {
+        console.error("Logout error:", error);
     });
 }
 
@@ -210,7 +285,7 @@ function loadAllSettings() {
         if (d.mottoFont) document.getElementById('motto').style.fontFamily = d.mottoFont;
         if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize+'px';
         if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
-    });
+    }).catch(err => console.error("Load header error:", err));
     
     // Zones
     db.collection('settings').doc('zones').get().then(doc => {
@@ -220,7 +295,7 @@ function loadAllSettings() {
         if (d.titleFont) document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
         if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize+'px';
         if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
-    });
+    }).catch(err => console.error("Load zones error:", err));
     
     // Reviews
     db.collection('settings').doc('reviews').get().then(doc => {
@@ -230,7 +305,7 @@ function loadAllSettings() {
         if (d.titleFont) document.getElementById('reviewTitle').style.fontFamily = d.titleFont;
         if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize+'px';
         if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
-    });
+    }).catch(err => console.error("Load reviews error:", err));
     
     // CEO
     db.collection('settings').doc('ceo').get().then(doc => {
@@ -245,7 +320,7 @@ function loadAllSettings() {
         if (d.nameColor) document.getElementById('ceoName').style.color = d.nameColor;
         if (d.titleFont) document.getElementById('ceoTitle').style.fontFamily = d.titleFont;
         if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
-    });
+    }).catch(err => console.error("Load CEO error:", err));
     
     // Footer
     db.collection('settings').doc('footer').get().then(doc => {
@@ -256,7 +331,7 @@ function loadAllSettings() {
         if (d.copyrightFont) document.getElementById('copyright').style.fontFamily = d.copyrightFont;
         if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize+'px';
         if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
-    });
+    }).catch(err => console.error("Load footer error:", err));
 }
 
 // Load Control Panel
@@ -265,7 +340,6 @@ function loadControlPanel() {
     if (!body) return;
     
     body.innerHTML = `
-        <!-- HEADER -->
         <div class="control-section">
             <h3>🔷 হেডার</h3>
             <div class="control-group">
@@ -312,7 +386,6 @@ function loadControlPanel() {
             </div>
         </div>
         
-        <!-- FACEBOOK -->
         <div class="control-section">
             <h3>📘 ফেসবুক</h3>
             <div class="control-group">
@@ -325,7 +398,6 @@ function loadControlPanel() {
             </div>
         </div>
         
-        <!-- ZONES -->
         <div class="control-section">
             <h3>📍 জোন কার্ড</h3>
             <div class="control-group">
@@ -347,7 +419,6 @@ function loadControlPanel() {
             <div id="zoneCardsSettings"></div>
         </div>
         
-        <!-- REVIEWS -->
         <div class="control-section">
             <h3>💬 রিভিউ</h3>
             <div class="control-group">
@@ -368,7 +439,6 @@ function loadControlPanel() {
             </div>
         </div>
         
-        <!-- CEO -->
         <div class="control-section">
             <h3>👔 CEO</h3>
             <div class="control-group">
@@ -409,7 +479,6 @@ function loadControlPanel() {
             </div>
         </div>
         
-        <!-- FOOTER -->
         <div class="control-section">
             <h3>🔻 ফুটার</h3>
             <div class="control-group">
