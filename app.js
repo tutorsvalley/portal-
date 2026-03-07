@@ -12,7 +12,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-// Storage দরকার নেই এখন
 
 // Google Auth Provider
 const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -240,7 +239,6 @@ function convertToBase64(file, maxWidth = 400, maxHeight = 400) {
                 let width = img.width;
                 let height = img.height;
                 
-                // Resize logic
                 if (width > height) {
                     if (width > maxWidth) {
                         height = Math.round((height * maxWidth) / width);
@@ -258,7 +256,6 @@ function convertToBase64(file, maxWidth = 400, maxHeight = 400) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Compress to JPEG with 0.7 quality
                 const base64 = canvas.toDataURL('image/jpeg', 0.7);
                 resolve(base64);
             };
@@ -289,7 +286,6 @@ async function uploadImage(type) {
     }
     
     try {
-        // Resize and compress image
         const base64 = await convertToBase64(file, 300, 300);
         
         if (type === 'logo') {
@@ -414,7 +410,7 @@ function createDefaultSettings() {
         ceoName: "CEO Name",
         ceoTitle: "Founder & CEO",
         ceoDesc: "CEO description here...",
-        ceoImageUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E",
+        ceoImageUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E",
         ceoImageSize: 100,
         zoneSectionTitle: "আমাদের এলাকা সমূহ",
         reviewsSectionTitle: "রিভিউ সমূহ",
