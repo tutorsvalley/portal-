@@ -391,6 +391,7 @@ body {
     border-radius: 50%;
     border: 4px solid #001f3f;
     margin-bottom: 15px;
+    object-fit: cover;
 }
 
 /* Footer */
