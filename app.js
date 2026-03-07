@@ -30,26 +30,14 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"] }
 ];
 
-// Wait for DOM to load
+// Wait for DOM
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM loaded");
-    initializeApp();
-});
-
-// Initialize App
-function initializeApp() {
-    console.log("Initializing app...");
+    console.log("✅ DOM Loaded");
     
-    // Setup login buttons
-    setupLoginButtons();
+    // Setup all buttons
+    setupButtons();
     
-    // Setup google login button
-    const googleBtn = document.getElementById('googleBtn');
-    if (googleBtn) {
-        googleBtn.onclick = handleGoogleLogin;
-    }
-    
-    // Check auth state
+    // Check auth
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
@@ -58,28 +46,54 @@ function initializeApp() {
             showPage('loginPage');
         }
     });
-}
+});
 
-// Setup Login Buttons
-function setupLoginButtons() {
-    const tutorBtn = document.querySelector('.tutor-btn');
-    const guardianBtn = document.querySelector('.guardian-btn');
-    const guestBtn = document.querySelector('.guest-btn');
-    const adminBtn = document.querySelector('.admin-btn');
+// Setup Buttons
+function setupButtons() {
+    console.log("Setting up buttons...");
+    
+    // Login buttons
+    const tutorBtn = document.getElementById('tutorBtn');
+    const guardianBtn = document.getElementById('guardianBtn');
+    const guestBtn = document.getElementById('guestBtn');
+    const adminBtn = document.getElementById('adminBtn');
     
     if (tutorBtn) tutorBtn.onclick = () => openLoginModal('tutor');
     if (guardianBtn) guardianBtn.onclick = () => openLoginModal('guardian');
     if (guestBtn) guestBtn.onclick = loginAsGuest;
     if (adminBtn) adminBtn.onclick = () => openLoginModal('admin');
+    
+    // Modal buttons
+    const closeModal = document.getElementById('closeModal');
+    const googleBtn = document.getElementById('googleBtn');
+    const closeControl = document.getElementById('closeControl');
+    const controlIcon = document.getElementById('controlIcon');
+    const saveBtn = document.getElementById('saveBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const submitReviewBtn = document.getElementById('submitReviewBtn');
+    
+    if (closeModal) closeModal.onclick = closeModalFunc;
+    if (googleBtn) googleBtn.onclick = handleGoogleLogin;
+    if (closeControl) closeControl.onclick = toggleControlPanel;
+    if (controlIcon) controlIcon.onclick = toggleControlPanel;
+    if (saveBtn) saveBtn.onclick = saveSettings;
+    if (logoutBtn) logoutBtn.onclick = logout;
+    if (submitReviewBtn) submitReviewBtn.onclick = submitReview;
+    
+    console.log("✅ Buttons setup complete");
 }
 
 // Show Page
 function showPage(pageId) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
+    const loginPage = document.getElementById('loginPage');
+    const homePage = document.getElementById('homePage');
+    
+    if (loginPage) loginPage.style.display = 'none';
+    if (homePage) homePage.style.display = 'none';
     
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
+        targetPage.style.display = 'block';
         targetPage.classList.add('active');
     }
 }
@@ -94,36 +108,30 @@ function openLoginModal(role) {
     };
     
     const modalTitle = document.getElementById('modalTitle');
-    if (modalTitle) {
-        modalTitle.innerText = titles[role] || 'লগইন';
-    }
+    if (modalTitle) modalTitle.innerText = titles[role] || 'লগইন';
     
     const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'block';
-    }
+    if (modal) modal.style.display = 'block';
 }
 
 // Close Modal
-function closeModal() {
+function closeModalFunc() {
     const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    if (modal) modal.style.display = 'none';
 }
 
 // Handle Google Login
 function handleGoogleLogin() {
-    console.log("Google login clicked, role:", loginRole);
+    console.log("Google login clicked");
     
     auth.signInWithPopup(provider).then(result => {
         const user = result.user;
-        console.log("User signed in:", user.email);
+        console.log("User:", user.email);
         
         if (loginRole === 'admin' && user.email !== OWNER_EMAIL) {
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
             auth.signOut();
-            closeModal();
+            closeModalFunc();
             return;
         }
         
@@ -133,8 +141,7 @@ function handleGoogleLogin() {
             role: loginRole,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true }).then(() => {
-            console.log("User data saved");
-            closeModal();
+            closeModalFunc();
         });
     }).catch(error => {
         console.error("Login error:", error);
@@ -144,44 +151,31 @@ function handleGoogleLogin() {
 
 // Load User Data
 function loadUserData(uid) {
-    console.log("Loading user data for:", uid);
     db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            console.log("User role:", currentUserRole);
             showHome();
         } else {
-            console.log("No user doc found");
             logout();
         }
-    }).catch(error => {
-        console.error("Error loading user:", error);
     });
 }
 
 // Show Home
 function showHome() {
-    console.log("Showing home page");
+    console.log("Showing home, role:", currentUserRole);
     showPage('homePage');
     
-    // Show control icon for admin only
+    // Control icon
     const controlIcon = document.getElementById('controlIcon');
     if (controlIcon) {
-        if (currentUserRole === 'admin') {
-            controlIcon.style.display = 'flex';
-        } else {
-            controlIcon.style.display = 'none';
-        }
+        controlIcon.style.display = currentUserRole === 'admin' ? 'flex' : 'none';
     }
     
-    // Show review form for tutor/guardian
+    // Review form
     const reviewForm = document.getElementById('reviewForm');
     if (reviewForm) {
-        if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
-            reviewForm.style.display = 'block';
-        } else {
-            reviewForm.style.display = 'none';
-        }
+        reviewForm.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     }
     
     loadSettings();
@@ -204,7 +198,11 @@ function logout() {
 function toggleControlPanel() {
     const panel = document.getElementById('controlPanel');
     if (panel) {
-        panel.classList.toggle('active');
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+        } else {
+            panel.style.display = 'block';
+        }
     }
 }
 
@@ -213,38 +211,31 @@ function uploadLogo() {
     const fileInput = document.getElementById('logoInput');
     if (!fileInput || !fileInput.files[0]) return;
     
-    const file = fileInput.files[0];
     const reader = new FileReader();
     reader.onload = e => {
         const logo = document.getElementById('logo');
-        if (logo) {
-            logo.src = e.target.result;
-        }
+        if (logo) logo.src = e.target.result;
         db.collection('settings').doc('main').update({ logoUrl: e.target.result });
     };
-    reader.readAsDataURL(file);
-}
-
-// Update Branding
-function updateBranding(value) {
-    const branding = document.getElementById('branding');
-    if (branding) branding.innerText = value;
-}
-
-// Update Motto
-function updateMotto(value) {
-    const motto = document.getElementById('motto');
-    if (motto) motto.innerText = value;
+    reader.readAsDataURL(fileInput.files[0]);
 }
 
 // Save Settings
 function saveSettings() {
     const brandingInput = document.getElementById('brandingInput');
     const mottoInput = document.getElementById('mottoInput');
+    const branding = document.getElementById('branding');
+    const motto = document.getElementById('motto');
+    
+    const newBranding = brandingInput ? brandingInput.value : '';
+    const newMotto = mottoInput ? mottoInput.value : '';
+    
+    if (branding) branding.innerText = newBranding;
+    if (motto) motto.innerText = newMotto;
     
     db.collection('settings').doc('main').update({
-        branding: brandingInput ? brandingInput.value : '',
-        motto: mottoInput ? mottoInput.value : ''
+        branding: newBranding,
+        motto: newMotto
     }).then(() => {
         alert("সেটিংস সেভ হয়েছে");
         toggleControlPanel();
@@ -265,15 +256,12 @@ function loadSettings() {
             if (data.branding && branding) branding.innerText = data.branding;
             if (data.motto && motto) motto.innerText = data.motto;
             if (data.logoUrl && logo) logo.src = data.logoUrl;
-            
             if (brandingInput) brandingInput.value = data.branding || '';
             if (mottoInput) mottoInput.value = data.motto || '';
         } else {
-            // Create default settings
             db.collection('settings').doc('main').set({
                 branding: "Tutors Valley",
-                motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর",
-                logoUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230074D9'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='white'%3ETV%3C/text%3E%3C/svg%3E"
+                motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর"
             });
         }
     });
@@ -349,10 +337,8 @@ function submitReview() {
         return;
     }
     
-    const text = reviewText.value;
-    
     db.collection('reviews').add({
-        text: text,
+        text: reviewText.value,
         userName: currentUser.displayName || currentUser.email,
         userRole: currentUserRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -363,10 +349,10 @@ function submitReview() {
     });
 }
 
-// Close modal when clicking outside
+// Close modal on outside click
 window.onclick = function(event) {
     const modal = document.getElementById('loginModal');
     if (modal && event.target === modal) {
-        closeModal();
+        closeModalFunc();
     }
 };
