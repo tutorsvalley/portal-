@@ -10,24 +10,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-// Set persistence to LOCAL (more reliable than SESSION)
-firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .catch((error) => {
-        console.warn("Persistence setup failed:", error);
-        // Continue anyway with default persistence
-    });
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
 
 const auth = firebase.auth();
 const db = firebase.firestore();
-
-// Configure Google Provider
 const provider = new firebase.auth.GoogleAuthProvider();
-provider.addScope('profile');
-provider.addScope('email');
-provider.setCustomParameters({
-    'prompt': 'select_account'
-});
+provider.setCustomParameters({ 'prompt': 'select_account' });
 
 // Variables
 let currentUser = null;
@@ -35,12 +23,13 @@ let currentUserRole = null;
 let currentLoginRole = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Fonts
+// Fonts List
 const fonts = {
     english: ['Poppins','Roboto','Open Sans','Lato','Montserrat','Arial','Georgia','Verdana','Calibri','Times New Roman'],
     bangla: ['Hind Siliguri','Noto Sans Bengali','SolaimanLipi','Baloo Da 2','Mukta','Poppins','Roboto','Open Sans','Lato','Montserrat']
 };
 
+// Default Zones
 const defaultZones = [
     { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "", mixedLink: "" },
     { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "", mixedLink: "" },
@@ -52,47 +41,31 @@ const defaultZones = [
 
 // Guest Login
 function guestLogin() {
-    auth.signInAnonymously()
-        .then((userCredential) => {
-            currentUser = userCredential.user;
-            currentUserRole = 'guest';
-            return db.collection('users').doc(userCredential.user.uid).set({
-                email: 'guest@tutorsvalley.com',
-                displayName: 'Guest User',
-                role: 'guest',
-                isGuest: true,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        })
-        .then(() => { showHome(); })
-        .catch((error) => { 
-            console.error("Guest login error:", error);
-            alert("গেস্ট লগইন ব্যর্থ: " + error.message); 
-        });
+    auth.signInAnonymously().then((userCredential) => {
+        currentUser = userCredential.user;
+        currentUserRole = 'guest';
+        return db.collection('users').doc(userCredential.user.uid).set({
+            email: 'guest@tutorsvalley.com',
+            displayName: 'Guest User',
+            role: 'guest',
+            isGuest: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    }).then(() => { showHome(); })
+    .catch((error) => { alert("গেস্ট লগইন ব্যর্থ: " + error.message); });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Check for redirect result FIRST
     auth.getRedirectResult().then((result) => {
-        if (result.user) {
-            console.log("Redirect login successful");
-            handleLoginSuccess(result.user);
-        }
-    }).catch((error) => {
-        console.error("Redirect error:", error);
-        // Clear any broken auth state
-        auth.signOut().catch(() => {});
-    });
+        if (result.user) handleLoginSuccess(result.user);
+    }).catch((error) => { console.error("Redirect error:", error); auth.signOut().catch(() => {}); });
     
-    // Then check current auth state
     auth.onAuthStateChanged(user => {
         if (user) {
-            console.log("Auth state changed:", user.email);
             currentUser = user;
             loadUser(user.uid);
         } else {
-            console.log("No user - showing login");
             showPage('loginPage');
         }
     });
@@ -106,15 +79,12 @@ function handleLoginSuccess(user) {
         closeModal();
         return;
     }
-    
     db.collection('users').doc(user.uid).set({
         email: user.email,
         displayName: user.displayName,
         role: currentLoginRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(() => {
-        closeModal();
-    });
+    }, { merge: true }).then(() => { closeModal(); });
 }
 
 // Load User Data
@@ -123,12 +93,10 @@ function loadUser(uid) {
         if (doc.exists) {
             currentUserRole = doc.data().role;
             showHome();
-        } else { 
-            logout(); 
+        } else {
+            logout();
         }
-    }).catch(error => {
-        console.error("Load user error:", error);
-    });
+    }).catch(error => { console.error("Load user error:", error); });
 }
 
 // Show Page
@@ -157,54 +125,31 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none';
 }
 
-// Google Login - FIXED VERSION
+// Google Login
 function googleLogin() {
-    console.log("Starting Google login...");
-    
-    // First try popup (works better in most browsers)
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            console.log("Popup login successful");
-            handleLoginSuccess(result.user);
-        })
-        .catch((error) => {
-            console.error("Popup login failed:", error);
-            
-            // If popup fails, try redirect (fallback)
-            if (error.code === 'auth/popup-closed-by-user' || 
-                error.code === 'auth/cancelled-popup-request' ||
-                error.code === 'auth/popup-blocked') {
-                console.log("Trying redirect method...");
-                // Store the login role in sessionStorage before redirect
-                try {
-                    sessionStorage.setItem('loginRole', currentLoginRole);
-                } catch(e) {
-                    console.warn("sessionStorage not available");
-                }
-                auth.signInWithRedirect(provider);
-            } else if (error.code === 'auth/internal-error' || 
-                       error.message.includes('missing initial state')) {
-                // Storage issue - show helpful message
-                alert("লগইন সমস্যা: অনুগ্রহ করে Chrome বা Firefox browser ব্যবহার করুন। Facebook Messenger বা WhatsApp থেকে চেষ্টা করবেন না।");
-            } else {
-                alert("Login failed: " + error.message);
-            }
-        });
+    auth.signInWithPopup(provider).then(result => {
+        handleLoginSuccess(result.user);
+    }).catch(error => {
+        if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+            try { sessionStorage.setItem('loginRole', currentLoginRole); } catch(e) {}
+            auth.signInWithRedirect(provider);
+        } else if (error.code === 'auth/internal-error' || error.message.includes('missing initial state')) {
+            alert("লগইন সমস্যা: Chrome বা Firefox browser ব্যবহার করুন। Messenger/WhatsApp থেকে চেষ্টা করবেন না।");
+        } else {
+            alert("Login failed: " + error.message);
+        }
+    });
 }
 
 // Show Home
 function showHome() {
     showPage('homePage');
-    
     const controlPanel = document.getElementById('controlPanel');
     if (controlPanel) controlPanel.style.display = 'none';
-    
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) adminIcon.style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
-    
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
-    
     loadAllSettings();
     loadZones();
     loadReviews();
@@ -220,8 +165,6 @@ function logout() {
         const controlPanel = document.getElementById('controlPanel');
         if (controlPanel) controlPanel.style.display = 'none';
         showPage('loginPage');
-    }).catch(error => {
-        console.error("Logout error:", error);
     });
 }
 
@@ -233,7 +176,7 @@ function toggleControl() {
         panel.style.display = 'none';
     } else {
         panel.style.display = 'block';
-        setTimeout(() => { loadControlPanel(); }, 50);
+        setTimeout(() => { loadControlPanel(); }, 100);
     }
 }
 
@@ -255,89 +198,117 @@ function rgbToHex(rgb) {
     return "#" + ((1<<24)+(parseInt(v[0])<<16)+(parseInt(v[1])<<8)+parseInt(v[2])).toString(16).slice(1);
 }
 
-// Get Element Style Safely
+// Get Element Style
 function getStyle(id, prop) {
     const el = document.getElementById(id);
     return el ? (el.style[prop] || '') : '';
 }
 
-// Get Element Text Safely
+// Get Element Text
 function getText(id) {
     const el = document.getElementById(id);
     return el ? el.innerText : '';
 }
 
-// Load All Settings
+// ✅ LOAD ALL SETTINGS
 function loadAllSettings() {
+    console.log("Loading settings...");
+    
     // Header
     db.collection('settings').doc('header').get().then(doc => {
         if (!doc.exists) return;
         const d = doc.data();
         if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
-        if (d.branding) document.getElementById('branding').innerText = d.branding;
-        if (d.motto) document.getElementById('motto').innerText = d.motto;
+        if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
+        if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
         if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
-        if (d.fbText) document.getElementById('fbText').innerText = d.fbText;
+        if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
         if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
-        if (d.brandFont) document.getElementById('branding').style.fontFamily = d.brandFont;
-        if (d.brandSize) document.getElementById('branding').style.fontSize = d.brandSize+'px';
-        if (d.brandColor) document.getElementById('branding').style.color = d.brandColor;
+        if (d.brandingFont) document.getElementById('branding').style.fontFamily = d.brandingFont;
+        if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
+        if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
         if (d.mottoFont) document.getElementById('motto').style.fontFamily = d.mottoFont;
-        if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize+'px';
+        if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
         if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
-    }).catch(err => console.error("Load header error:", err));
+    });
     
     // Zones
     db.collection('settings').doc('zones').get().then(doc => {
         if (!doc.exists) return;
         const d = doc.data();
-        if (d.title) document.getElementById('zoneTitle').innerText = d.title;
+        if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
         if (d.titleFont) document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
-        if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize+'px';
+        if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
         if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
-    }).catch(err => console.error("Load zones error:", err));
+    });
     
     // Reviews
     db.collection('settings').doc('reviews').get().then(doc => {
         if (!doc.exists) return;
         const d = doc.data();
-        if (d.title) document.getElementById('reviewTitle').innerText = d.title;
+        if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
         if (d.titleFont) document.getElementById('reviewTitle').style.fontFamily = d.titleFont;
-        if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize+'px';
+        if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
         if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
-    }).catch(err => console.error("Load reviews error:", err));
+    });
     
     // CEO
     db.collection('settings').doc('ceo').get().then(doc => {
         if (!doc.exists) return;
         const d = doc.data();
         if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
-        if (d.name) document.getElementById('ceoName').innerText = d.name;
-        if (d.title) document.getElementById('ceoTitle').innerText = d.title;
-        if (d.desc) document.getElementById('ceoDesc').innerText = d.desc;
+        if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
+        if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
+        if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
         if (d.nameFont) document.getElementById('ceoName').style.fontFamily = d.nameFont;
-        if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize+'px';
+        if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
         if (d.nameColor) document.getElementById('ceoName').style.color = d.nameColor;
         if (d.titleFont) document.getElementById('ceoTitle').style.fontFamily = d.titleFont;
         if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
-    }).catch(err => console.error("Load CEO error:", err));
+    });
     
     // Footer
     db.collection('settings').doc('footer').get().then(doc => {
         if (!doc.exists) return;
         const d = doc.data();
-        if (d.copyright) document.getElementById('copyright').innerText = d.copyright;
+        if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
         if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
         if (d.copyrightFont) document.getElementById('copyright').style.fontFamily = d.copyrightFont;
-        if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize+'px';
+        if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
         if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
-    }).catch(err => console.error("Load footer error:", err));
+    });
 }
 
-// Load Control Panel
+// ✅ LOAD CONTROL PANEL
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
+    
+    const brandingFont = getStyle('branding', 'fontFamily') || '';
+    const brandingSize = parseInt(getStyle('branding', 'fontSize')) || 32;
+    const brandingColor = getStyle('branding', 'color') || '#ffffff';
+    const mottoFont = getStyle('motto', 'fontFamily') || '';
+    const mottoSize = parseInt(getStyle('motto', 'fontSize')) || 18;
+    const mottoColor = getStyle('motto', 'color') || '#ffd700';
+    const headerBg = getStyle('headerSection', 'background') || '#001f3f';
+    const zoneTitleFont = getStyle('zoneTitle', 'fontFamily') || '';
+    const zoneTitleSize = parseInt(getStyle('zoneTitle', 'fontSize')) || 32;
+    const zoneTitleColor = getStyle('zoneTitle', 'color') || '#001f3f';
+    const reviewTitleFont = getStyle('reviewTitle', 'fontFamily') || '';
+    const reviewTitleSize = parseInt(getStyle('reviewTitle', 'fontSize')) || 32;
+    const reviewTitleColor = getStyle('reviewTitle', 'color') || '#001f3f';
+    const ceoNameFont = getStyle('ceoName', 'fontFamily') || '';
+    const ceoNameSize = parseInt(getStyle('ceoName', 'fontSize')) || 24;
+    const ceoNameColor = getStyle('ceoName', 'color') || '#001f3f';
+    const ceoTitleFont = getStyle('ceoTitle', 'fontFamily') || '';
+    const ceoDescFont = getStyle('ceoDesc', 'fontFamily') || '';
+    const copyrightFont = getStyle('copyright', 'fontFamily') || '';
+    const copyrightSize = parseInt(getStyle('copyright', 'fontSize')) || 14;
+    const copyrightColor = getStyle('copyright', 'color') || '#ffffff';
+    const footerBg = getStyle('footerSection', 'background') || '#001f3f';
+    
+    // ✅ Check if user is Admin or Tutor for Zone Title Edit
+    const canEditZoneTitle = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     body.innerHTML = `
         <div class="control-section">
@@ -348,41 +319,47 @@ function loadControlPanel() {
             </div>
             <div class="control-group">
                 <label>ব্র্যান্ডিং:</label>
-                <input type="text" value="${getText('branding')}" oninput="updateText('branding',this.value);saveStyle('header','branding','text',this.value)">
+                <input type="text" value="${getText('branding')}" oninput="updateText('branding',this.value); saveSetting('header','brandingText',this.value)">
             </div>
             <div class="control-group">
                 <label>ব্র্যান্ডিং ফন্ট:</label>
-                <select onchange="updateFont('branding',this.value);saveStyle('header','branding','font',this.value)">${generateFontOptions(getStyle('branding','fontFamily'))}</select>
+                <select onchange="updateFont('branding',this.value); saveSetting('header','brandingFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(brandingFont)}
+                </select>
             </div>
             <div class="control-group">
                 <label>ব্র্যান্ডিং সাইজ:</label>
-                <input type="number" value="${parseInt(getStyle('branding','fontSize'))||32}" min="10" max="100" onchange="updateSize('branding',this.value);saveStyle('header','branding','size',this.value)">
+                <input type="number" value="${brandingSize}" min="10" max="100" onchange="updateSize('branding',this.value); saveSetting('header','brandingSize',this.value)">
             </div>
             <div class="control-group">
                 <label>ব্র্যান্ডিং কালার:</label>
-                <input type="color" value="${rgbToHex(getStyle('branding','color'))||'#ffffff'}" onchange="updateColor('branding','color',this.value);saveStyle('header','branding','color',this.value)">
+                <input type="color" value="${rgbToHex(brandingColor)}" onchange="updateColor('branding','color',this.value); saveSetting('header','brandingColor',this.value)">
             </div>
             <hr style="margin:15px 0;border:0;border-top:1px solid #eee;">
             <div class="control-group">
                 <label>মotto:</label>
-                <input type="text" value="${getText('motto')}" oninput="updateText('motto',this.value);saveStyle('header','motto','text',this.value)">
+                <input type="text" value="${getText('motto')}" oninput="updateText('motto',this.value); saveSetting('header','mottoText',this.value)">
             </div>
             <div class="control-group">
                 <label>মotto ফন্ট:</label>
-                <select onchange="updateFont('motto',this.value);saveStyle('header','motto','font',this.value)">${generateFontOptions(getStyle('motto','fontFamily'))}</select>
+                <select onchange="updateFont('motto',this.value); saveSetting('header','mottoFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(mottoFont)}
+                </select>
             </div>
             <div class="control-group">
                 <label>মotto সাইজ:</label>
-                <input type="number" value="${parseInt(getStyle('motto','fontSize'))||18}" min="10" max="60" onchange="updateSize('motto',this.value);saveStyle('header','motto','size',this.value)">
+                <input type="number" value="${mottoSize}" min="10" max="60" onchange="updateSize('motto',this.value); saveSetting('header','mottoSize',this.value)">
             </div>
             <div class="control-group">
                 <label>মotto কালার:</label>
-                <input type="color" value="${rgbToHex(getStyle('motto','color'))||'#ffd700'}" onchange="updateColor('motto','color',this.value);saveStyle('header','motto','color',this.value)">
+                <input type="color" value="${rgbToHex(mottoColor)}" onchange="updateColor('motto','color',this.value); saveSetting('header','mottoColor',this.value)">
             </div>
             <hr style="margin:15px 0;border:0;border-top:1px solid #eee;">
             <div class="control-group">
                 <label>হেডার ব্যাকগ্রাউন্ড:</label>
-                <input type="color" value="${rgbToHex(getStyle('headerSection','background'))||'#001f3f'}" onchange="updateColor('headerSection','background',this.value);saveStyle('header','section','bg',this.value)">
+                <input type="color" value="${rgbToHex(headerBg)}" onchange="updateColor('headerSection','background',this.value); saveSetting('header','headerBg',this.value)">
             </div>
         </div>
         
@@ -394,28 +371,41 @@ function loadControlPanel() {
             </div>
             <div class="control-group">
                 <label>টেক্সট:</label>
-                <input type="text" value="${getText('fbText')}" oninput="updateText('fbText',this.value);saveStyle('header','fbText','text',this.value)">
+                <input type="text" value="${getText('fbText')}" oninput="updateText('fbText',this.value); saveSetting('header','fbTextText',this.value)">
             </div>
         </div>
         
         <div class="control-section">
             <h3>📍 জোন কার্ড</h3>
             <div class="control-group">
-                <label>শিরোনাম:</label>
-                <input type="text" value="${getText('zoneTitle')}" oninput="updateText('zoneTitle',this.value);saveStyle('zones','title','text',this.value)">
+                <label>সেকশন শিরোনাম:</label>
+                <input type="text" value="${getText('zoneTitle')}" oninput="updateText('zoneTitle',this.value); saveSetting('zones','titleText',this.value)">
             </div>
             <div class="control-group">
-                <label>ফন্ট:</label>
-                <select onchange="updateFont('zoneTitle',this.value);saveStyle('zones','title','font',this.value)">${generateFontOptions(getStyle('zoneTitle','fontFamily'))}</select>
+                <label>শিরোনাম ফন্ট:</label>
+                <select onchange="updateFont('zoneTitle',this.value); saveSetting('zones','titleFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(zoneTitleFont)}
+                </select>
             </div>
             <div class="control-group">
-                <label>সাইজ:</label>
-                <input type="number" value="${parseInt(getStyle('zoneTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('zoneTitle',this.value);saveStyle('zones','title','size',this.value)">
+                <label>শিরোনাম সাইজ:</label>
+                <input type="number" value="${zoneTitleSize}" min="10" max="80" onchange="updateSize('zoneTitle',this.value); saveSetting('zones','titleSize',this.value)">
             </div>
             <div class="control-group">
-                <label>কালার:</label>
-                <input type="color" value="${rgbToHex(getStyle('zoneTitle','color'))||'#001f3f'}" onchange="updateColor('zoneTitle','color',this.value);saveStyle('zones','title','color',this.value)">
+                <label>শিরোনাম কালার:</label>
+                <input type="color" value="${rgbToHex(zoneTitleColor)}" onchange="updateColor('zoneTitle','color',this.value); saveSetting('zones','titleColor',this.value)">
             </div>
+            
+            ${canEditZoneTitle ? `
+            <hr style="margin:15px 0;border:0;border-top:1px solid #eee;">
+            <div class="control-group" style="background:#fff3cd; padding:10px; border-radius:5px;">
+                <label style="color:#856404;">⚠️ টিউটরদের জন্য নোট (শুধু টিউটর দেখবে):</label>
+                <input type="text" id="tutorZoneNote" placeholder="টিউটরদের জন্য বার্তা লিখুন..." onchange="saveSetting('zones','tutorNote',this.value)">
+                <small style="color:#856404;">এই টেক্সট শুধুমাত্র টিউটররা তাদের হোম পেজে দেখতে পাবে</small>
+            </div>
+            ` : ''}
+            
             <div id="zoneCardsSettings"></div>
         </div>
         
@@ -423,19 +413,22 @@ function loadControlPanel() {
             <h3>💬 রিভিউ</h3>
             <div class="control-group">
                 <label>শিরোনাম:</label>
-                <input type="text" value="${getText('reviewTitle')}" oninput="updateText('reviewTitle',this.value);saveStyle('reviews','title','text',this.value)">
+                <input type="text" value="${getText('reviewTitle')}" oninput="updateText('reviewTitle',this.value); saveSetting('reviews','titleText',this.value)">
             </div>
             <div class="control-group">
                 <label>ফন্ট:</label>
-                <select onchange="updateFont('reviewTitle',this.value);saveStyle('reviews','title','font',this.value)">${generateFontOptions(getStyle('reviewTitle','fontFamily'))}</select>
+                <select onchange="updateFont('reviewTitle',this.value); saveSetting('reviews','titleFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(reviewTitleFont)}
+                </select>
             </div>
             <div class="control-group">
                 <label>সাইজ:</label>
-                <input type="number" value="${parseInt(getStyle('reviewTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('reviewTitle',this.value);saveStyle('reviews','title','size',this.value)">
+                <input type="number" value="${reviewTitleSize}" min="10" max="80" onchange="updateSize('reviewTitle',this.value); saveSetting('reviews','titleSize',this.value)">
             </div>
             <div class="control-group">
                 <label>কালার:</label>
-                <input type="color" value="${rgbToHex(getStyle('reviewTitle','color'))||'#001f3f'}" onchange="updateColor('reviewTitle','color',this.value);saveStyle('reviews','title','color',this.value)">
+                <input type="color" value="${rgbToHex(reviewTitleColor)}" onchange="updateColor('reviewTitle','color',this.value); saveSetting('reviews','titleColor',this.value)">
             </div>
         </div>
         
@@ -447,35 +440,44 @@ function loadControlPanel() {
             </div>
             <div class="control-group">
                 <label>নাম:</label>
-                <input type="text" value="${getText('ceoName')}" oninput="updateText('ceoName',this.value);saveStyle('ceo','name','text',this.value)">
+                <input type="text" value="${getText('ceoName')}" oninput="updateText('ceoName',this.value); saveSetting('ceo','nameText',this.value)">
             </div>
             <div class="control-group">
                 <label>নাম ফন্ট:</label>
-                <select onchange="updateFont('ceoName',this.value);saveStyle('ceo','name','font',this.value)">${generateFontOptions(getStyle('ceoName','fontFamily'))}</select>
+                <select onchange="updateFont('ceoName',this.value); saveSetting('ceo','nameFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(ceoNameFont)}
+                </select>
             </div>
             <div class="control-group">
                 <label>নাম সাইজ:</label>
-                <input type="number" value="${parseInt(getStyle('ceoName','fontSize'))||24}" min="10" max="60" onchange="updateSize('ceoName',this.value);saveStyle('ceo','name','size',this.value)">
+                <input type="number" value="${ceoNameSize}" min="10" max="60" onchange="updateSize('ceoName',this.value); saveSetting('ceo','nameSize',this.value)">
             </div>
             <div class="control-group">
                 <label>নাম কালার:</label>
-                <input type="color" value="${rgbToHex(getStyle('ceoName','color'))||'#001f3f'}" onchange="updateColor('ceoName','color',this.value);saveStyle('ceo','name','color',this.value)">
+                <input type="color" value="${rgbToHex(ceoNameColor)}" onchange="updateColor('ceoName','color',this.value); saveSetting('ceo','nameColor',this.value)">
             </div>
             <div class="control-group">
                 <label>পদবী:</label>
-                <input type="text" value="${getText('ceoTitle')}" oninput="updateText('ceoTitle',this.value);saveStyle('ceo','title','text',this.value)">
+                <input type="text" value="${getText('ceoTitle')}" oninput="updateText('ceoTitle',this.value); saveSetting('ceo','titleText',this.value)">
             </div>
             <div class="control-group">
                 <label>পদবী ফন্ট:</label>
-                <select onchange="updateFont('ceoTitle',this.value);saveStyle('ceo','title','font',this.value)">${generateFontOptions(getStyle('ceoTitle','fontFamily'))}</select>
+                <select onchange="updateFont('ceoTitle',this.value); saveSetting('ceo','titleFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(ceoTitleFont)}
+                </select>
             </div>
             <div class="control-group">
                 <label>বিবরণ:</label>
-                <textarea rows="3" oninput="updateText('ceoDesc',this.value);saveStyle('ceo','desc','text',this.value)">${getText('ceoDesc')}</textarea>
+                <textarea rows="3" oninput="updateText('ceoDesc',this.value); saveSetting('ceo','descText',this.value)">${getText('ceoDesc')}</textarea>
             </div>
             <div class="control-group">
                 <label>বিবরণ ফন্ট:</label>
-                <select onchange="updateFont('ceoDesc',this.value);saveStyle('ceo','desc','font',this.value)">${generateFontOptions(getStyle('ceoDesc','fontFamily'))}</select>
+                <select onchange="updateFont('ceoDesc',this.value); saveSetting('ceo','descFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(ceoDescFont)}
+                </select>
             </div>
         </div>
         
@@ -483,31 +485,52 @@ function loadControlPanel() {
             <h3>🔻 ফুটার</h3>
             <div class="control-group">
                 <label>কপিরাইট:</label>
-                <input type="text" value="${getText('copyright')}" oninput="updateText('copyright',this.value);saveStyle('footer','copyright','text',this.value)">
+                <input type="text" value="${getText('copyright')}" oninput="updateText('copyright',this.value); saveSetting('footer','copyrightText',this.value)">
             </div>
             <div class="control-group">
                 <label>ফন্ট:</label>
-                <select onchange="updateFont('copyright',this.value);saveStyle('footer','copyright','font',this.value)">${generateFontOptions(getStyle('copyright','fontFamily'))}</select>
+                <select onchange="updateFont('copyright',this.value); saveSetting('footer','copyrightFont',this.value)">
+                    <option value="">ডিফল্ট</option>
+                    ${generateFontOptions(copyrightFont)}
+                </select>
             </div>
             <div class="control-group">
                 <label>সাইজ:</label>
-                <input type="number" value="${parseInt(getStyle('copyright','fontSize'))||14}" min="10" max="40" onchange="updateSize('copyright',this.value);saveStyle('footer','copyright','size',this.value)">
+                <input type="number" value="${copyrightSize}" min="10" max="40" onchange="updateSize('copyright',this.value); saveSetting('footer','copyrightSize',this.value)">
             </div>
             <div class="control-group">
                 <label>কালার:</label>
-                <input type="color" value="${rgbToHex(getStyle('copyright','color'))||'#ffffff'}" onchange="updateColor('copyright','color',this.value);saveStyle('footer','copyright','color',this.value)">
+                <input type="color" value="${rgbToHex(copyrightColor)}" onchange="updateColor('copyright','color',this.value); saveSetting('footer','copyrightColor',this.value)">
             </div>
             <div class="control-group">
                 <label>ব্যাকগ্রাউন্ড:</label>
-                <input type="color" value="${rgbToHex(getStyle('footerSection','background'))||'#001f3f'}" onchange="updateColor('footerSection','background',this.value);saveStyle('footer','section','bg',this.value)">
+                <input type="color" value="${rgbToHex(footerBg)}" onchange="updateColor('footerSection','background',this.value); saveSetting('footer','bgColor',this.value)">
             </div>
         </div>
     `;
     
+    // Load tutor note if exists
+    if (canEditZoneTitle) {
+        db.collection('settings').doc('zones').get().then(doc => {
+            if (doc.exists && doc.data().tutorNote) {
+                document.getElementById('tutorZoneNote').value = doc.data().tutorNote;
+            }
+        });
+    }
+    
     loadZoneCardsSettings();
 }
 
-// Update Functions
+// ✅ SAVE SETTING
+function saveSetting(collection, field, value) {
+    console.log(`Saving: ${collection}.${field} = ${value}`);
+    db.collection('settings').doc(collection).update({ [field]: value })
+        .catch(() => {
+            db.collection('settings').doc(collection).set({ [field]: value });
+        });
+}
+
+// Update Logo
 function updateLogo() {
     const file = document.getElementById('logoInput').files[0];
     if (!file) return;
@@ -519,6 +542,7 @@ function updateLogo() {
     reader.readAsDataURL(file);
 }
 
+// Update CEO Image
 function updateCeoImage() {
     const file = document.getElementById('ceoImageInput').files[0];
     if (!file) return;
@@ -530,6 +554,7 @@ function updateCeoImage() {
     reader.readAsDataURL(file);
 }
 
+// Update Functions
 function updateText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
 function updateFont(id, font) { const el = document.getElementById(id); if (el) el.style.fontFamily = font; }
 function updateSize(id, size) { const el = document.getElementById(id); if (el) el.style.fontSize = size+'px'; }
@@ -538,13 +563,6 @@ function updateColor(id, prop, color) { const el = document.getElementById(id); 
 function updateFbUrl(url) {
     document.getElementById('fbBtn').href = url;
     db.collection('settings').doc('header').update({ fbUrl: url });
-}
-
-// Save Style to Firestore
-function saveStyle(section, element, field, value) {
-    const key = element + (field==='text'?'Text':field==='font'?'Font':field==='size'?'Size':'Color');
-    db.collection('settings').doc(section).update({ [key]: value })
-        .catch(() => db.collection('settings').doc(section).set({ [key]: value }));
 }
 
 // Load Zone Cards Settings
@@ -560,15 +578,16 @@ function loadZoneCardsSettings() {
                     <strong>জোন #${z.id}</strong><br><br>
                     শিরোনাম: <input type="text" value="${z.title}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'title',this.value)"><br>
                     এলাকা: <input type="text" value="${z.areas?z.areas.join(', '):''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'areas',this.value)"><br>
-                    পুরুষ লিঙ্ক: <input type="url" value="${z.maleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>
-                    মহিলা লিঙ্ক: <input type="url" value="${z.femaleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)"><br>
-                    মিক্সড লিঙ্ক: <input type="url" value="${z.mixedLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'mixedLink',this.value)">
+                    মেল গ্রুপ লিঙ্ক: <input type="url" value="${z.maleLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>
+                    ফিমেল গ্রুপ লিঙ্ক: <input type="url" value="${z.femaleLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)"><br>
+                    মিক্সড গ্রুপ লিঙ্ক: <input type="url" value="${z.mixedLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'mixedLink',this.value)">
                 </div>
             `;
         });
     });
 }
 
+// Update Zone
 function updateZone(id, field, val) {
     if (field === 'areas') val = val.split(',').map(a=>a.trim()).filter(a=>a);
     db.collection('zones').doc(id.toString()).update({ [field]: val });
@@ -586,13 +605,31 @@ function loadZones() {
             renderZones(zones);
         }
     });
+    
+    // ✅ Load Tutor Note (Only for Tutors)
+    if (currentUserRole === 'tutor') {
+        db.collection('settings').doc('zones').get().then(doc => {
+            if (doc.exists && doc.data().tutorNote) {
+                const zoneTitle = document.getElementById('zoneTitle');
+                if (zoneTitle) {
+                    const note = document.createElement('p');
+                    note.style.cssText = 'background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px;';
+                    note.innerText = '📢 ' + doc.data().tutorNote;
+                    zoneTitle.parentNode.insertBefore(note, zoneTitle.nextSibling);
+                }
+            }
+        });
+    }
 }
 
-// Render Zones
+// ✅ Render Zones - Male/Female Group Text + URL Visibility
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
     container.innerHTML = '';
+    
+    // ✅ Only Admin and Tutor can see group buttons
+    const canSeeButtons = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     zones.forEach(zone => {
         const card = document.createElement('div');
@@ -602,9 +639,10 @@ function renderZones(zones) {
         if (zone.areas) areas = zone.areas.map(a => `<span class="area-tag">${a}</span>`).join('');
         
         let buttons = '';
-        if (currentUserRole === 'tutor') {
-            if (zone.maleLink) buttons += `<a href="${zone.maleLink}" target="_blank" class="group-btn male-btn">👨 পুরুষ গ্রুপ</a><br>`;
-            if (zone.femaleLink) buttons += `<a href="${zone.femaleLink}" target="_blank" class="group-btn female-btn">👩 মহিলা গ্রুপ</a><br>`;
+        if (canSeeButtons) {
+            // ✅ Changed text to "মেল গ্রুপ" and "ফিমেল গ্রুপ"
+            if (zone.maleLink) buttons += `<a href="${zone.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a><br>`;
+            if (zone.femaleLink) buttons += `<a href="${zone.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a><br>`;
             if (zone.mixedLink) buttons += `<a href="${zone.mixedLink}" target="_blank" class="group-btn mixed-btn">👥 মিক্সড গ্রুপ</a>`;
         }
         
@@ -619,21 +657,17 @@ function loadReviews() {
         const container = document.getElementById('reviewList');
         if (!container) return;
         container.innerHTML = '';
-        
         if (snapshot.empty) {
             container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">এখনও কোনো রিভিউ নেই</p>';
             return;
         }
-        
         snapshot.forEach(doc => {
             const r = doc.data();
             const date = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
             const card = document.createElement('div');
             card.className = 'review-card';
-            
             const deleteBtn = currentUserRole === 'admin' ? 
                 `<button onclick="deleteReview('${doc.id}')" style="float:right;background:#ff4136;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:0.8em;">🗑️ ডিলিট</button>` : '';
-            
             card.innerHTML = `${deleteBtn}<h4>${r.userName||'Anonymous'} ${r.userRole?'('+r.userRole+')':''}</h4><small style="color:#999;display:block;margin-bottom:8px;">${date}</small><p style="line-height:1.6;">${r.text}</p>`;
             container.appendChild(card);
         });
@@ -659,7 +693,6 @@ function submitReview() {
     }
     const text = document.getElementById('reviewText').value;
     if (!text.trim()) { alert("রিভিউ লিখুন"); return; }
-    
     db.collection('reviews').add({
         text: text,
         userName: currentUser.displayName || currentUser.email || 'Anonymous',
