@@ -30,14 +30,26 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"] }
 ];
 
-// On Load
-window.onload = function() {
-    console.log("App loaded");
-    checkAuth();
-};
+// Wait for DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded");
+    initializeApp();
+});
 
-// Check Auth
-function checkAuth() {
+// Initialize App
+function initializeApp() {
+    console.log("Initializing app...");
+    
+    // Setup login buttons
+    setupLoginButtons();
+    
+    // Setup google login button
+    const googleBtn = document.getElementById('googleBtn');
+    if (googleBtn) {
+        googleBtn.onclick = handleGoogleLogin;
+    }
+    
+    // Check auth state
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
@@ -48,22 +60,28 @@ function checkAuth() {
     });
 }
 
-// Load User Data
-function loadUserData(uid) {
-    db.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) {
-            currentUserRole = doc.data().role;
-            showHome();
-        } else {
-            logout();
-        }
-    });
+// Setup Login Buttons
+function setupLoginButtons() {
+    const tutorBtn = document.querySelector('.tutor-btn');
+    const guardianBtn = document.querySelector('.guardian-btn');
+    const guestBtn = document.querySelector('.guest-btn');
+    const adminBtn = document.querySelector('.admin-btn');
+    
+    if (tutorBtn) tutorBtn.onclick = () => openLoginModal('tutor');
+    if (guardianBtn) guardianBtn.onclick = () => openLoginModal('guardian');
+    if (guestBtn) guestBtn.onclick = loginAsGuest;
+    if (adminBtn) adminBtn.onclick = () => openLoginModal('admin');
 }
 
 // Show Page
 function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(p => p.classList.remove('active'));
+    
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
 }
 
 // Open Login Modal
@@ -74,19 +92,33 @@ function openLoginModal(role) {
         'guardian': 'অভিভাবক লগইন',
         'admin': 'এডমিন লগইন'
     };
-    document.getElementById('modalTitle').innerText = titles[role];
-    document.getElementById('loginModal').style.display = 'block';
+    
+    const modalTitle = document.getElementById('modalTitle');
+    if (modalTitle) {
+        modalTitle.innerText = titles[role] || 'লগইন';
+    }
+    
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
 }
 
 // Close Modal
 function closeModal() {
-    document.getElementById('loginModal').style.display = 'none';
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
-// Google Login
-document.getElementById('googleBtn').onclick = function() {
+// Handle Google Login
+function handleGoogleLogin() {
+    console.log("Google login clicked, role:", loginRole);
+    
     auth.signInWithPopup(provider).then(result => {
         const user = result.user;
+        console.log("User signed in:", user.email);
         
         if (loginRole === 'admin' && user.email !== OWNER_EMAIL) {
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
@@ -101,40 +133,55 @@ document.getElementById('googleBtn').onclick = function() {
             role: loginRole,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true }).then(() => {
+            console.log("User data saved");
             closeModal();
         });
     }).catch(error => {
+        console.error("Login error:", error);
         alert("লগইন ব্যর্থ: " + error.message);
-        console.error(error);
     });
-};
+}
 
-// Guest Login
-function loginAsGuest() {
-    auth.signInAnonymously().then(() => {
-        currentUserRole = 'guest';
-        showHome();
+// Load User Data
+function loadUserData(uid) {
+    console.log("Loading user data for:", uid);
+    db.collection('users').doc(uid).get().then(doc => {
+        if (doc.exists) {
+            currentUserRole = doc.data().role;
+            console.log("User role:", currentUserRole);
+            showHome();
+        } else {
+            console.log("No user doc found");
+            logout();
+        }
+    }).catch(error => {
+        console.error("Error loading user:", error);
     });
 }
 
 // Show Home
 function showHome() {
+    console.log("Showing home page");
     showPage('homePage');
     
     // Show control icon for admin only
     const controlIcon = document.getElementById('controlIcon');
-    if (currentUserRole === 'admin') {
-        controlIcon.style.display = 'flex';
-    } else {
-        controlIcon.style.display = 'none';
+    if (controlIcon) {
+        if (currentUserRole === 'admin') {
+            controlIcon.style.display = 'flex';
+        } else {
+            controlIcon.style.display = 'none';
+        }
     }
     
     // Show review form for tutor/guardian
     const reviewForm = document.getElementById('reviewForm');
-    if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
-        reviewForm.style.display = 'block';
-    } else {
-        reviewForm.style.display = 'none';
+    if (reviewForm) {
+        if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
+            reviewForm.style.display = 'block';
+        } else {
+            reviewForm.style.display = 'none';
+        }
     }
     
     loadSettings();
@@ -147,24 +194,32 @@ function logout() {
     auth.signOut().then(() => {
         currentUser = null;
         currentUserRole = null;
-        document.getElementById('controlIcon').style.display = 'none';
+        const controlIcon = document.getElementById('controlIcon');
+        if (controlIcon) controlIcon.style.display = 'none';
         showPage('loginPage');
     });
 }
 
 // Toggle Control Panel
 function toggleControlPanel() {
-    document.getElementById('controlPanel').classList.toggle('active');
+    const panel = document.getElementById('controlPanel');
+    if (panel) {
+        panel.classList.toggle('active');
+    }
 }
 
 // Upload Logo
 function uploadLogo() {
-    const file = document.getElementById('logoInput').files[0];
-    if (!file) return;
+    const fileInput = document.getElementById('logoInput');
+    if (!fileInput || !fileInput.files[0]) return;
     
+    const file = fileInput.files[0];
     const reader = new FileReader();
     reader.onload = e => {
-        document.getElementById('logo').src = e.target.result;
+        const logo = document.getElementById('logo');
+        if (logo) {
+            logo.src = e.target.result;
+        }
         db.collection('settings').doc('main').update({ logoUrl: e.target.result });
     };
     reader.readAsDataURL(file);
@@ -172,19 +227,24 @@ function uploadLogo() {
 
 // Update Branding
 function updateBranding(value) {
-    document.getElementById('branding').innerText = value;
+    const branding = document.getElementById('branding');
+    if (branding) branding.innerText = value;
 }
 
 // Update Motto
 function updateMotto(value) {
-    document.getElementById('motto').innerText = value;
+    const motto = document.getElementById('motto');
+    if (motto) motto.innerText = value;
 }
 
 // Save Settings
 function saveSettings() {
+    const brandingInput = document.getElementById('brandingInput');
+    const mottoInput = document.getElementById('mottoInput');
+    
     db.collection('settings').doc('main').update({
-        branding: document.getElementById('brandingInput').value,
-        motto: document.getElementById('mottoInput').value
+        branding: brandingInput ? brandingInput.value : '',
+        motto: mottoInput ? mottoInput.value : ''
     }).then(() => {
         alert("সেটিংস সেভ হয়েছে");
         toggleControlPanel();
@@ -196,18 +256,24 @@ function loadSettings() {
     db.collection('settings').doc('main').get().then(doc => {
         if (doc.exists) {
             const data = doc.data();
-            if (data.branding) document.getElementById('branding').innerText = data.branding;
-            if (data.motto) document.getElementById('motto').innerText = data.motto;
-            if (data.logoUrl) document.getElementById('logo').src = data.logoUrl;
+            const branding = document.getElementById('branding');
+            const motto = document.getElementById('motto');
+            const logo = document.getElementById('logo');
+            const brandingInput = document.getElementById('brandingInput');
+            const mottoInput = document.getElementById('mottoInput');
             
-            // Fill control panel inputs
-            document.getElementById('brandingInput').value = data.branding || '';
-            document.getElementById('mottoInput').value = data.motto || '';
+            if (data.branding && branding) branding.innerText = data.branding;
+            if (data.motto && motto) motto.innerText = data.motto;
+            if (data.logoUrl && logo) logo.src = data.logoUrl;
+            
+            if (brandingInput) brandingInput.value = data.branding || '';
+            if (mottoInput) mottoInput.value = data.motto || '';
         } else {
+            // Create default settings
             db.collection('settings').doc('main').set({
                 branding: "Tutors Valley",
                 motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর",
-                logoUrl: document.getElementById('logo').src
+                logoUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230074D9'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='white'%3ETV%3C/text%3E%3C/svg%3E"
             });
         }
     });
@@ -232,6 +298,8 @@ function loadZones() {
 // Render Zones
 function renderZones(zones) {
     const container = document.getElementById('zoneCards');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     zones.forEach(zone => {
@@ -239,12 +307,12 @@ function renderZones(zones) {
         card.className = 'zone-card';
         
         let areasHtml = '';
-        if (zone.areas) {
+        if (zone.areas && Array.isArray(zone.areas)) {
             areasHtml = zone.areas.map(area => `<span class="area-tag">${area}</span>`).join('');
         }
         
         card.innerHTML = `
-            <h3>${zone.title}</h3>
+            <h3>${zone.title || 'Zone'}</h3>
             <div class="area-tags">${areasHtml}</div>
         `;
         
@@ -256,6 +324,8 @@ function renderZones(zones) {
 function loadReviews() {
     db.collection('reviews').orderBy('createdAt', 'desc').limit(10).get().then(snapshot => {
         const container = document.getElementById('reviewsList');
+        if (!container) return;
+        
         container.innerHTML = '';
         
         snapshot.forEach(doc => {
@@ -264,7 +334,7 @@ function loadReviews() {
             card.className = 'review-card';
             card.innerHTML = `
                 <h4>${review.userName || 'Anonymous'}</h4>
-                <p>${review.text}</p>
+                <p>${review.text || ''}</p>
             `;
             container.appendChild(card);
         });
@@ -273,11 +343,13 @@ function loadReviews() {
 
 // Submit Review
 function submitReview() {
-    const text = document.getElementById('reviewText').value;
-    if (!text.trim()) {
+    const reviewText = document.getElementById('reviewText');
+    if (!reviewText || !reviewText.value.trim()) {
         alert("রিভিউ লিখুন");
         return;
     }
+    
+    const text = reviewText.value;
     
     db.collection('reviews').add({
         text: text,
@@ -285,7 +357,7 @@ function submitReview() {
         userRole: currentUserRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
-        document.getElementById('reviewText').value = '';
+        reviewText.value = '';
         loadReviews();
         alert("রিভিউ জমা হয়েছে");
     });
@@ -294,7 +366,7 @@ function submitReview() {
 // Close modal when clicking outside
 window.onclick = function(event) {
     const modal = document.getElementById('loginModal');
-    if (event.target === modal) {
+    if (modal && event.target === modal) {
         closeModal();
     }
 };
