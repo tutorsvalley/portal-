@@ -1,4 +1,4 @@
-// Firebase Configuration
+// Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",
     authDomain: "tutors-valley-6ddb0.firebaseapp.com",
@@ -12,149 +12,125 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const provider = new firebase.auth.GoogleAuthProvider();
 
-// Global Variables
+// Variables
 let currentUser = null;
 let currentUserRole = null;
+let loginRole = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Default Zone Cards
-const defaultZoneCards = [
-    { id: 1, zoneTitle: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী", "রূপনগর"] },
-    { id: 2, zoneTitle: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর", "শ্যামলী"] },
-    { id: 3, zoneTitle: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা", "নিকেতন"] },
-    { id: 4, zoneTitle: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর", "কেরানীগঞ্জ"] },
-    { id: 5, zoneTitle: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ", "রমনা"] },
-    { id: 6, zoneTitle: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "গাজীপুর", "সাভার"] }
+// Default Data
+const defaultZones = [
+    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"] },
+    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"] },
+    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"] },
+    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"] },
+    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"] },
+    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"] }
 ];
 
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Page loaded, checking auth...");
-    checkAuthState();
-});
+// On Load
+window.onload = function() {
+    console.log("App loaded");
+    checkAuth();
+};
 
-// Auth State Observer
-function checkAuthState() {
-    auth.onAuthStateChanged((user) => {
-        console.log("Auth state changed:", user ? user.email : "No user");
+// Check Auth
+function checkAuth() {
+    auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
-            determineUserRole(user);
+            loadUserData(user.uid);
         } else {
             showPage('loginPage');
         }
     });
 }
-// Determine User Role
-function determineUserRole(user) {
-    console.log("Determining role for:", user.email);
-    db.collection('users').doc(user.uid).get().then((doc) => {
+
+// Load User Data
+function loadUserData(uid) {
+    db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            console.log("User role:", currentUserRole);
-            initializeApp();
+            showHome();
         } else {
-            console.log("No user doc found, logging out");
             logout();
         }
-    }).catch((error) => {
-        console.error("Error getting user role:", error);
-        logout();
     });
 }
 
-// Show Google Login Modal
-function showGoogleLogin(role) {
-    console.log("Showing login for role:", role);
-    currentUserRole = role;
-    
+// Show Page
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+}
+
+// Open Login Modal
+function openLoginModal(role) {
+    loginRole = role;
     const titles = {
         'tutor': 'টিউটর লগইন',
         'guardian': 'অভিভাবক লগইন',
         'admin': 'এডমিন লগইন'
     };
-    
-    document.getElementById('googleLoginTitle').innerText = titles[role] || 'লগইন';
-    document.getElementById('googleLoginModal').style.display = 'block';
-    
-    document.getElementById('googleSignInBtn').onclick = function() {
-        console.log("Google sign in clicked for:", role);
-        signInWithGoogle(role);
-    };
+    document.getElementById('modalTitle').innerText = titles[role];
+    document.getElementById('loginModal').style.display = 'block';
 }
 
-// Google Sign In
-function signInWithGoogle(role) {
-    console.log("Signing in with Google as:", role);
-    auth.signInWithPopup(googleProvider)
-        .then((result) => {
-            const user = result.user;
-            console.log("User signed in:", user.email);
-            
-            // Admin check
-            if (role === 'admin') {
-                if (user.email !== OWNER_EMAIL) {
-                    alert("শুধুমাত্র মালিক এইমেইল দিয়ে admin লগইন করতে পারবেন!");                    console.log("Admin login rejected:", user.email);
-                    auth.signOut();
-                    closeModal('googleLoginModal');
-                    return;
-                }
-            }
-            
-            // Save user data
-            db.collection('users').doc(user.uid).set({
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                role: role === 'admin' ? 'admin' : role,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true }).then(() => {
-                console.log("User data saved");
-                closeModal('googleLoginModal');
-                // initializeApp will be called by auth state change
-            }).catch((error) => {
-                console.error("Error saving user:", error);
-                alert("ডাটা সংরক্ষণ ব্যর্থ: " + error.message);
-            });
-        })
-        .catch((error) => {
-            console.error("Google sign in error:", error);
-            alert("লগইন ব্যর্থ: " + error.message);
-        });
+// Close Modal
+function closeModal() {
+    document.getElementById('loginModal').style.display = 'none';
 }
+
+// Google Login
+document.getElementById('googleBtn').onclick = function() {
+    auth.signInWithPopup(provider).then(result => {
+        const user = result.user;
+        
+        if (loginRole === 'admin' && user.email !== OWNER_EMAIL) {
+            alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
+            auth.signOut();
+            closeModal();
+            return;
+        }
+        
+        db.collection('users').doc(user.uid).set({
+            email: user.email,
+            displayName: user.displayName,
+            role: loginRole,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).then(() => {
+            closeModal();
+        });
+    }).catch(error => {
+        alert("লগইন ব্যর্থ: " + error.message);
+        console.error(error);
+    });
+};
 
 // Guest Login
 function loginAsGuest() {
-    console.log("Guest login");
-    currentUserRole = 'guest';
-    auth.signInAnonymously()
-        .then(() => {
-            console.log("Guest signed in");
-            // initializeApp will be called by auth state change
-        })
-        .catch((error) => {
-            console.error("Guest login error:", error);
-            alert("গেস্ট লগইন ব্যর্থ: " + error.message);
-        });
+    auth.signInAnonymously().then(() => {
+        currentUserRole = 'guest';
+        showHome();
+    });
 }
 
-// Initialize App
-function initializeApp() {
-    console.log("Initializing app for role:", currentUserRole);
+// Show Home
+function showHome() {
     showPage('homePage');
     
-    // Show control panel icon for admin ONLY    const controlIcon = document.getElementById('controlPanelIcon');
+    // Show control icon for admin only
+    const controlIcon = document.getElementById('controlIcon');
     if (currentUserRole === 'admin') {
         controlIcon.style.display = 'flex';
-        console.log("Control panel icon shown for admin");
     } else {
         controlIcon.style.display = 'none';
     }
     
-    // Show review form for tutor and guardian
-    const reviewForm = document.getElementById('reviewFormContainer');
+    // Show review form for tutor/guardian
+    const reviewForm = document.getElementById('reviewForm');
     if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
         reviewForm.style.display = 'block';
     } else {
@@ -162,259 +138,163 @@ function initializeApp() {
     }
     
     loadSettings();
-    loadZoneCards();
+    loadZones();
     loadReviews();
-}
-
-// Show Page
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.style.display = 'none';
-    });
-    document.getElementById(pageId).style.display = 'block';
-    console.log("Showing page:", pageId);
-}
-
-// Close Modal
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
 }
 
 // Logout
 function logout() {
-    console.log("Logging out");
     auth.signOut().then(() => {
         currentUser = null;
         currentUserRole = null;
-        document.getElementById('controlPanelIcon').style.display = 'none';
+        document.getElementById('controlIcon').style.display = 'none';
         showPage('loginPage');
-    }).catch((error) => {
-        console.error("Logout error:", error);
     });
 }
 
 // Toggle Control Panel
-function toggleControlPanel() {    const panel = document.getElementById('controlPanel');
-    panel.classList.toggle('active');
-    console.log("Control panel toggled");
+function toggleControlPanel() {
+    document.getElementById('controlPanel').classList.toggle('active');
 }
 
-// Update Logo Size
-function updateLogoSize(value) {
-    const logo = document.getElementById('siteLogo');
-    if (logo) {
-        logo.style.width = value + 'px';
-        logo.style.height = value + 'px';
-    }
-}
-
-// Update Text
-function updateText(elementId, value) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.innerText = value;
-    }
-}
-
-// Upload Image
-function uploadImage(type) {
-    const fileInput = document.getElementById(type + 'Upload');
-    const file = fileInput.files[0];
-    if (!file) {
-        alert("অনুগ্রহ করে একটি ফাইল সিলেক্ট করুন");
-        return;
-    }
-    
-    if (file.size > 1024 * 1024) {
-        alert("ফাইল সাইজ 1MB এর কম হতে হবে");
-        return;
-    }
+// Upload Logo
+function uploadLogo() {
+    const file = document.getElementById('logoInput').files[0];
+    if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = (e) => {
-        const base64 = e.target.result;
-        if (type === 'logo') {
-            document.getElementById('siteLogo').src = base64;
-        } else if (type === 'ceo') {
-            document.getElementById('ceoImage').src = base64;
-        }
-        
-        db.collection('settings').doc('main').update({ [type + 'Url']: base64 })
-            .then(() => {
-                alert("ইমেজ আপলোড হয়েছে");
-            })
-            .catch((error) => {                console.error("Upload error:", error);
-                alert("আপলোড ব্যর্থ: " + error.message);
-            });
-    };
-    reader.onerror = (error) => {
-        alert("ফাইল পড়া যায়নি: " + error);
+    reader.onload = e => {
+        document.getElementById('logo').src = e.target.result;
+        db.collection('settings').doc('main').update({ logoUrl: e.target.result });
     };
     reader.readAsDataURL(file);
 }
 
+// Update Branding
+function updateBranding(value) {
+    document.getElementById('branding').innerText = value;
+}
+
+// Update Motto
+function updateMotto(value) {
+    document.getElementById('motto').innerText = value;
+}
+
+// Save Settings
+function saveSettings() {
+    db.collection('settings').doc('main').update({
+        branding: document.getElementById('brandingInput').value,
+        motto: document.getElementById('mottoInput').value
+    }).then(() => {
+        alert("সেটিংস সেভ হয়েছে");
+        toggleControlPanel();
+    });
+}
+
 // Load Settings
 function loadSettings() {
-    db.collection('settings').doc('main').get().then((doc) => {
+    db.collection('settings').doc('main').get().then(doc => {
         if (doc.exists) {
             const data = doc.data();
-            console.log("Settings loaded:", data);
-            if (data.branding) document.getElementById('brandingText').innerText = data.branding;
-            if (data.motto) document.getElementById('mottoText').innerText = data.motto;
-            if (data.logoUrl) document.getElementById('siteLogo').src = data.logoUrl;
-            if (data.logoSize) {
-                document.getElementById('siteLogo').style.width = data.logoSize + 'px';
-                document.getElementById('siteLogo').style.height = data.logoSize + 'px';
-                if(document.getElementById('logoSize')) {
-                    document.getElementById('logoSize').value = data.logoSize;
-                }
-            }
+            if (data.branding) document.getElementById('branding').innerText = data.branding;
+            if (data.motto) document.getElementById('motto').innerText = data.motto;
+            if (data.logoUrl) document.getElementById('logo').src = data.logoUrl;
+            
+            // Fill control panel inputs
+            document.getElementById('brandingInput').value = data.branding || '';
+            document.getElementById('mottoInput').value = data.motto || '';
         } else {
-            console.log("No settings found, creating defaults");
-            createDefaultSettings();
+            db.collection('settings').doc('main').set({
+                branding: "Tutors Valley",
+                motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর",
+                logoUrl: document.getElementById('logo').src
+            });
         }
-    }).catch((error) => {
-        console.error("Load settings error:", error);
     });
 }
 
-// Create Default Settings
-function createDefaultSettings() {
-    const defaultSettings = {
-        branding: "Tutors Valley",
-        motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর",
-        logoUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E",
-        logoSize: 100
-    };
-    
-    db.collection('settings').doc('main').set(defaultSettings)
-        .then(() => {
-            console.log("Default settings created");
-        })
-        .catch((error) => {
-            console.error("Create settings error:", error);        });
-}
-
-// Save All Settings
-function saveAllSettings() {
-    const settings = {
-        branding: document.getElementById('brandingInput').value || document.getElementById('brandingText').innerText,
-        motto: document.getElementById('mottoInput').value || document.getElementById('mottoText').innerText,
-        logoSize: parseInt(document.getElementById('logoSize').value) || 100
-    };
-    
-    db.collection('settings').doc('main').update(settings)
-        .then(() => {
-            alert("সেটিংস সংরক্ষিত হয়েছে");
-            toggleControlPanel();
-        })
-        .catch((error) => {
-            alert("সেটিংস সংরক্ষণ ব্যর্থ: " + error.message);
-        });
-}
-
-// Load Zone Cards
-function loadZoneCards() {
-    console.log("Loading zone cards...");
-    db.collection('zoneCards').get().then((snapshot) => {
-        console.log("Zone cards snapshot size:", snapshot.size);
+// Load Zones
+function loadZones() {
+    db.collection('zones').get().then(snapshot => {
         if (snapshot.empty) {
-            console.log("Creating default zone cards");
-            defaultZoneCards.forEach(card => {
-                db.collection('zoneCards').doc(card.id.toString()).set(card);
+            defaultZones.forEach(zone => {
+                db.collection('zones').doc(zone.id.toString()).set(zone);
             });
-            renderZoneCards(defaultZoneCards);
+            renderZones(defaultZones);
         } else {
-            const cards = [];
-            snapshot.forEach(doc => {
-                cards.push(doc.data());
-            });
-            renderZoneCards(cards);
+            const zones = [];
+            snapshot.forEach(doc => zones.push(doc.data()));
+            renderZones(zones);
         }
-    }).catch((error) => {
-        console.error("Load zone cards error:", error);
     });
 }
 
-// Render Zone Cards
-function renderZoneCards(cards) {
-    const container = document.getElementById('zoneCardsContainer');
-    if (!container) {
-        console.error("Zone cards container not found");
-        return;    }
-    
+// Render Zones
+function renderZones(zones) {
+    const container = document.getElementById('zoneCards');
     container.innerHTML = '';
-    console.log("Rendering", cards.length, "zone cards");
     
-    cards.forEach(card => {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'zone-card';
+    zones.forEach(zone => {
+        const card = document.createElement('div');
+        card.className = 'zone-card';
         
         let areasHtml = '';
-        if (card.areas && Array.isArray(card.areas)) {
-            areasHtml = card.areas.map(area => `<span class="area-tag">${area}</span>`).join('');
+        if (zone.areas) {
+            areasHtml = zone.areas.map(area => `<span class="area-tag">${area}</span>`).join('');
         }
         
-        cardDiv.innerHTML = `
-            <h3 class="zone-title">${card.zoneTitle || 'Zone'}</h3>
+        card.innerHTML = `
+            <h3>${zone.title}</h3>
             <div class="area-tags">${areasHtml}</div>
         `;
         
-        container.appendChild(cardDiv);
+        container.appendChild(card);
     });
 }
 
 // Load Reviews
 function loadReviews() {
-    console.log("Loading reviews...");
-    db.collection('reviews').orderBy('createdAt', 'desc').limit(10).get().then((snapshot) => {
-        const container = document.getElementById('reviewsContainer');
-        if (!container) return;
-        
+    db.collection('reviews').orderBy('createdAt', 'desc').limit(10).get().then(snapshot => {
+        const container = document.getElementById('reviewsList');
         container.innerHTML = '';
-        console.log("Reviews loaded:", snapshot.size);
         
         snapshot.forEach(doc => {
             const review = doc.data();
-            const reviewDiv = document.createElement('div');
-            reviewDiv.className = 'review-card';
-            
-            const date = review.createdAt ? new Date(review.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
-            
-            reviewDiv.innerHTML = `
-                <div class="reviewer-name">${review.userName || 'Anonymous'} ${review.userRole ? '(' + review.userRole + ')' : ''}</div>
-                <div class="review-date">${date}</div>
-                <div class="review-text">${review.text}</div>
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = `
+                <h4>${review.userName || 'Anonymous'}</h4>
+                <p>${review.text}</p>
             `;
-            
-            container.appendChild(reviewDiv);
+            container.appendChild(card);
         });
-    }).catch((error) => {
-        console.error("Load reviews error:", error);    });
+    });
 }
 
 // Submit Review
 function submitReview() {
     const text = document.getElementById('reviewText').value;
-    if (!text || !text.trim()) {
-        alert("অনুগ্রহ করে রিভিউ লিখুন");
+    if (!text.trim()) {
+        alert("রিভিউ লিখুন");
         return;
     }
     
-    console.log("Submitting review...");
     db.collection('reviews').add({
         text: text,
-        userId: currentUser.uid,
         userName: currentUser.displayName || currentUser.email,
         userRole: currentUserRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
-        console.log("Review submitted");
         document.getElementById('reviewText').value = '';
         loadReviews();
-        alert("রিভিউ জমা দেওয়া হয়েছে");
-    }).catch((error) => {
-        console.error("Submit review error:", error);
-        alert("রিভিউ জমা ব্যর্থ: " + error.message);
+        alert("রিভিউ জমা হয়েছে");
     });
 }
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('loginModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+};
