@@ -27,13 +27,11 @@
                 <button class="login-btn guest-btn" onclick="loginAsGuest()">
                     <i class="fas fa-user"></i> গেস্ট লগইন
                 </button>
-                <div class="admin-login-wrapper">
-                    <button class="login-btn admin-btn" onclick="showAdminLogin()">
-                        <i class="fas fa-user-cog"></i> এডমিন লগইন
-                    </button>
-                    <div id="hiddenAdminIcon" class="hidden-admin-icon" onclick="showAdminLogin()">
-                        <i class="fas fa-lock"></i>
-                    </div>
+                <button class="login-btn admin-btn" onclick="showGoogleLogin('admin')">
+                    <i class="fas fa-user-cog"></i> এডমিন লগইন
+                </button>
+                <div id="hiddenAdminIcon" class="hidden-admin-icon" onclick="showGoogleLogin('admin')">
+                    <i class="fas fa-lock"></i>
                 </div>
             </div>
 
@@ -42,20 +40,10 @@
                 <div class="modal-content">
                     <span class="close" onclick="closeModal('googleLoginModal')">&times;</span>
                     <h2 id="googleLoginTitle">লগইন</h2>
+                    <p id="googleLoginDesc" class="login-desc"></p>
                     <button id="googleSignInBtn" class="google-btn">
                         <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
                     </button>
-                </div>
-            </div>
-
-            <!-- Admin Login Modal -->
-            <div id="adminLoginModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal('adminLoginModal')">&times;</span>
-                    <h2>এডমিন লগইন</h2>
-                    <input type="email" id="adminEmail" placeholder="ইমেইল" class="input-field">
-                    <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড" class="input-field">
-                    <button onclick="adminLogin()" class="login-submit-btn">লগইন</button>
                 </div>
             </div>
         </div>
@@ -81,16 +69,41 @@
                     <div class="control-group">
                         <label>লোগো ইমেজ:</label>
                         <input type="file" id="logoUpload" accept="image/*" onchange="uploadImage('logo')">
-                        <input type="range" id="logoSize" min="50" max="200" value="100" oninput="updateElementStyle('siteLogo', 'width', this.value + 'px')">
+                        <input type="range" id="logoSize" min="50" max="200" value="100" oninput="updateElementStyle('siteLogo', 'width', this.value + 'px'); document.getElementById('logoSizeVal').innerText = this.value">
                         <label>Size: <span id="logoSizeVal">100</span>px</label>
                     </div>
                     <div class="control-group">
                         <label>ব্র্যান্ডিং টেক্সট:</label>
-                        <input type="text" id="brandingText" oninput="updateText('brandingText', this.value)">
+                        <input type="text" id="brandingTextInput" oninput="updateText('brandingText', this.value)">
                     </div>
                     <div class="control-group">
                         <label>মotto:</label>
-                        <input type="text" id="mottoText" oninput="updateText('mottoText', this.value)">
+                        <input type="text" id="mottoTextInput" oninput="updateText('mottoText', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>ফন্ট সিলেক্ট:</label>
+                        <select id="fontSelect" onchange="updateFont(this.value)" class="font-selector">
+                            <option value="'Hind Siliguri', sans-serif">Hind Siliguri (Bangla)</option>
+                            <option value="'Poppins', sans-serif">Poppins (English)</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Lato', sans-serif">Lato</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="Calibri, sans-serif">Calibri</option>
+                            <option value="Georgia, serif">Georgia</option>
+                            <option value="Verdana, sans-serif">Verdana</option>
+                            <option value="Tahoma, sans-serif">Tahoma</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                            <option value="Impact, sans-serif">Impact</option>
+                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Palatino Linotype', serif">Palatino</option>
+                            <option value="'Garamond', serif">Garamond</option>
+                            <option value="'SolaimanLipi', sans-serif">SolaimanLipi</option>
+                        </select>
                     </div>
                 </div>
 
@@ -109,11 +122,23 @@
                         <label>ওয়াটারমার্ক Opacity:</label>
                         <input type="range" id="watermarkOpacity" min="0" max="100" value="20" oninput="updateWatermarkOpacity(this.value)">
                     </div>
+                    <div class="control-group">
+                        <label>ব্যানার শিরোনাম:</label>
+                        <input type="text" id="bannerTitleInput" oninput="updateText('bannerTitle', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>ব্যানার সাবটাইটেল:</label>
+                        <input type="text" id="bannerSubtitleInput" oninput="updateText('bannerSubtitle', this.value)">
+                    </div>
                 </div>
 
                 <!-- Zone Cards Settings -->
                 <div class="control-section">
                     <h4>জোন কার্ড সেটিংস</h4>
+                    <div class="control-group">
+                        <label>সেকশন শিরোনাম:</label>
+                        <input type="text" id="zoneSectionTitleInput" oninput="updateText('zoneSectionTitle', this.value)">
+                    </div>
                     <div id="zoneCardsSettings"></div>
                     <button onclick="addNewZoneCard()" class="add-btn">+ নতুন জোন যোগ করুন</button>
                 </div>
@@ -128,15 +153,15 @@
                     </div>
                     <div class="control-group">
                         <label>CEO নাম:</label>
-                        <input type="text" id="ceoName" oninput="updateText('ceoNameText', this.value)">
+                        <input type="text" id="ceoNameInput" oninput="updateText('ceoNameText', this.value)">
                     </div>
                     <div class="control-group">
                         <label>CEO পদবী:</label>
-                        <input type="text" id="ceoTitle" oninput="updateText('ceoTitleText', this.value)">
+                        <input type="text" id="ceoTitleInput" oninput="updateText('ceoTitleText', this.value)">
                     </div>
                     <div class="control-group">
                         <label>CEO বিবরণ:</label>
-                        <textarea id="ceoDesc" oninput="updateText('ceoDescText', this.value)"></textarea>
+                        <textarea id="ceoDescInput" oninput="updateText('ceoDescText', this.value)"></textarea>
                     </div>
                 </div>
 
@@ -149,7 +174,7 @@
                     </div>
                     <div class="control-group">
                         <label>বাটন টেক্সট:</label>
-                        <input type="text" id="fbButtonText" value="আমাদের ফেসবুক পেজ" oninput="updateText('fbButtonText', this.value)">
+                        <input type="text" id="fbButtonTextInput" value="আমাদের ফেসবুক পেজ" oninput="updateText('fbButtonText', this.value)">
                     </div>
                 </div>
 
@@ -160,6 +185,16 @@
                         <label>ইমেইল দিয়ে আমন্ত্রণ:</label>
                         <input type="email" id="subAdminEmail" placeholder="subadmin@example.com">
                         <button onclick="inviteSubAdmin()" class="invite-btn">আমন্ত্রণ পাঠান</button>
+                    </div>
+                    <div id="subAdminList"></div>
+                </div>
+
+                <!-- Page Color Settings -->
+                <div class="control-section">
+                    <h4>পেজ কালার</h4>
+                    <div class="control-group">
+                        <label>ব্যাকগ্রাউন্ড কালার:</label>
+                        <input type="color" id="pageBgColor" value="#ffffff" onchange="updatePageColor(this.value)">
                     </div>
                 </div>
 
@@ -185,6 +220,7 @@
                 </div>
                 <div class="user-info">
                     <span id="userName"></span>
+                    <span id="userRole" class="user-role-badge"></span>
                     <button onclick="logout()" class="logout-btn-small">
                         <i class="fas fa-sign-out-alt"></i> লগআউট
                     </button>
@@ -213,7 +249,8 @@
         <section class="reviews-section">
             <h2 id="reviewsSectionTitle" class="section-title">রিভিউ সমূহ</h2>
             <div id="reviewFormContainer" class="review-form-container" style="display:none;">
-                <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..." class="review-input"></textarea>
+                <h3>আপনার রিভিউ দিন</h3>
+                <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা শেয়ার করুন..." class="review-input"></textarea>
                 <button onclick="submitReview()" class="submit-review-btn">রিভিউ দিন</button>
             </div>
             <div id="reviewsContainer" class="reviews-container">
