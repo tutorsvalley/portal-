@@ -168,15 +168,21 @@ function googleLogin() {
     });
 }
 
-// Show Home
+// Show Home - GEAR ICON ONLY FOR ADMIN
 function showHome() {
     console.log("Showing home page, role:", currentUserRole);
     showPage('homePage');
     
-    // Show admin icon for admin only
+    // Show admin icon ONLY for admin (NOT for subadmin, tutor, guardian, or guest)
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) {
-        adminIcon.style.display = currentUserRole === 'admin' ? 'flex' : 'none';
+        if (currentUserRole === 'admin') {
+            adminIcon.style.display = 'flex';
+            console.log("✅ Admin icon shown - user is admin");
+        } else {
+            adminIcon.style.display = 'none';
+            console.log("❌ Admin icon hidden - user role:", currentUserRole);
+        }
     }
     
     // Show review form for tutor and guardian ONLY (NOT for guest)
@@ -190,7 +196,7 @@ function showHome() {
     }
     
     loadAllSettings();
-    loadZones(); // Load zones with proper button visibility
+    loadZones();
 }
 
 // Logout
