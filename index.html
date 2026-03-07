@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Tutors Valley</h1>
+                <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+            </div>
+            
+            <div class="login-options">
+                <button class="login-btn tutor-btn" onclick="showGoogleLogin('tutor')">
+                    <i class="fas fa-chalkboard-teacher"></i> টিউটর লগইন
+                </button>
+                <button class="login-btn guardian-btn" onclick="showGoogleLogin('guardian')">
+                    <i class="fas fa-user-shield"></i> অভিভাবক লগইন
+                </button>
+                <button class="login-btn guest-btn" onclick="loginAsGuest()">
+                    <i class="fas fa-user"></i> গেস্ট লগইন
+                </button>
+                <div class="admin-login-wrapper">
+                    <button class="login-btn admin-btn" onclick="showAdminLogin()">
+                        <i class="fas fa-user-cog"></i> এডমিন লগইন
+                    </button>
+                    <div id="hiddenAdminIcon" class="hidden-admin-icon" onclick="showAdminLogin()">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Login Modal -->
+            <div id="googleLoginModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('googleLoginModal')">&times;</span>
+                    <h2 id="googleLoginTitle">লগইন</h2>
+                    <button id="googleSignInBtn" class="google-btn">
+                        <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Login Modal -->
+            <div id="adminLoginModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('adminLoginModal')">&times;</span>
+                    <h2>এডমিন লগইন</h2>
+                    <input type="email" id="adminEmail" placeholder="ইমেইল" class="input-field">
+                    <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড" class="input-field">
+                    <button onclick="adminLogin()" class="login-submit-btn">লগইন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Homepage -->
+    <div id="homePage" class="page" style="display:none;">
+        <!-- Control Panel Gear Icon (Admin Only) -->
+        <div id="controlPanelIcon" class="control-panel-icon" onclick="toggleControlPanel()" style="display:none;">
+            <i class="fas fa-cog"></i>
+        </div>
+
+        <!-- Control Panel Modal -->
+        <div id="controlPanel" class="control-panel">
+            <div class="control-panel-header">
+                <h3>কন্ট্রোল প্যানেল</h3>
+                <span class="close" onclick="toggleControlPanel()">&times;</span>
+            </div>
+            <div class="control-panel-content">
+                <!-- General Settings -->
+                <div class="control-section">
+                    <h4>সাধারণ সেটিংস</h4>
+                    <div class="control-group">
+                        <label>লোগো ইমেজ:</label>
+                        <input type="file" id="logoUpload" accept="image/*" onchange="uploadImage('logo')">
+                        <input type="range" id="logoSize" min="50" max="200" value="100" oninput="updateElementStyle('siteLogo', 'width', this.value + 'px')">
+                        <label>Size: <span id="logoSizeVal">100</span>px</label>
+                    </div>
+                    <div class="control-group">
+                        <label>ব্র্যান্ডিং টেক্সট:</label>
+                        <input type="text" id="brandingText" oninput="updateText('brandingText', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>মotto:</label>
+                        <input type="text" id="mottoText" oninput="updateText('mottoText', this.value)">
+                    </div>
+                </div>
+
+                <!-- Banner Settings -->
+                <div class="control-section">
+                    <h4>ব্যানার সেটিংস</h4>
+                    <div class="control-group">
+                        <label>ব্যানার ব্যাকগ্রাউন্ড কালার:</label>
+                        <input type="color" id="bannerColor" value="#001f3f" onchange="updateElementStyle('bannerSection', 'backgroundColor', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>ওয়াটারমার্ক ইমেজ:</label>
+                        <input type="file" id="watermarkUpload" accept="image/*" onchange="uploadWatermark()">
+                    </div>
+                    <div class="control-group">
+                        <label>ওয়াটারমার্ক Opacity:</label>
+                        <input type="range" id="watermarkOpacity" min="0" max="100" value="20" oninput="updateWatermarkOpacity(this.value)">
+                    </div>
+                </div>
+
+                <!-- Zone Cards Settings -->
+                <div class="control-section">
+                    <h4>জোন কার্ড সেটিংস</h4>
+                    <div id="zoneCardsSettings"></div>
+                    <button onclick="addNewZoneCard()" class="add-btn">+ নতুন জোন যোগ করুন</button>
+                </div>
+
+                <!-- CEO Settings -->
+                <div class="control-section">
+                    <h4>CEO তথ্য</h4>
+                    <div class="control-group">
+                        <label>CEO ইমেজ:</label>
+                        <input type="file" id="ceoUpload" accept="image/*" onchange="uploadImage('ceo')">
+                        <input type="range" id="ceoSize" min="50" max="200" value="100" oninput="updateElementStyle('ceoImage', 'width', this.value + 'px')">
+                    </div>
+                    <div class="control-group">
+                        <label>CEO নাম:</label>
+                        <input type="text" id="ceoName" oninput="updateText('ceoNameText', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>CEO পদবী:</label>
+                        <input type="text" id="ceoTitle" oninput="updateText('ceoTitleText', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>CEO বিবরণ:</label>
+                        <textarea id="ceoDesc" oninput="updateText('ceoDescText', this.value)"></textarea>
+                    </div>
+                </div>
+
+                <!-- Facebook Settings -->
+                <div class="control-section">
+                    <h4>ফেসবুক সেটিংস</h4>
+                    <div class="control-group">
+                        <label>ফেসবুক পেজ লিঙ্ক:</label>
+                        <input type="url" id="fbPageLink" placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="control-group">
+                        <label>বাটন টেক্সট:</label>
+                        <input type="text" id="fbButtonText" value="আমাদের ফেসবুক পেজ" oninput="updateText('fbButtonText', this.value)">
+                    </div>
+                </div>
+
+                <!-- Sub-admin Settings -->
+                <div class="control-section">
+                    <h4>সাব-এডমিন</h4>
+                    <div class="control-group">
+                        <label>ইমেইল দিয়ে আমন্ত্রণ:</label>
+                        <input type="email" id="subAdminEmail" placeholder="subadmin@example.com">
+                        <button onclick="inviteSubAdmin()" class="invite-btn">আমন্ত্রণ পাঠান</button>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <button onclick="saveAllSettings()" class="save-btn">সেটিংস সংরক্ষণ করুন</button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-content">
+                <div id="fbPageBtn" class="fb-page-btn">
+                    <a href="#" target="_blank" id="fbLink">
+                        <i class="fab fa-facebook"></i> <span id="fbButtonText">আমাদের ফেসবুক পেজ</span>
+                    </a>
+                </div>
+                <div class="header-center">
+                    <div class="logo-container">
+                        <img id="siteLogo" src="https://via.placeholder.com/100" alt="Logo" class="logo-img">
+                    </div>
+                    <h1 id="brandingText" class="branding">Tutors Valley</h1>
+                    <p id="mottoText" class="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+                </div>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button onclick="logout()" class="logout-btn-small">
+                        <i class="fas fa-sign-out-alt"></i> লগআউট
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Banner Section -->
+        <section id="bannerSection" class="banner-section">
+            <div id="watermark" class="watermark"></div>
+            <div class="banner-content">
+                <h2 id="bannerTitle">আমাদের শিক্ষা ব্যবস্থা</h2>
+                <p id="bannerSubtitle">সেরা টিউটর খুঁজছেন? আমরা আছি আপনার পাশে</p>
+            </div>
+        </section>
+
+        <!-- Zone Cards Section -->
+        <section class="zone-section">
+            <h2 id="zoneSectionTitle" class="section-title">আমাদের এলাকা সমূহ</h2>
+            <div id="zoneCardsContainer" class="zone-cards-container">
+                <!-- Cards will be generated dynamically -->
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="reviews-section">
+            <h2 id="reviewsSectionTitle" class="section-title">রিভিউ সমূহ</h2>
+            <div id="reviewFormContainer" class="review-form-container" style="display:none;">
+                <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..." class="review-input"></textarea>
+                <button onclick="submitReview()" class="submit-review-btn">রিভিউ দিন</button>
+            </div>
+            <div id="reviewsContainer" class="reviews-container">
+                <!-- Reviews will be loaded here -->
+            </div>
+        </section>
+
+        <!-- CEO Section -->
+        <section class="ceo-section">
+            <div class="ceo-container">
+                <img id="ceoImage" src="https://via.placeholder.com/100" alt="CEO" class="ceo-img">
+                <h3 id="ceoNameText" class="ceo-name">CEO Name</h3>
+                <p id="ceoTitleText" class="ceo-title">Founder & CEO</p>
+                <p id="ceoDescText" class="ceo-desc">CEO description here...</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p id="copyrightText">&copy; 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।</p>
+        </footer>
+    </div>
+
+    <!-- Group Join Page -->
+    <div id="groupJoinPage" class="page" style="display:none;">
+        <div class="group-join-container">
+            <h2>গ্রুপে যোগদান করুন</h2>
+            <p id="groupInfo"></p>
+            <a id="groupJoinLink" href="#" target="_blank" class="join-group-btn">
+                <i class="fab fa-whatsapp"></i> গ্রুপে যোগ দিন
+            </a>
+            <button onclick="goBackHome()" class="back-btn">ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
