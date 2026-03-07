@@ -8,19 +8,16 @@ const firebaseConfig = {
     appId: "1:377815974425:web:3d1254d14640f43516a088"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// Variables
 let currentUser = null;
 let currentUserRole = null;
 let loginRole = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Default Data
 const defaultZones = [
     { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"] },
     { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"] },
@@ -30,7 +27,7 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"] }
 ];
 
-// Guest Login Function - DEFINED FIRST
+// ✅ THIS FUNCTION MUST BE FIRST
 function loginAsGuest() {
     console.log("Guest login clicked");
     auth.signInAnonymously().then(() => {
@@ -42,12 +39,10 @@ function loginAsGuest() {
     });
 }
 
-// Wait for DOM
 document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ DOM Loaded");
     setupButtons();
     
-    // Check auth
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
@@ -58,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Setup Buttons
 function setupButtons() {
     console.log("Setting up buttons...");
     
@@ -91,7 +85,6 @@ function setupButtons() {
     console.log("✅ Buttons setup complete");
 }
 
-// Show Page
 function showPage(pageId) {
     const loginPage = document.getElementById('loginPage');
     const homePage = document.getElementById('homePage');
@@ -106,7 +99,6 @@ function showPage(pageId) {
     }
 }
 
-// Open Login Modal
 function openLoginModal(role) {
     loginRole = role;
     const titles = {
@@ -122,13 +114,11 @@ function openLoginModal(role) {
     if (modal) modal.style.display = 'block';
 }
 
-// Close Modal
 function closeModalFunc() {
     const modal = document.getElementById('loginModal');
     if (modal) modal.style.display = 'none';
 }
 
-// Handle Google Login
 function handleGoogleLogin() {
     console.log("Google login clicked for:", loginRole);
     
@@ -158,24 +148,18 @@ function handleGoogleLogin() {
     });
 }
 
-// Load User Data
 function loadUserData(uid) {
-    console.log("Loading user data for:", uid);
     db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
             console.log("User role:", currentUserRole);
             showHome();
         } else {
-            console.log("No user doc found");
             logout();
         }
-    }).catch(error => {
-        console.error("Error loading user:", error);
     });
 }
 
-// Show Home
 function showHome() {
     console.log("Showing home page");
     showPage('homePage');
@@ -195,7 +179,6 @@ function showHome() {
     loadReviews();
 }
 
-// Logout
 function logout() {
     auth.signOut().then(() => {
         currentUser = null;
@@ -206,7 +189,6 @@ function logout() {
     });
 }
 
-// Toggle Control Panel
 function toggleControlPanel() {
     const panel = document.getElementById('controlPanel');
     if (panel) {
@@ -214,7 +196,6 @@ function toggleControlPanel() {
     }
 }
 
-// Upload Logo
 function uploadLogo() {
     const fileInput = document.getElementById('logoInput');
     if (!fileInput || !fileInput.files[0]) return;
@@ -228,7 +209,6 @@ function uploadLogo() {
     reader.readAsDataURL(fileInput.files[0]);
 }
 
-// Save Settings
 function saveSettings() {
     const brandingInput = document.getElementById('brandingInput');
     const mottoInput = document.getElementById('mottoInput');
@@ -250,7 +230,6 @@ function saveSettings() {
     });
 }
 
-// Load Settings
 function loadSettings() {
     db.collection('settings').doc('main').get().then(doc => {
         if (doc.exists) {
@@ -275,7 +254,6 @@ function loadSettings() {
     });
 }
 
-// Load Zones
 function loadZones() {
     db.collection('zones').get().then(snapshot => {
         if (snapshot.empty) {
@@ -291,7 +269,6 @@ function loadZones() {
     });
 }
 
-// Render Zones
 function renderZones(zones) {
     const container = document.getElementById('zoneCards');
     if (!container) return;
@@ -316,7 +293,6 @@ function renderZones(zones) {
     });
 }
 
-// Load Reviews
 function loadReviews() {
     db.collection('reviews').orderBy('createdAt', 'desc').limit(10).get().then(snapshot => {
         const container = document.getElementById('reviewsList');
@@ -337,7 +313,6 @@ function loadReviews() {
     });
 }
 
-// Submit Review
 function submitReview() {
     const reviewText = document.getElementById('reviewText');
     if (!reviewText || !reviewText.value.trim()) {
@@ -357,7 +332,6 @@ function submitReview() {
     });
 }
 
-// Close modal on outside click
 window.onclick = function(event) {
     const modal = document.getElementById('loginModal');
     if (modal && event.target === modal) {
