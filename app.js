@@ -47,8 +47,7 @@ const defaultZoneCards = [
         maleLink: "",
         femaleLink: "",
         mixedLink: ""
-    },
-    {
+    },    {
         id: 4,
         zoneTitle: "পশ্চিম ঢাকা",
         areas: ["দোহাই", "সাভার", "আশুলিয়া", "গাজীপুর"],
@@ -97,8 +96,7 @@ function determineUserRole(user) {
         if (doc.exists) {
             currentUserRole = doc.data().role;
             initializeApp();
-        } else {
-            logout();
+        } else {            logout();
         }
     }).catch((error) => {
         console.error("Error:", error);
@@ -147,8 +145,7 @@ function signInWithGoogle(role) {
                 email: user.email,
                 displayName: user.displayName,
                 photoURL: user.photoURL,
-                role: role === 'admin' ? 'admin' : role,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                role: role === 'admin' ? 'admin' : role,                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
                 closeModal('googleLoginModal');
             });
@@ -197,8 +194,7 @@ function initializeApp() {
 // Show Page
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
-        page.style.display = 'none';
-    });
+        page.style.display = 'none';    });
     document.getElementById(pageId).style.display = 'block';
 }
 
@@ -247,8 +243,7 @@ function convertToBase64(file, maxWidth = 400, maxHeight = 400) {
                 } else {
                     if (height > maxHeight) {
                         width = Math.round((width * maxHeight) / height);
-                        height = maxHeight;
-                    }
+                        height = maxHeight;                    }
                 }
                 
                 canvas.width = width;
@@ -297,11 +292,18 @@ async function uploadImage(type) {
                 logoUrl: base64,
                 logoSize: parseInt(logoSize)
             });
-            alert("লোগো সফলভাবে আপলোড হয়েছে!");
-        } else if (type === 'ceo') {
+            alert("লোগো সফলভাবে আপলোড হয়েছে!");        } else if (type === 'ceo') {
             const ceoSize = document.getElementById('ceoSize').value;
             document.getElementById('ceoImage').src = base64;
             document.getElementById('ceoImage').style.width = ceoSize + 'px';
+            document.getElementById('ceoImage').style.height = ceoSize + 'px';
+            
+            // Update wrapper size too
+            const wrapper = document.querySelector('.ceo-image-wrapper');
+            if (wrapper) {
+                wrapper.style.width = ceoSize + 'px';
+                wrapper.style.height = ceoSize + 'px';
+            }
             
             db.collection('settings').doc('main').update({ 
                 ceoImageUrl: base64,
@@ -339,8 +341,7 @@ async function uploadWatermark() {
     
     try {
         const base64 = await convertToBase64(file, 200, 200);
-        
-        document.getElementById('watermark').style.backgroundImage = `url(${base64})`;
+                document.getElementById('watermark').style.backgroundImage = `url(${base64})`;
         document.getElementById('watermark').style.opacity = document.getElementById('watermarkOpacity').value / 100;
         
         db.collection('settings').doc('main').update({ 
@@ -369,6 +370,15 @@ function updateText(elementId, value) {
 // Update Element Style
 function updateElementStyle(elementId, property, value) {
     document.getElementById(elementId).style[property] = value;
+    
+    // Special handling for CEO image size
+    if (elementId === 'ceoImage' && (property === 'width' || property === 'height')) {
+        const wrapper = document.querySelector('.ceo-image-wrapper');
+        if (wrapper) {
+            wrapper.style.width = value;
+            wrapper.style.height = value;
+        }
+    }
 }
 
 // Update Font
@@ -380,7 +390,6 @@ function updateFont(fontValue) {
 function updatePageColor(color) {
     document.body.style.background = color;
 }
-
 // Load Settings from Firestore
 function loadSettings() {
     db.collection('settings').doc('main').get().then((doc) => {
@@ -401,7 +410,7 @@ function createDefaultSettings() {
         branding: "Tutors Valley",
         motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর",
         bannerColor: "#001f3f",
-        logoUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E",
+        logoUrl: "image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E",
         logoSize: 100,
         watermarkUrl: "",
         watermarkOpacity: 20,
@@ -410,8 +419,8 @@ function createDefaultSettings() {
         ceoName: "CEO Name",
         ceoTitle: "Founder & CEO",
         ceoDesc: "CEO description here...",
-        ceoImageUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E",
-        ceoImageSize: 100,
+        ceoImageUrl: "image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E",
+        ceoImageSize: 150,
         zoneSectionTitle: "আমাদের এলাকা সমূহ",
         reviewsSectionTitle: "রিভিউ সমূহ",
         bannerTitle: "আমাদের শিক্ষা ব্যবস্থা",
@@ -430,8 +439,7 @@ function createDefaultSettings() {
 function applySettings(data) {
     if (data.branding) document.getElementById('brandingText').innerText = data.branding;
     if (data.motto) document.getElementById('mottoText').innerText = data.motto;
-    if (data.bannerColor) {
-        document.getElementById('bannerSection').style.backgroundColor = data.bannerColor;
+    if (data.bannerColor) {        document.getElementById('bannerSection').style.backgroundColor = data.bannerColor;
         if(document.getElementById('bannerColor')) document.getElementById('bannerColor').value = data.bannerColor;
     }
     if (data.logoUrl) {
@@ -472,7 +480,15 @@ function applySettings(data) {
         document.getElementById('ceoImage').src = data.ceoImageUrl;
     }
     if (data.ceoImageSize) {
-        document.getElementById('ceoImage').style.width = data.ceoImageSize + 'px';
+        const size = data.ceoImageSize + 'px';
+        document.getElementById('ceoImage').style.width = size;
+        document.getElementById('ceoImage').style.height = size;
+        
+        const wrapper = document.querySelector('.ceo-image-wrapper');
+        if (wrapper) {
+            wrapper.style.width = size;
+            wrapper.style.height = size;
+        }        
         if(document.getElementById('ceoSize')) document.getElementById('ceoSize').value = data.ceoImageSize;
     }
     if (data.zoneSectionTitle) {
@@ -521,8 +537,7 @@ function renderZoneCards(cards) {
     cards.forEach(card => {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'zone-card';
-        
-        let areasHtml = '';
+                let areasHtml = '';
         if (card.areas) {
             card.areas.forEach(area => {
                 areasHtml += `<span class="area-tag">${area}</span>`;
@@ -571,8 +586,7 @@ function loadReviews() {
         container.innerHTML = '';
         
         snapshot.forEach(doc => {
-            const review = doc.data();
-            const reviewDiv = document.createElement('div');
+            const review = doc.data();            const reviewDiv = document.createElement('div');
             reviewDiv.className = 'review-card';
             
             const date = review.createdAt ? new Date(review.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
@@ -621,14 +635,13 @@ function loadControlPanelSettings() {
         if (doc.exists) {
             const data = doc.data();
             
-            if(document.getElementById('brandingTextInput')) document.getElementById('brandingTextInput').value = data.branding || '';
-            if(document.getElementById('mottoTextInput')) document.getElementById('mottoTextInput').value = data.motto || '';
+            if(document.getElementById('brandingTextInput')) document.getElementById('brandingTextInput').value = data.branding || '';            if(document.getElementById('mottoTextInput')) document.getElementById('mottoTextInput').value = data.motto || '';
             if(document.getElementById('bannerColor')) document.getElementById('bannerColor').value = data.bannerColor || '#001f3f';
             if(document.getElementById('logoSize')) {
                 document.getElementById('logoSize').value = data.logoSize || 100;
                 document.getElementById('logoSizeVal').innerText = data.logoSize || 100;
             }
-            if(document.getElementById('ceoSize')) document.getElementById('ceoSize').value = data.ceoImageSize || 100;
+            if(document.getElementById('ceoSize')) document.getElementById('ceoSize').value = data.ceoImageSize || 150;
             if(document.getElementById('ceoNameInput')) document.getElementById('ceoNameInput').value = data.ceoName || '';
             if(document.getElementById('ceoTitleInput')) document.getElementById('ceoTitleInput').value = data.ceoTitle || '';
             if(document.getElementById('ceoDescInput')) document.getElementById('ceoDescInput').value = data.ceoDesc || '';
@@ -671,8 +684,7 @@ function loadZoneCardsSettings() {
                 <label>এলাকা সমূহ (কমা দিয়ে আলাদা করুন):</label>
                 <input type="text" value="${card.areas ? card.areas.join(', ') : ''}" onchange="updateZoneCard(${card.id}, 'areas', this.value)">
                 
-                <label>পুরুষ গ্রুপ লিঙ্ক:</label>
-                <input type="url" value="${card.maleLink || ''}" onchange="updateZoneCard(${card.id}, 'maleLink', this.value)">
+                <label>পুরুষ গ্রুপ লিঙ্ক:</label>                <input type="url" value="${card.maleLink || ''}" onchange="updateZoneCard(${card.id}, 'maleLink', this.value)">
                 
                 <label>মহিলা গ্রুপ লিঙ্ক:</label>
                 <input type="url" value="${card.femaleLink || ''}" onchange="updateZoneCard(${card.id}, 'femaleLink', this.value)">
@@ -721,8 +733,7 @@ function addNewZoneCard() {
         mixedLink: ""
     };
     
-    db.collection('zoneCards').doc(newId.toString()).set(newCard)
-        .then(() => {
+    db.collection('zoneCards').doc(newId.toString()).set(newCard)        .then(() => {
             loadZoneCardsSettings();
         });
 }
@@ -771,8 +782,7 @@ function loadSubAdminList() {
                     ''}
             `;
             
-            container.appendChild(div);
-        });
+            container.appendChild(div);        });
     });
 }
 
@@ -821,8 +831,7 @@ auth.onAuthStateChanged((user) => {
     if (user) {
         db.collection('subadmins').doc(user.email).get().then((doc) => {
             if (doc.exists && doc.data().status === 'approved') {
-                currentUserRole = 'subadmin';
-                if(document.getElementById('userRole')) {
+                currentUserRole = 'subadmin';                if(document.getElementById('userRole')) {
                     document.getElementById('userRole').innerText = 'সাব-এডমিন';
                 }
                 if(document.getElementById('controlPanelIcon')) {
