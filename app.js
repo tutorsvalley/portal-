@@ -30,11 +30,21 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"] }
 ];
 
+// Guest Login Function - DEFINED FIRST
+function loginAsGuest() {
+    console.log("Guest login clicked");
+    auth.signInAnonymously().then(() => {
+        currentUserRole = 'guest';
+        console.log("Guest logged in successfully");
+    }).catch(error => {
+        console.error("Guest login error:", error);
+        alert("গেস্ট লগইন ব্যর্থ: " + error.message);
+    });
+}
+
 // Wait for DOM
 document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ DOM Loaded");
-    
-    // Setup all buttons
     setupButtons();
     
     // Check auth
@@ -52,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupButtons() {
     console.log("Setting up buttons...");
     
-    // Login buttons
     const tutorBtn = document.getElementById('tutorBtn');
     const guardianBtn = document.getElementById('guardianBtn');
     const guestBtn = document.getElementById('guestBtn');
@@ -63,7 +72,6 @@ function setupButtons() {
     if (guestBtn) guestBtn.onclick = loginAsGuest;
     if (adminBtn) adminBtn.onclick = () => openLoginModal('admin');
     
-    // Modal buttons
     const closeModal = document.getElementById('closeModal');
     const googleBtn = document.getElementById('googleBtn');
     const closeControl = document.getElementById('closeControl');
@@ -122,11 +130,11 @@ function closeModalFunc() {
 
 // Handle Google Login
 function handleGoogleLogin() {
-    console.log("Google login clicked");
+    console.log("Google login clicked for:", loginRole);
     
     auth.signInWithPopup(provider).then(result => {
         const user = result.user;
-        console.log("User:", user.email);
+        console.log("User signed in:", user.email);
         
         if (loginRole === 'admin' && user.email !== OWNER_EMAIL) {
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
@@ -141,6 +149,7 @@ function handleGoogleLogin() {
             role: loginRole,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true }).then(() => {
+            console.log("User data saved");
             closeModalFunc();
         });
     }).catch(error => {
@@ -151,28 +160,31 @@ function handleGoogleLogin() {
 
 // Load User Data
 function loadUserData(uid) {
+    console.log("Loading user data for:", uid);
     db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
+            console.log("User role:", currentUserRole);
             showHome();
         } else {
+            console.log("No user doc found");
             logout();
         }
+    }).catch(error => {
+        console.error("Error loading user:", error);
     });
 }
 
 // Show Home
 function showHome() {
-    console.log("Showing home, role:", currentUserRole);
+    console.log("Showing home page");
     showPage('homePage');
     
-    // Control icon
     const controlIcon = document.getElementById('controlIcon');
     if (controlIcon) {
         controlIcon.style.display = currentUserRole === 'admin' ? 'flex' : 'none';
     }
     
-    // Review form
     const reviewForm = document.getElementById('reviewForm');
     if (reviewForm) {
         reviewForm.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
@@ -198,11 +210,7 @@ function logout() {
 function toggleControlPanel() {
     const panel = document.getElementById('controlPanel');
     if (panel) {
-        if (panel.style.display === 'block') {
-            panel.style.display = 'none';
-        } else {
-            panel.style.display = 'block';
-        }
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 }
 
