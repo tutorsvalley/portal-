@@ -23,30 +23,6 @@ let currentUserRole = null;
 let currentZoneCards = [];
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Default Fonts (Bangla + English)
-const fonts = [
-    { name: 'Hind Siliguri (Bangla)', value: "'Hind Siliguri', sans-serif", lang: 'bn' },
-    { name: 'Poppins (English)', value: "'Poppins', sans-serif", lang: 'en' },
-    { name: 'Roboto', value: "'Roboto', sans-serif", lang: 'en' },
-    { name: 'Open Sans', value: "'Open Sans', sans-serif", lang: 'en' },
-    { name: 'Lato', value: "'Lato', sans-serif", lang: 'en' },
-    { name: 'Montserrat', value: "'Montserrat', sans-serif", lang: 'en' },
-    { name: 'Noto Sans Bengali', value: "'Noto Sans Bengali', sans-serif", lang: 'bn' },
-    { name: 'SolaimanLipi', value: "'SolaimanLipi', sans-serif", lang: 'bn' },
-    { name: 'Arial', value: "Arial, sans-serif", lang: 'en' },
-    { name: 'Times New Roman', value: "'Times New Roman', serif", lang: 'en' },
-    { name: 'Calibri', value: "Calibri, sans-serif", lang: 'en' },
-    { name: 'Georgia', value: "Georgia, serif", lang: 'en' },
-    { name: 'Verdana', value: "Verdana, sans-serif", lang: 'en' },
-    { name: 'Tahoma', value: "Tahoma, sans-serif", lang: 'en' },
-    { name: 'Trebuchet MS', value: "'Trebuchet MS', sans-serif", lang: 'en' },
-    { name: 'Impact', value: "Impact, sans-serif", lang: 'en' },
-    { name: 'Comic Sans MS', value: "'Comic Sans MS', cursive", lang: 'en' },
-    { name: 'Courier New', value: "'Courier New', monospace", lang: 'en' },
-    { name: 'Palatino', value: "'Palatino Linotype', serif", lang: 'en' },
-    { name: 'Garamond', value: "'Garamond', serif", lang: 'en' }
-];
-
 // Default Zone Cards
 const defaultZoneCards = [
     {
@@ -102,7 +78,6 @@ const defaultZoneCards = [
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     checkAuthState();
-    loadDefaultSettings();
 });
 
 // Auth State Observer
@@ -124,7 +99,7 @@ function determineUserRole(user) {
             currentUserRole = doc.data().role;
             initializeApp();
         } else {
-            // New user - should not happen with our flow
+            // This shouldn't happen with our flow
             logout();
         }
     }).catch((error) => {
@@ -135,8 +110,19 @@ function determineUserRole(user) {
 // Show Google Login Modal
 function showGoogleLogin(role) {
     currentUserRole = role;
-    document.getElementById('googleLoginTitle').innerText = 
-        role === 'tutor' ? 'টিউটর লগইন' : 'অভিভাবক লগইন';
+    const titles = {
+        'tutor': 'টিউটর লগইন',
+        'guardian': 'অভিভাবক লগইন',
+        'admin': 'এডমিন লগইন'
+    };
+    const descs = {
+        'tutor': 'আপনার Google অ্যাকাউন্ট দিয়ে টিউটর হিসেবে লগইন করুন',
+        'guardian': 'আপনার Google অ্যাকাউন্ট দিয়ে অভিভাবক হিসেবে লগইন করুন',
+        'admin': 'শুধুমাত্র মালিক এইমেইল দিয়ে এডমিন হিসেবে লগইন করতে পারবেন'
+    };
+    
+    document.getElementById('googleLoginTitle').innerText = titles[role] || 'লগইন';
+    document.getElementById('googleLoginDesc').innerText = descs[role] || '';
     document.getElementById('googleLoginModal').style.display = 'block';
     
     document.getElementById('googleSignInBtn').onclick = function() {
@@ -149,14 +135,27 @@ function signInWithGoogle(role) {
     auth.signInWithPopup(googleProvider)
         .then((result) => {
             const user = result.user;
-            // Save user data
+            
+            // Admin হলে চেক করুন
+            if (role === 'admin') {
+                if (user.email !== OWNER_EMAIL) {
+                    alert("শুধুমাত্র মালিক এইমেইল দিয়ে admin লগইন করতে পারবেন!");
+                    auth.signOut();
+                    closeModal('googleLoginModal');
+                    return;
+                }
+            }
+            
+            // User data save করুন
             db.collection('users').doc(user.uid).set({
                 email: user.email,
                 displayName: user.displayName,
                 photoURL: user.photoURL,
-                role: role,
+                role: role === 'admin' ? 'admin' : role,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+            }, { merge: true }).then(() => {
+                closeModal('googleLoginModal');
+            });
         })
         .catch((error) => {
             alert("লগইন ব্যর্থ: " + error.message);
@@ -173,48 +172,18 @@ function loginAsGuest() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     
-    // Create anonymous auth
     auth.signInAnonymously().then(() => {
         initializeApp();
     });
-}
-
-// Show Admin Login
-function showAdminLogin() {
-    document.getElementById('adminLoginModal').style.display = 'block';
-}
-
-// Admin Login
-function adminLogin() {
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPassword').value;
-    
-    if (email !== OWNER_EMAIL) {
-        alert("শুধুমাত্র মালিক এইমেইল দিয়ে লগইন করতে পারবেন");
-        return;
-    }
-    
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            db.collection('users').doc(user.uid).set({
-                email: email,
-                role: 'admin',
-                displayName: 'Admin',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        })
-        .catch((error) => {
-            alert("লগইন ব্যর্থ: " + error.message);
-        });
-    
-    closeModal('adminLoginModal');
 }
 
 // Initialize App
 function initializeApp() {
     showPage('homePage');
     document.getElementById('userName').innerText = currentUser.displayName || currentUser.email;
+    document.getElementById('userRole').innerText = currentUserRole === 'admin' ? 'এডমিন' : 
+                                                    currentUserRole === 'tutor' ? 'টিউটর' :
+                                                    currentUserRole === 'guardian' ? 'অভিভাবক' : 'গেস্ট';
     
     // Show control panel icon for admin
     if (currentUserRole === 'admin' || currentUserRole === 'subadmin') {
@@ -263,11 +232,6 @@ function toggleControlPanel() {
     }
 }
 
-// Load Default Settings
-function loadDefaultSettings() {
-    currentZoneCards = [...defaultZoneCards];
-}
-
 // Load Settings from Firestore
 function loadSettings() {
     db.collection('settings').doc('main').get().then((doc) => {
@@ -275,7 +239,6 @@ function loadSettings() {
             const data = doc.data();
             applySettings(data);
         } else {
-            // Create default settings
             createDefaultSettings();
         }
     });
@@ -302,7 +265,8 @@ function createDefaultSettings() {
         reviewsSectionTitle: "রিভিউ সমূহ",
         bannerTitle: "আমাদের শিক্ষা ব্যবস্থা",
         bannerSubtitle: "সেরা টিউটর খুঁজছেন? আমরা আছি আপনার পাশে",
-        copyrightText: "© 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।"
+        copyrightText: "© 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।",
+        pageBgColor: "#ffffff"
     };
     
     db.collection('settings').doc('main').set(defaultSettings);
@@ -313,32 +277,67 @@ function createDefaultSettings() {
 function applySettings(data) {
     if (data.branding) document.getElementById('brandingText').innerText = data.branding;
     if (data.motto) document.getElementById('mottoText').innerText = data.motto;
-    if (data.bannerColor) document.getElementById('bannerSection').style.backgroundColor = data.bannerColor;
+    if (data.bannerColor) {
+        document.getElementById('bannerSection').style.backgroundColor = data.bannerColor;
+        document.getElementById('bannerColor').value = data.bannerColor;
+    }
     if (data.logoUrl) document.getElementById('siteLogo').src = data.logoUrl;
-    if (data.logoSize) document.getElementById('siteLogo').style.width = data.logoSize + 'px';
+    if (data.logoSize) {
+        document.getElementById('siteLogo').style.width = data.logoSize + 'px';
+        document.getElementById('logoSize').value = data.logoSize;
+        document.getElementById('logoSizeVal').innerText = data.logoSize;
+    }
     if (data.watermarkUrl) {
         document.getElementById('watermark').style.backgroundImage = `url(${data.watermarkUrl})`;
         document.getElementById('watermark').style.opacity = data.watermarkOpacity / 100;
+        document.getElementById('watermarkOpacity').value = data.watermarkOpacity;
     }
     if (data.fbPageLink) document.getElementById('fbLink').href = data.fbPageLink;
-    if (data.fbButtonText) document.getElementById('fbButtonText').innerText = data.fbButtonText;
-    if (data.ceoName) document.getElementById('ceoNameText').innerText = data.ceoName;
-    if (data.ceoTitle) document.getElementById('ceoTitleText').innerText = data.ceoTitle;
-    if (data.ceoDesc) document.getElementById('ceoDescText').innerText = data.ceoDesc;
+    if (data.fbButtonText) {
+        document.getElementById('fbButtonText').innerText = data.fbButtonText;
+        document.getElementById('fbButtonTextInput').value = data.fbButtonText;
+    }
+    if (data.ceoName) {
+        document.getElementById('ceoNameText').innerText = data.ceoName;
+        document.getElementById('ceoNameInput').value = data.ceoName;
+    }
+    if (data.ceoTitle) {
+        document.getElementById('ceoTitleText').innerText = data.ceoTitle;
+        document.getElementById('ceoTitleInput').value = data.ceoTitle;
+    }
+    if (data.ceoDesc) {
+        document.getElementById('ceoDescText').innerText = data.ceoDesc;
+        document.getElementById('ceoDescInput').value = data.ceoDesc;
+    }
     if (data.ceoImageUrl) document.getElementById('ceoImage').src = data.ceoImageUrl;
-    if (data.ceoImageSize) document.getElementById('ceoImage').style.width = data.ceoImageSize + 'px';
-    if (data.zoneSectionTitle) document.getElementById('zoneSectionTitle').innerText = data.zoneSectionTitle;
+    if (data.ceoImageSize) {
+        document.getElementById('ceoImage').style.width = data.ceoImageSize + 'px';
+        document.getElementById('ceoSize').value = data.ceoImageSize;
+    }
+    if (data.zoneSectionTitle) {
+        document.getElementById('zoneSectionTitle').innerText = data.zoneSectionTitle;
+        document.getElementById('zoneSectionTitleInput').value = data.zoneSectionTitle;
+    }
     if (data.reviewsSectionTitle) document.getElementById('reviewsSectionTitle').innerText = data.reviewsSectionTitle;
-    if (data.bannerTitle) document.getElementById('bannerTitle').innerText = data.bannerTitle;
-    if (data.bannerSubtitle) document.getElementById('bannerSubtitle').innerText = data.bannerSubtitle;
+    if (data.bannerTitle) {
+        document.getElementById('bannerTitle').innerText = data.bannerTitle;
+        document.getElementById('bannerTitleInput').value = data.bannerTitle;
+    }
+    if (data.bannerSubtitle) {
+        document.getElementById('bannerSubtitle').innerText = data.bannerSubtitle;
+        document.getElementById('bannerSubtitleInput').value = data.bannerSubtitle;
+    }
     if (data.copyrightText) document.getElementById('copyrightText').innerText = data.copyrightText;
+    if (data.pageBgColor) {
+        document.body.style.background = data.pageBgColor;
+        document.getElementById('pageBgColor').value = data.pageBgColor;
+    }
 }
 
 // Load Zone Cards
 function loadZoneCards() {
     db.collection('zoneCards').get().then((snapshot) => {
         if (snapshot.empty) {
-            // Create default cards
             defaultZoneCards.forEach(card => {
                 db.collection('zoneCards').doc(card.id.toString()).set(card);
             });
@@ -372,13 +371,13 @@ function renderZoneCards(cards) {
         let buttonsHtml = '';
         if (currentUserRole === 'tutor') {
             if (card.maleLink) {
-                buttonsHtml += `<a href="#" onclick="goToGroupPage('${card.maleLink}', 'পুরুষ')" class="group-btn male-btn"><i class="fab fa-whatsapp"></i> পুরুষ গ্রুপ</a>`;
+                buttonsHtml += `<a href="#" onclick="goToGroupPage('${card.maleLink}', 'পুরুষ'); return false;" class="group-btn male-btn"><i class="fab fa-whatsapp"></i> পুরুষ গ্রুপ</a>`;
             }
             if (card.femaleLink) {
-                buttonsHtml += `<a href="#" onclick="goToGroupPage('${card.femaleLink}', 'মহিলা')" class="group-btn female-btn"><i class="fab fa-whatsapp"></i> মহিলা গ্রুপ</a>`;
+                buttonsHtml += `<a href="#" onclick="goToGroupPage('${card.femaleLink}', 'মহিলা'); return false;" class="group-btn female-btn"><i class="fab fa-whatsapp"></i> মহিলা গ্রুপ</a>`;
             }
             if (card.mixedLink) {
-                buttonsHtml += `<a href="#" onclick="goToGroupPage('${card.mixedLink}', 'মিক্সড')" class="group-btn mixed-btn"><i class="fab fa-whatsapp"></i> মিক্সড গ্রুপ</a>`;
+                buttonsHtml += `<a href="#" onclick="goToGroupPage('${card.mixedLink}', 'মিক্সড'); return false;" class="group-btn mixed-btn"><i class="fab fa-whatsapp"></i> মিক্সড গ্রুপ</a>`;
             }
         }
         
@@ -419,7 +418,7 @@ function loadReviews() {
             
             reviewDiv.innerHTML = `
                 <div class="review-header">
-                    <span class="reviewer-name">${review.userName || 'Anonymous'}</span>
+                    <span class="reviewer-name">${review.userName || 'Anonymous'} ${review.userRole ? '(' + review.userRole + ')' : ''}</span>
                     <span class="review-date">${date}</span>
                 </div>
                 <p class="review-text">${review.text}</p>
@@ -471,6 +470,9 @@ function uploadImage(type) {
             document.getElementById('ceoImage').src = url;
             db.collection('settings').doc('main').update({ ceoImageUrl: url });
         }
+        alert("ইমেজ আপলোড হয়েছে");
+    }).catch((error) => {
+        alert("ইমেজ আপলোড ব্যর্থ: " + error.message);
     });
 }
 
@@ -489,6 +491,9 @@ function uploadWatermark() {
     }).then((url) => {
         document.getElementById('watermark').style.backgroundImage = `url(${url})`;
         db.collection('settings').doc('main').update({ watermarkUrl: url });
+        alert("ওয়াটারমার্ক আপলোড হয়েছে");
+    }).catch((error) => {
+        alert("ওয়াটারমার্ক আপলোড ব্যর্থ: " + error.message);
     });
 }
 
@@ -507,28 +512,41 @@ function updateElementStyle(elementId, property, value) {
     document.getElementById(elementId).style[property] = value;
 }
 
+// Update Font
+function updateFont(fontValue) {
+    document.body.style.fontFamily = fontValue;
+}
+
+// Update Page Color
+function updatePageColor(color) {
+    document.body.style.background = color;
+}
+
 // Load Control Panel Settings
 function loadControlPanelSettings() {
     db.collection('settings').doc('main').get().then((doc) => {
         if (doc.exists) {
             const data = doc.data();
             
-            // Populate form fields
-            document.getElementById('brandingText').value = data.branding || '';
-            document.getElementById('mottoText').value = data.motto || '';
+            document.getElementById('brandingTextInput').value = data.branding || '';
+            document.getElementById('mottoTextInput').value = data.motto || '';
             document.getElementById('bannerColor').value = data.bannerColor || '#001f3f';
             document.getElementById('logoSize').value = data.logoSize || 100;
             document.getElementById('logoSizeVal').innerText = data.logoSize || 100;
             document.getElementById('ceoSize').value = data.ceoImageSize || 100;
-            document.getElementById('ceoName').value = data.ceoName || '';
-            document.getElementById('ceoTitle').value = data.ceoTitle || '';
-            document.getElementById('ceoDesc').value = data.ceoDesc || '';
+            document.getElementById('ceoNameInput').value = data.ceoName || '';
+            document.getElementById('ceoTitleInput').value = data.ceoTitle || '';
+            document.getElementById('ceoDescInput').value = data.ceoDesc || '';
             document.getElementById('fbPageLink').value = data.fbPageLink || '';
-            document.getElementById('fbButtonText').value = data.fbButtonText || '';
+            document.getElementById('fbButtonTextInput').value = data.fbButtonText || '';
             document.getElementById('watermarkOpacity').value = data.watermarkOpacity || 20;
+            document.getElementById('bannerTitleInput').value = data.bannerTitle || '';
+            document.getElementById('bannerSubtitleInput').value = data.bannerSubtitle || '';
+            document.getElementById('zoneSectionTitleInput').value = data.zoneSectionTitle || '';
+            document.getElementById('pageBgColor').value = data.pageBgColor || '#ffffff';
             
-            // Load zone cards settings
             loadZoneCardsSettings();
+            loadSubAdminList();
         }
     });
 }
@@ -628,29 +646,74 @@ function inviteSubAdmin() {
     }).then(() => {
         alert("আমন্ত্রণ পাঠানো হয়েছে");
         document.getElementById('subAdminEmail').value = '';
+        loadSubAdminList();
+    });
+}
+
+// Load Sub-admin List
+function loadSubAdminList() {
+    const container = document.getElementById('subAdminList');
+    container.innerHTML = '';
+    
+    db.collection('subadmins').get().then((snapshot) => {
+        snapshot.forEach((doc) => {
+            const subadmin = doc.data();
+            const div = document.createElement('div');
+            div.style.padding = '10px';
+            div.style.borderBottom = '1px solid #ddd';
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.alignItems = 'center';
+            
+            div.innerHTML = `
+                <span>${subadmin.email} - ${subadmin.status}</span>
+                ${subadmin.status === 'pending' ? 
+                    `<button onclick="approveSubAdmin('${subadmin.email}')" style="background: #2ECC40; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Approve</button>` : 
+                    ''}
+            `;
+            
+            container.appendChild(div);
+        });
+    });
+}
+
+// Approve Sub-admin
+function approveSubAdmin(email) {
+    db.collection('subadmins').doc(email).update({
+        status: 'approved'
+    }).then(() => {
+        alert("Sub-admin approved");
+        loadSubAdminList();
     });
 }
 
 // Save All Settings
 function saveAllSettings() {
     const settings = {
-        branding: document.getElementById('brandingText').value,
-        motto: document.getElementById('mottoText').value,
+        branding: document.getElementById('brandingTextInput').value,
+        motto: document.getElementById('mottoTextInput').value,
         bannerColor: document.getElementById('bannerColor').value,
         logoSize: document.getElementById('logoSize').value,
         ceoImageSize: document.getElementById('ceoSize').value,
-        ceoName: document.getElementById('ceoName').value,
-        ceoTitle: document.getElementById('ceoTitle').value,
-        ceoDesc: document.getElementById('ceoDesc').value,
+        ceoName: document.getElementById('ceoNameInput').value,
+        ceoTitle: document.getElementById('ceoTitleInput').value,
+        ceoDesc: document.getElementById('ceoDescInput').value,
         fbPageLink: document.getElementById('fbPageLink').value,
-        fbButtonText: document.getElementById('fbButtonText').value,
-        watermarkOpacity: document.getElementById('watermarkOpacity').value
+        fbButtonText: document.getElementById('fbButtonTextInput').value,
+        watermarkOpacity: document.getElementById('watermarkOpacity').value,
+        bannerTitle: document.getElementById('bannerTitleInput').value,
+        bannerSubtitle: document.getElementById('bannerSubtitleInput').value,
+        zoneSectionTitle: document.getElementById('zoneSectionTitleInput').value,
+        pageBgColor: document.getElementById('pageBgColor').value
     };
     
     db.collection('settings').doc('main').update(settings)
         .then(() => {
             alert("সেটিংস সংরক্ষিত হয়েছে");
             toggleControlPanel();
+        })
+        .catch((error) => {
+            alert("সেটিংস সংরক্ষণ ব্যর্থ: " + error.message);
         });
 }
 
@@ -660,6 +723,8 @@ auth.onAuthStateChanged((user) => {
         db.collection('subadmins').doc(user.email).get().then((doc) => {
             if (doc.exists && doc.data().status === 'approved') {
                 currentUserRole = 'subadmin';
+                document.getElementById('userRole').innerText = 'সাব-এডমিন';
+                document.getElementById('controlPanelIcon').style.display = 'flex';
             }
         });
     }
