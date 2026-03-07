@@ -47,7 +47,8 @@ body {
     margin-bottom: 30px;
 }
 
-.login-btn {    width: 100%;
+.login-btn {
+    width: 100%;
     padding: 15px;
     margin-bottom: 10px;
     border: none;
@@ -96,7 +97,8 @@ body {
     padding: 12px;
     background: #db4437;
     color: white;
-    border: none;    border-radius: 8px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 15px;
 }
@@ -145,7 +147,8 @@ body {
     align-items: center;
 }
 
-.control-panel-content {    padding: 20px;
+.control-panel-content {
+    padding: 20px;
 }
 
 .control-section {
@@ -195,6 +198,7 @@ body {
     background: var(--primary-color);
     padding: 20px;
 }
+
 .header-content {
     max-width: 1200px;
     margin: 0 auto;
@@ -243,7 +247,8 @@ body {
 
 .fb-page-btn {
     background: #3b5998;
-    padding: 6px 12px;    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
 }
 
 .fb-page-btn a {
@@ -292,7 +297,8 @@ body {
 .zone-title {
     font-size: 1.4em;
     color: var(--primary-color);
-    margin-bottom: 15px;    padding-bottom: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--secondary-color);
 }
 
@@ -341,7 +347,8 @@ body {
 }
 
 .submit-review-btn {
-    background: var(--secondary-color);    color: white;
+    background: var(--secondary-color);
+    color: white;
     border: none;
     padding: 10px 25px;
     border-radius: 8px;
@@ -390,7 +397,8 @@ body {
 }
 
 .ceo-image-wrapper {
-    width: 130px;    height: 130px;
+    width: 130px;
+    height: 130px;
     margin: 0 auto 15px;
     border-radius: 50%;
     padding: 4px;
@@ -439,7 +447,8 @@ body {
     .header-right {
         flex-direction: row;
         width: 100%;
-        justify-content: center;    }
+        justify-content: center;
+    }
     
     .branding {
         font-size: 1.5em;
