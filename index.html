@@ -48,7 +48,6 @@
             </div>
         </div>
     </div>
-
     <!-- Main Homepage -->
     <div id="homePage" class="page" style="display:none;">
         <!-- Control Panel Gear Icon (Admin Only) -->
@@ -97,8 +96,7 @@
                             <option value="Verdana, sans-serif">Verdana</option>
                             <option value="Tahoma, sans-serif">Tahoma</option>
                             <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                            <option value="Impact, sans-serif">Impact</option>
-                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                            <option value="Impact, sans-serif">Impact</option>                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
                             <option value="'Courier New', monospace">Courier New</option>
                             <option value="'Palatino Linotype', serif">Palatino</option>
                             <option value="'Garamond', serif">Garamond</option>
@@ -147,9 +145,8 @@
                 <div class="control-section">
                     <h4>CEO তথ্য</h4>
                     <div class="control-group">
-                        <label>CEO ইমেজ:</label>
-                        <input type="file" id="ceoUpload" accept="image/*" onchange="uploadImage('ceo')">
-                        <input type="range" id="ceoSize" min="50" max="200" value="100" oninput="updateElementStyle('ceoImage', 'width', this.value + 'px')">
+                        <label>CEO ইমেজ:</label>                        <input type="file" id="ceoUpload" accept="image/*" onchange="uploadImage('ceo')">
+                        <input type="range" id="ceoSize" min="50" max="200" value="100" oninput="updateElementStyle('ceoImage', 'width', this.value + 'px'); updateElementStyle('ceoImage', 'height', this.value + 'px')">
                     </div>
                     <div class="control-group">
                         <label>CEO নাম:</label>
@@ -197,7 +194,6 @@
                         <input type="color" id="pageBgColor" value="#ffffff" onchange="updatePageColor(this.value)">
                     </div>
                 </div>
-
                 <!-- Save Button -->
                 <button onclick="saveAllSettings()" class="save-btn">সেটিংস সংরক্ষণ করুন</button>
             </div>
@@ -213,7 +209,7 @@
                 </div>
                 <div class="header-center">
                     <div class="logo-container">
-                        <img id="siteLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo-img">
+                        <img id="siteLogo" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E" alt="Logo" class="logo-img">
                     </div>
                     <h1 id="brandingText" class="branding">Tutors Valley</h1>
                     <p id="mottoText" class="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
@@ -247,8 +243,7 @@
 
         <!-- Reviews Section -->
         <section class="reviews-section">
-            <h2 id="reviewsSectionTitle" class="section-title">রিভিউ সমূহ</h2>
-            <div id="reviewFormContainer" class="review-form-container" style="display:none;">
+            <h2 id="reviewsSectionTitle" class="section-title">রিভিউ সমূহ</h2>            <div id="reviewFormContainer" class="review-form-container" style="display:none;">
                 <h3>আপনার রিভিউ দিন</h3>
                 <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা শেয়ার করুন..." class="review-input"></textarea>
                 <button onclick="submitReview()" class="submit-review-btn">রিভিউ দিন</button>
@@ -261,7 +256,9 @@
         <!-- CEO Section -->
         <section class="ceo-section">
             <div class="ceo-container">
-                <img id="ceoImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
+                <div class="ceo-image-wrapper">
+                    <img id="ceoImage" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%230074D9'/%3E%3Ctext x='75' y='75' font-size='60' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E" alt="CEO" class="ceo-img">
+                </div>
                 <h3 id="ceoNameText" class="ceo-name">CEO Name</h3>
                 <p id="ceoTitleText" class="ceo-title">Founder & CEO</p>
                 <p id="ceoDescText" class="ceo-desc">CEO description here...</p>
