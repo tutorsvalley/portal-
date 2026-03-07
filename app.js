@@ -21,6 +21,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
+let authReady = false; // ✅ Track auth state
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts List
@@ -39,9 +40,34 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", mixedLink: "" }
 ];
 
+// ✅ Show Loading Screen
+function showLoading() {
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loadingScreen';
+    loadingDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+    loadingDiv.innerHTML = `
+        <div style="width:50px;height:50px;border:5px solid #f3f3f3;border-top:5px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:20px;color:#666;font-family:'Hind Siliguri',sans-serif;">লোড হচ্ছে...</p>
+        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
+    `;
+    document.body.appendChild(loadingDiv);
+}
+
+// ✅ Hide Loading Screen
+function hideLoading() {
+    const loadingDiv = document.getElementById('loadingScreen');
+    if (loadingDiv) loadingDiv.remove();
+}
+
 // Guest Login
 function guestLogin() {
-    auth.signInAnonymously().then((userCredential) => {
+    console.log("Guest login clicked");
+    
+    // ✅ Clear previous auth state first
+    auth.signOut().then(() => {
+        return auth.signInAnonymously();
+    }).then((userCredential) => {
         currentUser = userCredential.user;
         currentUserRole = 'guest';
         return db.collection('users').doc(userCredential.user.uid).set({
@@ -51,22 +77,55 @@ function guestLogin() {
             isGuest: true,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-    }).then(() => { showHome(); })
-    .catch((error) => { alert("গেস্ট লগইন ব্যর্থ: " + error.message); });
+    }).then(() => {
+        console.log("Guest logged in successfully");
+        showHome();
+    }).catch((error) => {
+        console.error("Guest login error:", error);
+        alert("গেস্ট লগইন ব্যর্থ: " + error.message);
+    });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Page loaded, checking auth...");
+    showLoading(); // ✅ Show loading while checking auth
+    
+    // ✅ Check for redirect result first
     auth.getRedirectResult().then((result) => {
-        if (result.user) handleLoginSuccess(result.user);
-    }).catch((error) => { console.error("Redirect error:", error); auth.signOut().catch(() => {}); });
+        if (result.user) {
+            console.log("Redirect login successful");
+            handleLoginSuccess(result.user);
+        }
+    }).catch((error) => {
+        console.error("Redirect error:", error);
+        // ✅ On error, logout immediately
+        auth.signOut().catch(() => {});
+        showPage('loginPage');
+        hideLoading();
+    });
+    
+    // ✅ Auth state observer with timeout
+    let authTimeout = setTimeout(() => {
+        console.log("Auth timeout - forcing login page");
+        authReady = true;
+        showPage('loginPage');
+        hideLoading();
+    }, 3000); // 3 second timeout
     
     auth.onAuthStateChanged(user => {
+        clearTimeout(authTimeout); // ✅ Clear timeout
+        
         if (user) {
+            console.log("User authenticated:", user.email || 'Anonymous');
             currentUser = user;
+            authReady = true;
             loadUser(user.uid);
         } else {
+            console.log("No user - showing login page");
+            authReady = true;
             showPage('loginPage');
+            hideLoading();
         }
     });
 });
@@ -77,6 +136,8 @@ function handleLoginSuccess(user) {
         alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
         auth.signOut();
         closeModal();
+        showPage('loginPage');
+        hideLoading();
         return;
     }
     db.collection('users').doc(user.uid).set({
@@ -84,19 +145,30 @@ function handleLoginSuccess(user) {
         displayName: user.displayName,
         role: currentLoginRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(() => { closeModal(); });
+    }, { merge: true }).then(() => {
+        console.log("User data saved");
+        closeModal();
+    });
 }
 
-// Load User Data
+// Load User Data - ✅ Faster loading
 function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
+        hideLoading(); // ✅ Hide loading as soon as user data loads
+        
         if (doc.exists) {
             currentUserRole = doc.data().role;
+            console.log("User role:", currentUserRole);
             showHome();
         } else {
+            console.log("No user doc found - logging out");
             logout();
         }
-    }).catch(error => { console.error("Load user error:", error); });
+    }).catch(error => {
+        console.error("Load user error:", error);
+        hideLoading();
+        logout();
+    });
 }
 
 // Show Page
@@ -112,9 +184,13 @@ function showPage(pageId) {
     }
 }
 
-// Open Modal
+// Open Modal - ✅ Clear previous auth before opening
 function openModal(role) {
     currentLoginRole = role;
+    
+    // ✅ Sign out previous user before new login
+    auth.signOut().catch(() => {});
+    
     const titles = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' };
     document.getElementById('modalTitle').innerText = titles[role];
     document.getElementById('loginModal').style.display = 'block';
@@ -125,45 +201,78 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none';
 }
 
-// Google Login
+// Google Login - ✅ Faster with immediate signout
 function googleLogin() {
-    auth.signInWithPopup(provider).then(result => {
+    console.log("Google login clicked for:", currentLoginRole);
+    
+    // ✅ Sign out any existing user first
+    auth.signOut().then(() => {
+        return auth.signInWithPopup(provider);
+    }).then(result => {
+        console.log("Google login successful");
         handleLoginSuccess(result.user);
     }).catch(error => {
+        console.error("Google login error:", error);
+        
         if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
             try { sessionStorage.setItem('loginRole', currentLoginRole); } catch(e) {}
             auth.signInWithRedirect(provider);
         } else if (error.code === 'auth/internal-error' || error.message.includes('missing initial state')) {
             alert("লগইন সমস্যা: Chrome বা Firefox browser ব্যবহার করুন। Messenger/WhatsApp থেকে চেষ্টা করবেন না।");
+            showPage('loginPage');
+            hideLoading();
         } else {
             alert("Login failed: " + error.message);
+            showPage('loginPage');
+            hideLoading();
         }
     });
 }
 
-// Show Home
+// Show Home - ✅ Faster loading
 function showHome() {
+    console.log("Showing home page for role:", currentUserRole);
     showPage('homePage');
+    
     const controlPanel = document.getElementById('controlPanel');
     if (controlPanel) controlPanel.style.display = 'none';
+    
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) adminIcon.style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
+    
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
-    loadAllSettings();
-    loadZones();
-    loadReviews();
+    
+    // ✅ Load data in parallel (faster)
+    Promise.all([
+        loadAllSettings(),
+        loadZones(),
+        loadReviews()
+    ]).then(() => {
+        console.log("All home data loaded");
+    }).catch(error => {
+        console.error("Error loading home data:", error);
+    });
 }
 
-// Logout
+// Logout - ✅ Immediate logout
 function logout() {
+    console.log("Logging out...");
+    
+    // ✅ Clear all states immediately
+    currentUser = null;
+    currentUserRole = null;
+    const adminIcon = document.getElementById('adminIcon');
+    if (adminIcon) adminIcon.style.display = 'none';
+    const controlPanel = document.getElementById('controlPanel');
+    if (controlPanel) controlPanel.style.display = 'none';
+    
+    // ✅ Sign out and show login page immediately
     auth.signOut().then(() => {
-        currentUser = null;
-        currentUserRole = null;
-        const adminIcon = document.getElementById('adminIcon');
-        if (adminIcon) adminIcon.style.display = 'none';
-        const controlPanel = document.getElementById('controlPanel');
-        if (controlPanel) controlPanel.style.display = 'none';
+        console.log("Logged out successfully");
+        showPage('loginPage');
+    }).catch(error => {
+        console.error("Logout error:", error);
         showPage('loginPage');
     });
 }
@@ -210,76 +319,79 @@ function getText(id) {
     return el ? el.innerText : '';
 }
 
-// ✅ LOAD ALL SETTINGS
+// LOAD ALL SETTINGS
 function loadAllSettings() {
-    console.log("Loading settings...");
-    
-    // Header
-    db.collection('settings').doc('header').get().then(doc => {
-        if (!doc.exists) return;
-        const d = doc.data();
-        if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
-        if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
-        if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
-        if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
-        if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
-        if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
-        if (d.brandingFont) document.getElementById('branding').style.fontFamily = d.brandingFont;
-        if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
-        if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
-        if (d.mottoFont) document.getElementById('motto').style.fontFamily = d.mottoFont;
-        if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
-        if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
-    });
-    
-    // Zones
-    db.collection('settings').doc('zones').get().then(doc => {
-        if (!doc.exists) return;
-        const d = doc.data();
-        if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
-        if (d.titleFont) document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
-        if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
-        if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
-    });
-    
-    // Reviews
-    db.collection('settings').doc('reviews').get().then(doc => {
-        if (!doc.exists) return;
-        const d = doc.data();
-        if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
-        if (d.titleFont) document.getElementById('reviewTitle').style.fontFamily = d.titleFont;
-        if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
-        if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
-    });
-    
-    // CEO
-    db.collection('settings').doc('ceo').get().then(doc => {
-        if (!doc.exists) return;
-        const d = doc.data();
-        if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
-        if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
-        if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
-        if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
-        if (d.nameFont) document.getElementById('ceoName').style.fontFamily = d.nameFont;
-        if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
-        if (d.nameColor) document.getElementById('ceoName').style.color = d.nameColor;
-        if (d.titleFont) document.getElementById('ceoTitle').style.fontFamily = d.titleFont;
-        if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
-    });
-    
-    // Footer
-    db.collection('settings').doc('footer').get().then(doc => {
-        if (!doc.exists) return;
-        const d = doc.data();
-        if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
-        if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
-        if (d.copyrightFont) document.getElementById('copyright').style.fontFamily = d.copyrightFont;
-        if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
-        if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
+    return Promise.all([
+        db.collection('settings').doc('header').get(),
+        db.collection('settings').doc('zones').get(),
+        db.collection('settings').doc('reviews').get(),
+        db.collection('settings').doc('ceo').get(),
+        db.collection('settings').doc('footer').get()
+    ]).then(results => {
+        const [headerDoc, zonesDoc, reviewsDoc, ceoDoc, footerDoc] = results;
+        
+        // Header
+        if (headerDoc.exists) {
+            const d = headerDoc.data();
+            if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
+            if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
+            if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
+            if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
+            if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
+            if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
+            if (d.brandingFont) document.getElementById('branding').style.fontFamily = d.brandingFont;
+            if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
+            if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
+            if (d.mottoFont) document.getElementById('motto').style.fontFamily = d.mottoFont;
+            if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
+            if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
+        }
+        
+        // Zones
+        if (zonesDoc.exists) {
+            const d = zonesDoc.data();
+            if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
+            if (d.titleFont) document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
+            if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
+            if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
+        }
+        
+        // Reviews
+        if (reviewsDoc.exists) {
+            const d = reviewsDoc.data();
+            if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
+            if (d.titleFont) document.getElementById('reviewTitle').style.fontFamily = d.titleFont;
+            if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
+            if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
+        }
+        
+        // CEO
+        if (ceoDoc.exists) {
+            const d = ceoDoc.data();
+            if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
+            if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
+            if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
+            if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
+            if (d.nameFont) document.getElementById('ceoName').style.fontFamily = d.nameFont;
+            if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
+            if (d.nameColor) document.getElementById('ceoName').style.color = d.nameColor;
+            if (d.titleFont) document.getElementById('ceoTitle').style.fontFamily = d.titleFont;
+            if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
+        }
+        
+        // Footer
+        if (footerDoc.exists) {
+            const d = footerDoc.data();
+            if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
+            if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
+            if (d.copyrightFont) document.getElementById('copyright').style.fontFamily = d.copyrightFont;
+            if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
+            if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
+        }
     });
 }
 
-// ✅ LOAD CONTROL PANEL
+// LOAD CONTROL PANEL
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
@@ -307,7 +419,6 @@ function loadControlPanel() {
     const copyrightColor = getStyle('copyright', 'color') || '#ffffff';
     const footerBg = getStyle('footerSection', 'background') || '#001f3f';
     
-    // ✅ Check if user is Admin or Tutor for Zone Title Edit
     const canEditZoneTitle = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     body.innerHTML = `
@@ -509,11 +620,11 @@ function loadControlPanel() {
         </div>
     `;
     
-    // Load tutor note if exists
     if (canEditZoneTitle) {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
-                document.getElementById('tutorZoneNote').value = doc.data().tutorNote;
+                const noteInput = document.getElementById('tutorZoneNote');
+                if (noteInput) noteInput.value = doc.data().tutorNote;
             }
         });
     }
@@ -521,9 +632,8 @@ function loadControlPanel() {
     loadZoneCardsSettings();
 }
 
-// ✅ SAVE SETTING
+// SAVE SETTING
 function saveSetting(collection, field, value) {
-    console.log(`Saving: ${collection}.${field} = ${value}`);
     db.collection('settings').doc(collection).update({ [field]: value })
         .catch(() => {
             db.collection('settings').doc(collection).set({ [field]: value });
@@ -595,7 +705,7 @@ function updateZone(id, field, val) {
 
 // Load Zones
 function loadZones() {
-    db.collection('zones').get().then(snapshot => {
+    return db.collection('zones').get().then(snapshot => {
         if (snapshot.empty) {
             defaultZones.forEach(z => db.collection('zones').doc(z.id.toString()).set(z));
             renderZones(defaultZones);
@@ -605,30 +715,14 @@ function loadZones() {
             renderZones(zones);
         }
     });
-    
-    // ✅ Load Tutor Note (Only for Tutors)
-    if (currentUserRole === 'tutor') {
-        db.collection('settings').doc('zones').get().then(doc => {
-            if (doc.exists && doc.data().tutorNote) {
-                const zoneTitle = document.getElementById('zoneTitle');
-                if (zoneTitle) {
-                    const note = document.createElement('p');
-                    note.style.cssText = 'background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px;';
-                    note.innerText = '📢 ' + doc.data().tutorNote;
-                    zoneTitle.parentNode.insertBefore(note, zoneTitle.nextSibling);
-                }
-            }
-        });
-    }
 }
 
-// ✅ Render Zones - Male/Female Group Text + URL Visibility
+// Render Zones
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
     container.innerHTML = '';
     
-    // ✅ Only Admin and Tutor can see group buttons
     const canSeeButtons = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     zones.forEach(zone => {
@@ -640,7 +734,6 @@ function renderZones(zones) {
         
         let buttons = '';
         if (canSeeButtons) {
-            // ✅ Changed text to "মেল গ্রুপ" and "ফিমেল গ্রুপ"
             if (zone.maleLink) buttons += `<a href="${zone.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a><br>`;
             if (zone.femaleLink) buttons += `<a href="${zone.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a><br>`;
             if (zone.mixedLink) buttons += `<a href="${zone.mixedLink}" target="_blank" class="group-btn mixed-btn">👥 মিক্সড গ্রুপ</a>`;
@@ -649,11 +742,30 @@ function renderZones(zones) {
         card.innerHTML = `<h3>${zone.title}</h3><div class="area-tags">${areas}</div>${buttons ? '<div style="margin-top:10px;">'+buttons+'</div>' : ''}`;
         container.appendChild(card);
     });
+    
+    // Load Tutor Note
+    if (currentUserRole === 'tutor') {
+        db.collection('settings').doc('zones').get().then(doc => {
+            if (doc.exists && doc.data().tutorNote) {
+                const zoneTitle = document.getElementById('zoneTitle');
+                if (zoneTitle) {
+                    const existingNote = zoneTitle.parentNode.querySelector('.tutor-note');
+                    if (existingNote) existingNote.remove();
+                    
+                    const note = document.createElement('p');
+                    note.className = 'tutor-note';
+                    note.style.cssText = 'background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px;';
+                    note.innerText = '📢 ' + doc.data().tutorNote;
+                    zoneTitle.parentNode.insertBefore(note, zoneTitle.nextSibling);
+                }
+            }
+        });
+    }
 }
 
 // Load Reviews
 function loadReviews() {
-    db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(snapshot => {
+    return db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(snapshot => {
         const container = document.getElementById('reviewList');
         if (!container) return;
         container.innerHTML = '';
