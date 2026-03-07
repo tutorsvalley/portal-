@@ -50,30 +50,54 @@ const fonts = {
 
 // Default Data
 const defaultZones = [
-    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"] },
-    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"] },
-    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"] },
-    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"] },
-    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"] },
-    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"] }
+    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "", mixedLink: "" },
+    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "", mixedLink: "" },
+    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"], maleLink: "", femaleLink: "", mixedLink: "" },
+    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"], maleLink: "", femaleLink: "", mixedLink: "" },
+    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"], maleLink: "", femaleLink: "", mixedLink: "" },
+    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", mixedLink: "" }
 ];
 
-// Guest Login
+// Guest Login - FIXED
 function guestLogin() {
-    auth.signInAnonymously().then(() => {
-        currentUserRole = 'guest';
-    }).catch(error => {
-        alert("Error: " + error.message);
-    });
+    console.log("Guest login clicked");
+    
+    auth.signInAnonymously()
+        .then((userCredential) => {
+            console.log("Guest logged in successfully");
+            currentUser = userCredential.user;
+            currentUserRole = 'guest';
+            
+            // Save guest user data
+            return db.collection('users').doc(userCredential.user.uid).set({
+                email: 'guest@tutorsvalley.com',
+                displayName: 'Guest User',
+                role: 'guest',
+                isGuest: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        })
+        .then(() => {
+            console.log("Guest data saved");
+            showHome();
+        })
+        .catch((error) => {
+            console.error("Guest login error:", error);
+            alert("গেস্ট লগইন ব্যর্থ: " + error.message);
+        });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Page loaded");
+    
     auth.onAuthStateChanged(user => {
         if (user) {
+            console.log("User authenticated:", user.email || 'Anonymous');
             currentUser = user;
             loadUser(user.uid);
         } else {
+            console.log("No user - showing login page");
             showPage('loginPage');
         }
     });
@@ -84,10 +108,14 @@ function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
+            console.log("User role:", currentUserRole);
             showHome();
         } else {
+            console.log("No user doc found");
             logout();
         }
+    }).catch(error => {
+        console.error("Error loading user:", error);
     });
 }
 
@@ -95,6 +123,7 @@ function loadUser(uid) {
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
     document.getElementById(pageId).style.display = 'block';
+    console.log("Showing page:", pageId);
 }
 
 // Open Modal
@@ -141,19 +170,27 @@ function googleLogin() {
 
 // Show Home
 function showHome() {
+    console.log("Showing home page, role:", currentUserRole);
     showPage('homePage');
     
+    // Show admin icon for admin only
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) {
         adminIcon.style.display = currentUserRole === 'admin' ? 'flex' : 'none';
     }
     
+    // Show review form for tutor and guardian ONLY (NOT for guest)
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) {
-        reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
+        if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
+            reviewBox.style.display = 'block';
+        } else {
+            reviewBox.style.display = 'none';
+        }
     }
     
     loadAllSettings();
+    loadZones(); // Load zones with proper button visibility
 }
 
 // Logout
@@ -164,18 +201,14 @@ function logout() {
         const adminIcon = document.getElementById('adminIcon');
         if (adminIcon) adminIcon.style.display = 'none';
         showPage('loginPage');
+        console.log("User logged out");
     });
 }
 
 // Toggle Control Panel
 function toggleControl() {
     const panel = document.getElementById('controlPanel');
-    if (panel.style.display === 'block') {
-        panel.style.display = 'none';
-    } else {
-        panel.style.display = 'block';
-        loadControlPanel();
-    }
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
 }
 
 // Load All Settings
@@ -221,8 +254,6 @@ function loadAllSettings() {
         }
     });
     
-    loadZones();
-    
     // Load Review Settings
     db.collection('settings').doc('reviews').get().then(doc => {
         if (doc.exists) {
@@ -240,8 +271,6 @@ function loadAllSettings() {
             });
         }
     });
-    
-    loadReviews();
     
     // Load CEO Settings
     db.collection('settings').doc('ceo').get().then(doc => {
@@ -618,7 +647,7 @@ function saveSetting(collection, field, value) {
         });
 }
 
-// Load Zone Cards Settings
+// Load Zone Cards Settings - WITH URL LINKS
 function loadZoneCardsSettings() {
     db.collection('zones').get().then(snapshot => {
         const container = document.getElementById('zoneCardsSettings');
@@ -641,6 +670,21 @@ function loadZoneCardsSettings() {
                         <label>এলাকা (কমা দিয়ে আলাদা করুন):</label>
                         <input type="text" value="${zone.areas ? zone.areas.join(', ') : ''}" onchange="updateZone(${zone.id}, 'areas', this.value)">
                     </div>
+                    
+                    <div class="control-group">
+                        <label>পুরুষ গ্রুপ লিঙ্ক (URL):</label>
+                        <input type="url" value="${zone.maleLink || ''}" placeholder="https://chat.whatsapp.com/..." onchange="updateZone(${zone.id}, 'maleLink', this.value)">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>মহিলা গ্রুপ লিঙ্ক (URL):</label>
+                        <input type="url" value="${zone.femaleLink || ''}" placeholder="https://chat.whatsapp.com/..." onchange="updateZone(${zone.id}, 'femaleLink', this.value)">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>মিক্সড গ্রুপ লিঙ্ক (URL):</label>
+                        <input type="url" value="${zone.mixedLink || ''}" placeholder="https://chat.whatsapp.com/..." onchange="updateZone(${zone.id}, 'mixedLink', this.value)">
+                    </div>
                 </div>
             `;
         });
@@ -656,7 +700,7 @@ function updateZone(id, field, value) {
     db.collection('zones').doc(id.toString()).update({ [field]: value });
 }
 
-// Load Zones
+// Load Zones - WITH BUTTON VISIBILITY BASED ON ROLE
 function loadZones() {
     db.collection('zones').get().then(snapshot => {
         if (snapshot.empty) {
@@ -672,7 +716,7 @@ function loadZones() {
     });
 }
 
-// Render Zones
+// Render Zones - ONLY TUTORS SEE BUTTONS
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
@@ -688,14 +732,33 @@ function renderZones(zones) {
             areasHtml = zone.areas.map(a => `<span class="area-tag">${a}</span>`).join('');
         }
         
-        card.innerHTML = `<h3>${zone.title}</h3><div>${areasHtml}</div>`;
+        // ONLY TUTORS can see and click the group buttons
+        let buttonsHtml = '';
+        if (currentUserRole === 'tutor') {
+            if (zone.maleLink) {
+                buttonsHtml += `<a href="${zone.maleLink}" target="_blank" class="group-btn male-btn"><i class="fab fa-whatsapp"></i> পুরুষ গ্রুপ</a>`;
+            }
+            if (zone.femaleLink) {
+                buttonsHtml += `<a href="${zone.femaleLink}" target="_blank" class="group-btn female-btn"><i class="fab fa-whatsapp"></i> মহিলা গ্রুপ</a>`;
+            }
+            if (zone.mixedLink) {
+                buttonsHtml += `<a href="${zone.mixedLink}" target="_blank" class="group-btn mixed-btn"><i class="fab fa-whatsapp"></i> মিক্সড গ্রুপ</a>`;
+            }
+        }
+        
+        card.innerHTML = `
+            <h3>${zone.title}</h3>
+            <div class="area-tags">${areasHtml}</div>
+            ${buttonsHtml ? `<div class="group-buttons" style="margin-top:15px; display:flex; flex-direction:column; gap:8px;">${buttonsHtml}</div>` : ''}
+        `;
+        
         container.appendChild(card);
     });
 }
 
-// Load Reviews
+// Load Reviews - EVERYONE CAN SEE
 function loadReviews() {
-    db.collection('reviews').orderBy('createdAt', 'desc').limit(10).get().then(snapshot => {
+    db.collection('reviews').orderBy('createdAt', 'desc').limit(20).get().then(snapshot => {
         const container = document.getElementById('reviewList');
         if (!container) return;
         
@@ -705,14 +768,27 @@ function loadReviews() {
             const review = doc.data();
             const card = document.createElement('div');
             card.className = 'review-card';
-            card.innerHTML = `<h4>${review.userName || 'Anonymous'}</h4><p>${review.text}</p>`;
+            
+            const date = review.createdAt ? new Date(review.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
+            
+            card.innerHTML = `
+                <h4>${review.userName || 'Anonymous'} ${review.userRole ? '(' + review.userRole + ')' : ''}</h4>
+                <small style="color:#999;">${date}</small>
+                <p>${review.text}</p>
+            `;
             container.appendChild(card);
         });
     });
 }
 
-// Submit Review
+// Submit Review - ONLY TUTORS & GUARDIANS CAN WRITE
 function submitReview() {
+    // Double check user role
+    if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') {
+        alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন");
+        return;
+    }
+    
     const text = document.getElementById('reviewText').value;
     if (!text.trim()) {
         alert("রিভিউ লিখুন");
@@ -721,13 +797,16 @@ function submitReview() {
     
     db.collection('reviews').add({
         text: text,
-        userName: currentUser.displayName || currentUser.email,
+        userName: currentUser.displayName || currentUser.email || 'Anonymous',
         userRole: currentUserRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
         document.getElementById('reviewText').value = '';
         loadReviews();
         alert("রিভিউ জমা হয়েছে");
+    }).catch(error => {
+        console.error("Error submitting review:", error);
+        alert("রিভিউ জমা ব্যর্থ: " + error.message);
     });
 }
 
