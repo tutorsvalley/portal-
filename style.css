@@ -19,6 +19,7 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
     color: var(--text-color);
     min-height: 100vh;
+    transition: background 0.3s;
 }
 
 .page {
@@ -60,6 +61,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    position: relative;
 }
 
 .login-btn {
@@ -101,18 +103,18 @@ body {
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
-.admin-login-wrapper {
-    position: relative;
-}
-
 .hidden-admin-icon {
     position: absolute;
     right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: 10px;
     cursor: pointer;
-    opacity: 0.3;
+    opacity: 0.2;
     font-size: 0.8em;
+    transition: opacity 0.3s;
+}
+
+.hidden-admin-icon:hover {
+    opacity: 0.5;
 }
 
 /* Modal Styles */
@@ -161,16 +163,13 @@ body {
     color: #333;
 }
 
-.input-field {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-family: 'Hind Siliguri', sans-serif;
+.login-desc {
+    color: #666;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-.login-submit-btn, .google-btn {
+.google-btn {
     width: 100%;
     padding: 12px;
     border: none;
@@ -179,20 +178,16 @@ body {
     cursor: pointer;
     margin-top: 10px;
     font-family: 'Hind Siliguri', sans-serif;
-}
-
-.login-submit-btn {
-    background: var(--primary-color);
-    color: white;
-}
-
-.google-btn {
     background: #db4437;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+}
+
+.google-btn:hover {
+    background: #c53929;
 }
 
 /* Control Panel */
@@ -282,6 +277,11 @@ body {
     font-family: 'Hind Siliguri', sans-serif;
 }
 
+.control-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
 .control-group input[type="color"] {
     width: 100%;
     height: 40px;
@@ -292,6 +292,14 @@ body {
 .control-group input[type="range"] {
     width: 100%;
     margin: 10px 0;
+}
+
+.font-selector {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-family: 'Hind Siliguri', sans-serif;
 }
 
 .add-btn, .invite-btn, .save-btn {
@@ -319,6 +327,10 @@ body {
     color: white;
     font-size: 1.1em;
     padding: 15px;
+}
+
+.save-btn:hover {
+    background: #ff2b1f;
 }
 
 /* Main Header */
@@ -396,6 +408,15 @@ body {
     gap: 15px;
 }
 
+.user-role-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    text-transform: capitalize;
+}
+
 .logout-btn-small {
     background: var(--accent-color);
     color: white;
@@ -409,6 +430,10 @@ body {
     gap: 5px;
 }
 
+.logout-btn-small:hover {
+    background: #ff2b1f;
+}
+
 /* Banner Section */
 .banner-section {
     background: var(--primary-color);
@@ -417,6 +442,7 @@ body {
     text-align: center;
     position: relative;
     overflow: hidden;
+    transition: background-color 0.3s;
 }
 
 .watermark {
@@ -559,6 +585,11 @@ body {
     margin-bottom: 40px;
 }
 
+.review-form-container h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
 .review-input {
     width: 100%;
     min-height: 120px;
@@ -580,6 +611,10 @@ body {
     cursor: pointer;
     font-family: 'Hind Siliguri', sans-serif;
     font-size: 1.1em;
+}
+
+.submit-review-btn:hover {
+    background: #0056a3;
 }
 
 .reviews-container {
@@ -712,6 +747,10 @@ body {
     margin-top: 10px;
 }
 
+.back-btn:hover {
+    background: #777;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .header-content {
@@ -744,15 +783,4 @@ body {
 
 .editable:hover {
     border-color: var(--secondary-color);
-}
-
-.font-selector {
-    margin-top: 5px;
-}
-
-.font-selector select {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-    font-family: inherit;
 }
