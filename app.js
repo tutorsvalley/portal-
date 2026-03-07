@@ -21,7 +21,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
-let authReady = false; // ✅ Track auth state
+let authReady = false;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts List
@@ -40,31 +40,78 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", mixedLink: "" }
 ];
 
-// ✅ Show Loading Screen
-function showLoading() {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+// ✅ Professional Loading Screen
+function showLoading(message = "লোড হচ্ছে...") {
+    // Remove existing loading screen if any
+    hideLoading();
+    
     const loadingDiv = document.createElement('div');
     loadingDiv.id = 'loadingScreen';
-    loadingDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-    loadingDiv.innerHTML = `
-        <div style="width:50px;height:50px;border:5px solid #f3f3f3;border-top:5px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div>
-        <p style="margin-top:20px;color:#666;font-family:'Hind Siliguri',sans-serif;">লোড হচ্ছে...</p>
-        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
+    loadingDiv.style.cssText = `
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index:9999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction:column;
+        transition:opacity 0.5s ease;
     `;
+    
+    loadingDiv.innerHTML = `
+        <div style="width:60px;height:60px;border:4px solid rgba(255,255,255,0.3);border-top:4px solid #ffffff;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:20px;color:#ffffff;font-family:'Hind Siliguri',sans-serif;font-size:18px;font-weight:500;letter-spacing:1px;">${message}</p>
+        <div style="margin-top:30px;display:flex;gap:10px;">
+            <div style="width:10px;height:10px;background:#ffffff;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both;"></div>
+            <div style="width:10px;height:10px;background:#ffffff;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.16s;"></div>
+            <div style="width:10px;height:10px;background:#ffffff;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.32s;"></div>
+        </div>
+        <style>
+            @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+            @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+        </style>
+    `;
+    
     document.body.appendChild(loadingDiv);
+    
+    // Fade in effect
+    setTimeout(() => {
+        loadingDiv.style.opacity = '1';
+    }, 10);
 }
 
-// ✅ Hide Loading Screen
+// ✅ Hide Loading Screen with Fade Out
 function hideLoading() {
     const loadingDiv = document.getElementById('loadingScreen');
-    if (loadingDiv) loadingDiv.remove();
+    if (loadingDiv) {
+        loadingDiv.style.opacity = '0';
+        setTimeout(() => {
+            loadingDiv.remove();
+        }, 500);
+    }
+}
+
+// ✅ Fade In Page Content
+function fadeInPage() {
+    const activePage = document.querySelector('.page.active');
+    if (activePage) {
+        activePage.style.opacity = '0';
+        activePage.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => {
+            activePage.style.opacity = '1';
+        }, 100);
+    }
 }
 
 // Guest Login
 function guestLogin() {
     console.log("Guest login clicked");
+    showLoading("গেস্ট লগইন হচ্ছে...");
     
-    // ✅ Clear previous auth state first
     auth.signOut().then(() => {
         return auth.signInAnonymously();
     }).then((userCredential) => {
@@ -79,9 +126,12 @@ function guestLogin() {
         }, { merge: true });
     }).then(() => {
         console.log("Guest logged in successfully");
+        hideLoading();
+        fadeInPage();
         showHome();
     }).catch((error) => {
         console.error("Guest login error:", error);
+        hideLoading();
         alert("গেস্ট লগইন ব্যর্থ: " + error.message);
     });
 }
@@ -89,9 +139,9 @@ function guestLogin() {
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Page loaded, checking auth...");
-    showLoading(); // ✅ Show loading while checking auth
+    showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // ✅ Check for redirect result first
+    // Check for redirect result first
     auth.getRedirectResult().then((result) => {
         if (result.user) {
             console.log("Redirect login successful");
@@ -99,22 +149,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }).catch((error) => {
         console.error("Redirect error:", error);
-        // ✅ On error, logout immediately
         auth.signOut().catch(() => {});
         showPage('loginPage');
         hideLoading();
     });
     
-    // ✅ Auth state observer with timeout
+    // Auth state observer with timeout
     let authTimeout = setTimeout(() => {
         console.log("Auth timeout - forcing login page");
         authReady = true;
         showPage('loginPage');
         hideLoading();
-    }, 3000); // 3 second timeout
+    }, 5000);
     
     auth.onAuthStateChanged(user => {
-        clearTimeout(authTimeout); // ✅ Clear timeout
+        clearTimeout(authTimeout);
         
         if (user) {
             console.log("User authenticated:", user.email || 'Anonymous');
@@ -126,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             authReady = true;
             showPage('loginPage');
             hideLoading();
+            fadeInPage();
         }
     });
 });
@@ -151,17 +201,20 @@ function handleLoginSuccess(user) {
     });
 }
 
-// Load User Data - ✅ Faster loading
+// Load User Data
 function loadUser(uid) {
+    showLoading("প্রোফাইল লোড হচ্ছে...");
+    
     db.collection('users').doc(uid).get().then(doc => {
-        hideLoading(); // ✅ Hide loading as soon as user data loads
-        
         if (doc.exists) {
             currentUserRole = doc.data().role;
             console.log("User role:", currentUserRole);
+            hideLoading();
+            fadeInPage();
             showHome();
         } else {
             console.log("No user doc found - logging out");
+            hideLoading();
             logout();
         }
     }).catch(error => {
@@ -176,19 +229,20 @@ function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => {
         p.style.display = 'none';
         p.classList.remove('active');
+        p.style.opacity = '0';
     });
     const page = document.getElementById(pageId);
     if (page) {
         page.style.display = 'block';
         page.classList.add('active');
+        page.style.opacity = '1';
+        page.style.transition = 'opacity 0.5s ease';
     }
 }
 
-// Open Modal - ✅ Clear previous auth before opening
+// Open Modal
 function openModal(role) {
     currentLoginRole = role;
-    
-    // ✅ Sign out previous user before new login
     auth.signOut().catch(() => {});
     
     const titles = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' };
@@ -201,11 +255,11 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none';
 }
 
-// Google Login - ✅ Faster with immediate signout
+// Google Login
 function googleLogin() {
     console.log("Google login clicked for:", currentLoginRole);
+    showLoading("Google লগইন হচ্ছে...");
     
-    // ✅ Sign out any existing user first
     auth.signOut().then(() => {
         return auth.signInWithPopup(provider);
     }).then(result => {
@@ -213,6 +267,7 @@ function googleLogin() {
         handleLoginSuccess(result.user);
     }).catch(error => {
         console.error("Google login error:", error);
+        hideLoading();
         
         if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
             try { sessionStorage.setItem('loginRole', currentLoginRole); } catch(e) {}
@@ -220,16 +275,14 @@ function googleLogin() {
         } else if (error.code === 'auth/internal-error' || error.message.includes('missing initial state')) {
             alert("লগইন সমস্যা: Chrome বা Firefox browser ব্যবহার করুন। Messenger/WhatsApp থেকে চেষ্টা করবেন না।");
             showPage('loginPage');
-            hideLoading();
         } else {
             alert("Login failed: " + error.message);
             showPage('loginPage');
-            hideLoading();
         }
     });
 }
 
-// Show Home - ✅ Faster loading
+// Show Home
 function showHome() {
     console.log("Showing home page for role:", currentUserRole);
     showPage('homePage');
@@ -243,23 +296,24 @@ function showHome() {
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
-    // ✅ Load data in parallel (faster)
+    // Load data in parallel
     Promise.all([
         loadAllSettings(),
         loadZones(),
         loadReviews()
     ]).then(() => {
         console.log("All home data loaded");
+        fadeInPage();
     }).catch(error => {
         console.error("Error loading home data:", error);
     });
 }
 
-// Logout - ✅ Immediate logout
+// Logout
 function logout() {
     console.log("Logging out...");
+    showLoading("লগআউট হচ্ছে...");
     
-    // ✅ Clear all states immediately
     currentUser = null;
     currentUserRole = null;
     const adminIcon = document.getElementById('adminIcon');
@@ -267,13 +321,16 @@ function logout() {
     const controlPanel = document.getElementById('controlPanel');
     if (controlPanel) controlPanel.style.display = 'none';
     
-    // ✅ Sign out and show login page immediately
     auth.signOut().then(() => {
         console.log("Logged out successfully");
+        hideLoading();
         showPage('loginPage');
+        fadeInPage();
     }).catch(error => {
         console.error("Logout error:", error);
+        hideLoading();
         showPage('loginPage');
+        fadeInPage();
     });
 }
 
