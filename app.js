@@ -12,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
+// Storage দরকার নেই এখন
 
 // Google Auth Provider
 const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -99,7 +99,6 @@ function determineUserRole(user) {
             currentUserRole = doc.data().role;
             initializeApp();
         } else {
-            // This shouldn't happen with our flow
             logout();
         }
     }).catch((error) => {
@@ -136,7 +135,6 @@ function signInWithGoogle(role) {
         .then((result) => {
             const user = result.user;
             
-            // Admin হলে চেক করুন
             if (role === 'admin') {
                 if (user.email !== OWNER_EMAIL) {
                     alert("শুধুমাত্র মালিক এইমেইল দিয়ে admin লগইন করতে পারবেন!");
@@ -146,7 +144,6 @@ function signInWithGoogle(role) {
                 }
             }
             
-            // User data save করুন
             db.collection('users').doc(user.uid).set({
                 email: user.email,
                 displayName: user.displayName,
@@ -185,12 +182,10 @@ function initializeApp() {
                                                     currentUserRole === 'tutor' ? 'টিউটর' :
                                                     currentUserRole === 'guardian' ? 'অভিভাবক' : 'গেস্ট';
     
-    // Show control panel icon for admin
     if (currentUserRole === 'admin' || currentUserRole === 'subadmin') {
         document.getElementById('controlPanelIcon').style.display = 'flex';
     }
     
-    // Show review form for tutor and guardian
     if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
         document.getElementById('reviewFormContainer').style.display = 'block';
     }
@@ -232,15 +227,175 @@ function toggleControlPanel() {
     }
 }
 
+// Image to Base64 Converter
+function convertToBase64(file, maxWidth = 400, maxHeight = 400) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Resize logic
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Compress to JPEG with 0.7 quality
+                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                resolve(base64);
+            };
+            img.onerror = (error) => reject(error);
+        };
+        reader.onerror = (error) => reject(error);
+    });
+}
+
+// Upload Logo Image
+async function uploadImage(type) {
+    const fileInput = document.getElementById(type + 'Upload');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert("অনুগ্রহ করে একটি ফাইল সিলেক্ট করুন");
+        return;
+    }
+    
+    if (file.size > 1024 * 1024) {
+        alert("ফাইল সাইজ 1MB এর কম হতে হবে");
+        return;
+    }
+    
+    if (!file.type.startsWith('image/')) {
+        alert("শুধুমাত্র ইমেজ ফাইল আপলোড করা যাবে");
+        return;
+    }
+    
+    try {
+        // Resize and compress image
+        const base64 = await convertToBase64(file, 300, 300);
+        
+        if (type === 'logo') {
+            const logoSize = document.getElementById('logoSize').value;
+            document.getElementById('siteLogo').src = base64;
+            document.getElementById('siteLogo').style.width = logoSize + 'px';
+            
+            db.collection('settings').doc('main').update({ 
+                logoUrl: base64,
+                logoSize: parseInt(logoSize)
+            });
+            alert("লোগো সফলভাবে আপলোড হয়েছে!");
+        } else if (type === 'ceo') {
+            const ceoSize = document.getElementById('ceoSize').value;
+            document.getElementById('ceoImage').src = base64;
+            document.getElementById('ceoImage').style.width = ceoSize + 'px';
+            
+            db.collection('settings').doc('main').update({ 
+                ceoImageUrl: base64,
+                ceoImageSize: parseInt(ceoSize)
+            });
+            alert("CEO ইমেজ সফলভাবে আপলোড হয়েছে!");
+        }
+        
+        fileInput.value = '';
+    } catch (error) {
+        console.error("Upload error:", error);
+        alert("ইমেজ আপলোড ব্যর্থ: " + error.message);
+    }
+}
+
+// Upload Watermark
+async function uploadWatermark() {
+    const fileInput = document.getElementById('watermarkUpload');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert("অনুগ্রহ করে একটি ফাইল সিলেক্ট করুন");
+        return;
+    }
+    
+    if (file.size > 512 * 1024) {
+        alert("ফাইল সাইজ 500KB এর কম হতে হবে");
+        return;
+    }
+    
+    if (!file.type.startsWith('image/')) {
+        alert("শুধুমাত্র ইমেজ ফাইল আপলোড করা যাবে");
+        return;
+    }
+    
+    try {
+        const base64 = await convertToBase64(file, 200, 200);
+        
+        document.getElementById('watermark').style.backgroundImage = `url(${base64})`;
+        document.getElementById('watermark').style.opacity = document.getElementById('watermarkOpacity').value / 100;
+        
+        db.collection('settings').doc('main').update({ 
+            watermarkUrl: base64,
+            watermarkOpacity: parseInt(document.getElementById('watermarkOpacity').value)
+        });
+        
+        alert("ওয়াটারমার্ক সফলভাবে আপলোড হয়েছে!");
+        fileInput.value = '';
+    } catch (error) {
+        console.error("Watermark error:", error);
+        alert("ওয়াটারমার্ক আপলোড ব্যর্থ: " + error.message);
+    }
+}
+
+// Update Watermark Opacity
+function updateWatermarkOpacity(value) {
+    document.getElementById('watermark').style.opacity = value / 100;
+}
+
+// Update Text
+function updateText(elementId, value) {
+    document.getElementById(elementId).innerText = value;
+}
+
+// Update Element Style
+function updateElementStyle(elementId, property, value) {
+    document.getElementById(elementId).style[property] = value;
+}
+
+// Update Font
+function updateFont(fontValue) {
+    document.body.style.fontFamily = fontValue;
+}
+
+// Update Page Color
+function updatePageColor(color) {
+    document.body.style.background = color;
+}
+
 // Load Settings from Firestore
 function loadSettings() {
     db.collection('settings').doc('main').get().then((doc) => {
         if (doc.exists) {
-            const data = doc.data();
-            applySettings(data);
+            applySettings(doc.data());
         } else {
             createDefaultSettings();
         }
+    }).catch((error) => {
+        console.error("Load settings error:", error);
+        createDefaultSettings();
     });
 }
 
@@ -250,7 +405,7 @@ function createDefaultSettings() {
         branding: "Tutors Valley",
         motto: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর",
         bannerColor: "#001f3f",
-        logoUrl: "https://via.placeholder.com/100",
+        logoUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3ETV%3C/text%3E%3C/svg%3E",
         logoSize: 100,
         watermarkUrl: "",
         watermarkOpacity: 20,
@@ -259,7 +414,7 @@ function createDefaultSettings() {
         ceoName: "CEO Name",
         ceoTitle: "Founder & CEO",
         ceoDesc: "CEO description here...",
-        ceoImageUrl: "https://via.placeholder.com/100",
+        ceoImageUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230074D9'/%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.3em' fill='white'%3E👤%3C/text%3E%3C/svg%3E",
         ceoImageSize: 100,
         zoneSectionTitle: "আমাদের এলাকা সমূহ",
         reviewsSectionTitle: "রিভিউ সমূহ",
@@ -269,8 +424,10 @@ function createDefaultSettings() {
         pageBgColor: "#ffffff"
     };
     
-    db.collection('settings').doc('main').set(defaultSettings);
-    applySettings(defaultSettings);
+    db.collection('settings').doc('main').set(defaultSettings)
+        .then(() => {
+            applySettings(defaultSettings);
+        });
 }
 
 // Apply Settings
@@ -279,58 +436,66 @@ function applySettings(data) {
     if (data.motto) document.getElementById('mottoText').innerText = data.motto;
     if (data.bannerColor) {
         document.getElementById('bannerSection').style.backgroundColor = data.bannerColor;
-        document.getElementById('bannerColor').value = data.bannerColor;
+        if(document.getElementById('bannerColor')) document.getElementById('bannerColor').value = data.bannerColor;
     }
-    if (data.logoUrl) document.getElementById('siteLogo').src = data.logoUrl;
+    if (data.logoUrl) {
+        document.getElementById('siteLogo').src = data.logoUrl;
+    }
     if (data.logoSize) {
         document.getElementById('siteLogo').style.width = data.logoSize + 'px';
-        document.getElementById('logoSize').value = data.logoSize;
-        document.getElementById('logoSizeVal').innerText = data.logoSize;
+        if(document.getElementById('logoSize')) {
+            document.getElementById('logoSize').value = data.logoSize;
+            document.getElementById('logoSizeVal').innerText = data.logoSize;
+        }
     }
     if (data.watermarkUrl) {
         document.getElementById('watermark').style.backgroundImage = `url(${data.watermarkUrl})`;
-        document.getElementById('watermark').style.opacity = data.watermarkOpacity / 100;
-        document.getElementById('watermarkOpacity').value = data.watermarkOpacity;
+        document.getElementById('watermark').style.opacity = (data.watermarkOpacity || 20) / 100;
+        if(document.getElementById('watermarkOpacity')) {
+            document.getElementById('watermarkOpacity').value = data.watermarkOpacity || 20;
+        }
     }
     if (data.fbPageLink) document.getElementById('fbLink').href = data.fbPageLink;
     if (data.fbButtonText) {
         document.getElementById('fbButtonText').innerText = data.fbButtonText;
-        document.getElementById('fbButtonTextInput').value = data.fbButtonText;
+        if(document.getElementById('fbButtonTextInput')) document.getElementById('fbButtonTextInput').value = data.fbButtonText;
     }
     if (data.ceoName) {
         document.getElementById('ceoNameText').innerText = data.ceoName;
-        document.getElementById('ceoNameInput').value = data.ceoName;
+        if(document.getElementById('ceoNameInput')) document.getElementById('ceoNameInput').value = data.ceoName;
     }
     if (data.ceoTitle) {
         document.getElementById('ceoTitleText').innerText = data.ceoTitle;
-        document.getElementById('ceoTitleInput').value = data.ceoTitle;
+        if(document.getElementById('ceoTitleInput')) document.getElementById('ceoTitleInput').value = data.ceoTitle;
     }
     if (data.ceoDesc) {
         document.getElementById('ceoDescText').innerText = data.ceoDesc;
-        document.getElementById('ceoDescInput').value = data.ceoDesc;
+        if(document.getElementById('ceoDescInput')) document.getElementById('ceoDescInput').value = data.ceoDesc;
     }
-    if (data.ceoImageUrl) document.getElementById('ceoImage').src = data.ceoImageUrl;
+    if (data.ceoImageUrl) {
+        document.getElementById('ceoImage').src = data.ceoImageUrl;
+    }
     if (data.ceoImageSize) {
         document.getElementById('ceoImage').style.width = data.ceoImageSize + 'px';
-        document.getElementById('ceoSize').value = data.ceoImageSize;
+        if(document.getElementById('ceoSize')) document.getElementById('ceoSize').value = data.ceoImageSize;
     }
     if (data.zoneSectionTitle) {
         document.getElementById('zoneSectionTitle').innerText = data.zoneSectionTitle;
-        document.getElementById('zoneSectionTitleInput').value = data.zoneSectionTitle;
+        if(document.getElementById('zoneSectionTitleInput')) document.getElementById('zoneSectionTitleInput').value = data.zoneSectionTitle;
     }
     if (data.reviewsSectionTitle) document.getElementById('reviewsSectionTitle').innerText = data.reviewsSectionTitle;
     if (data.bannerTitle) {
         document.getElementById('bannerTitle').innerText = data.bannerTitle;
-        document.getElementById('bannerTitleInput').value = data.bannerTitle;
+        if(document.getElementById('bannerTitleInput')) document.getElementById('bannerTitleInput').value = data.bannerTitle;
     }
     if (data.bannerSubtitle) {
         document.getElementById('bannerSubtitle').innerText = data.bannerSubtitle;
-        document.getElementById('bannerSubtitleInput').value = data.bannerSubtitle;
+        if(document.getElementById('bannerSubtitleInput')) document.getElementById('bannerSubtitleInput').value = data.bannerSubtitle;
     }
     if (data.copyrightText) document.getElementById('copyrightText').innerText = data.copyrightText;
     if (data.pageBgColor) {
         document.body.style.background = data.pageBgColor;
-        document.getElementById('pageBgColor').value = data.pageBgColor;
+        if(document.getElementById('pageBgColor')) document.getElementById('pageBgColor').value = data.pageBgColor;
     }
 }
 
@@ -426,6 +591,8 @@ function loadReviews() {
             
             container.appendChild(reviewDiv);
         });
+    }).catch((error) => {
+        console.error("Load reviews error:", error);
     });
 }
 
@@ -447,79 +614,9 @@ function submitReview() {
         document.getElementById('reviewText').value = '';
         loadReviews();
         alert("রিভিউ জমা দেওয়া হয়েছে");
-    });
-}
-
-// Upload Image
-function uploadImage(type) {
-    const fileInput = document.getElementById(type + 'Upload');
-    const file = fileInput.files[0];
-    
-    if (!file) return;
-    
-    const storageRef = storage.ref();
-    const imageRef = storageRef.child(`images/${type}_${Date.now()}.${file.name.split('.').pop()}`);
-    
-    imageRef.put(file).then((snapshot) => {
-        return snapshot.ref.getDownloadURL();
-    }).then((url) => {
-        if (type === 'logo') {
-            document.getElementById('siteLogo').src = url;
-            db.collection('settings').doc('main').update({ logoUrl: url });
-        } else if (type === 'ceo') {
-            document.getElementById('ceoImage').src = url;
-            db.collection('settings').doc('main').update({ ceoImageUrl: url });
-        }
-        alert("ইমেজ আপলোড হয়েছে");
     }).catch((error) => {
-        alert("ইমেজ আপলোড ব্যর্থ: " + error.message);
+        alert("রিভিউ জমা ব্যর্থ: " + error.message);
     });
-}
-
-// Upload Watermark
-function uploadWatermark() {
-    const fileInput = document.getElementById('watermarkUpload');
-    const file = fileInput.files[0];
-    
-    if (!file) return;
-    
-    const storageRef = storage.ref();
-    const imageRef = storageRef.child(`watermarks/watermark_${Date.now()}.${file.name.split('.').pop()}`);
-    
-    imageRef.put(file).then((snapshot) => {
-        return snapshot.ref.getDownloadURL();
-    }).then((url) => {
-        document.getElementById('watermark').style.backgroundImage = `url(${url})`;
-        db.collection('settings').doc('main').update({ watermarkUrl: url });
-        alert("ওয়াটারমার্ক আপলোড হয়েছে");
-    }).catch((error) => {
-        alert("ওয়াটারমার্ক আপলোড ব্যর্থ: " + error.message);
-    });
-}
-
-// Update Watermark Opacity
-function updateWatermarkOpacity(value) {
-    document.getElementById('watermark').style.opacity = value / 100;
-}
-
-// Update Text
-function updateText(elementId, value) {
-    document.getElementById(elementId).innerText = value;
-}
-
-// Update Element Style
-function updateElementStyle(elementId, property, value) {
-    document.getElementById(elementId).style[property] = value;
-}
-
-// Update Font
-function updateFont(fontValue) {
-    document.body.style.fontFamily = fontValue;
-}
-
-// Update Page Color
-function updatePageColor(color) {
-    document.body.style.background = color;
 }
 
 // Load Control Panel Settings
@@ -528,22 +625,24 @@ function loadControlPanelSettings() {
         if (doc.exists) {
             const data = doc.data();
             
-            document.getElementById('brandingTextInput').value = data.branding || '';
-            document.getElementById('mottoTextInput').value = data.motto || '';
-            document.getElementById('bannerColor').value = data.bannerColor || '#001f3f';
-            document.getElementById('logoSize').value = data.logoSize || 100;
-            document.getElementById('logoSizeVal').innerText = data.logoSize || 100;
-            document.getElementById('ceoSize').value = data.ceoImageSize || 100;
-            document.getElementById('ceoNameInput').value = data.ceoName || '';
-            document.getElementById('ceoTitleInput').value = data.ceoTitle || '';
-            document.getElementById('ceoDescInput').value = data.ceoDesc || '';
-            document.getElementById('fbPageLink').value = data.fbPageLink || '';
-            document.getElementById('fbButtonTextInput').value = data.fbButtonText || '';
-            document.getElementById('watermarkOpacity').value = data.watermarkOpacity || 20;
-            document.getElementById('bannerTitleInput').value = data.bannerTitle || '';
-            document.getElementById('bannerSubtitleInput').value = data.bannerSubtitle || '';
-            document.getElementById('zoneSectionTitleInput').value = data.zoneSectionTitle || '';
-            document.getElementById('pageBgColor').value = data.pageBgColor || '#ffffff';
+            if(document.getElementById('brandingTextInput')) document.getElementById('brandingTextInput').value = data.branding || '';
+            if(document.getElementById('mottoTextInput')) document.getElementById('mottoTextInput').value = data.motto || '';
+            if(document.getElementById('bannerColor')) document.getElementById('bannerColor').value = data.bannerColor || '#001f3f';
+            if(document.getElementById('logoSize')) {
+                document.getElementById('logoSize').value = data.logoSize || 100;
+                document.getElementById('logoSizeVal').innerText = data.logoSize || 100;
+            }
+            if(document.getElementById('ceoSize')) document.getElementById('ceoSize').value = data.ceoImageSize || 100;
+            if(document.getElementById('ceoNameInput')) document.getElementById('ceoNameInput').value = data.ceoName || '';
+            if(document.getElementById('ceoTitleInput')) document.getElementById('ceoTitleInput').value = data.ceoTitle || '';
+            if(document.getElementById('ceoDescInput')) document.getElementById('ceoDescInput').value = data.ceoDesc || '';
+            if(document.getElementById('fbPageLink')) document.getElementById('fbPageLink').value = data.fbPageLink || '';
+            if(document.getElementById('fbButtonTextInput')) document.getElementById('fbButtonTextInput').value = data.fbButtonText || '';
+            if(document.getElementById('watermarkOpacity')) document.getElementById('watermarkOpacity').value = data.watermarkOpacity || 20;
+            if(document.getElementById('bannerTitleInput')) document.getElementById('bannerTitleInput').value = data.bannerTitle || '';
+            if(document.getElementById('bannerSubtitleInput')) document.getElementById('bannerSubtitleInput').value = data.bannerSubtitle || '';
+            if(document.getElementById('zoneSectionTitleInput')) document.getElementById('zoneSectionTitleInput').value = data.zoneSectionTitle || '';
+            if(document.getElementById('pageBgColor')) document.getElementById('pageBgColor').value = data.pageBgColor || '#ffffff';
             
             loadZoneCardsSettings();
             loadSubAdminList();
@@ -554,6 +653,8 @@ function loadControlPanelSettings() {
 // Load Zone Cards Settings
 function loadZoneCardsSettings() {
     const container = document.getElementById('zoneCardsSettings');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     db.collection('zoneCards').get().then((snapshot) => {
@@ -653,6 +754,8 @@ function inviteSubAdmin() {
 // Load Sub-admin List
 function loadSubAdminList() {
     const container = document.getElementById('subAdminList');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     db.collection('subadmins').get().then((snapshot) => {
@@ -693,14 +796,14 @@ function saveAllSettings() {
         branding: document.getElementById('brandingTextInput').value,
         motto: document.getElementById('mottoTextInput').value,
         bannerColor: document.getElementById('bannerColor').value,
-        logoSize: document.getElementById('logoSize').value,
-        ceoImageSize: document.getElementById('ceoSize').value,
+        logoSize: parseInt(document.getElementById('logoSize').value),
+        ceoImageSize: parseInt(document.getElementById('ceoSize').value),
         ceoName: document.getElementById('ceoNameInput').value,
         ceoTitle: document.getElementById('ceoTitleInput').value,
         ceoDesc: document.getElementById('ceoDescInput').value,
         fbPageLink: document.getElementById('fbPageLink').value,
         fbButtonText: document.getElementById('fbButtonTextInput').value,
-        watermarkOpacity: document.getElementById('watermarkOpacity').value,
+        watermarkOpacity: parseInt(document.getElementById('watermarkOpacity').value),
         bannerTitle: document.getElementById('bannerTitleInput').value,
         bannerSubtitle: document.getElementById('bannerSubtitleInput').value,
         zoneSectionTitle: document.getElementById('zoneSectionTitleInput').value,
@@ -723,8 +826,12 @@ auth.onAuthStateChanged((user) => {
         db.collection('subadmins').doc(user.email).get().then((doc) => {
             if (doc.exists && doc.data().status === 'approved') {
                 currentUserRole = 'subadmin';
-                document.getElementById('userRole').innerText = 'সাব-এডমিন';
-                document.getElementById('controlPanelIcon').style.display = 'flex';
+                if(document.getElementById('userRole')) {
+                    document.getElementById('userRole').innerText = 'সাব-এডমিন';
+                }
+                if(document.getElementById('controlPanelIcon')) {
+                    document.getElementById('controlPanelIcon').style.display = 'flex';
+                }
             }
         });
     }
