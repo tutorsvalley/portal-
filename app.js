@@ -1,5 +1,5 @@
 // ============================================
-// 🔥 TUTORS VALLEY - ALL ERRORS FIXED
+// 🔥 TUTORS VALLEY - ALL FEATURES FIXED
 // ============================================
 
 // Firebase Config
@@ -168,14 +168,25 @@ function googleLogin() {
     });
 }
 
-// Gender Selection
-function showGenderSelection() {
-    document.getElementById('genderModal').style.display = 'block';
+// Gender Selection Dropdown
+function showGenderDropdown() {
+    const container = document.getElementById('genderSelectionContainer');
+    if (!container) return;
+    
+    container.innerHTML = '<select id="genderDropdown" class="gender-dropdown"><option value="">লিঙ্গ নির্বাচন করুন</option><option value="male">👨 Male (পুরুষ)</option><option value="female">👩 Female (নারী)</option></select>';
+    
+    const dropdown = document.getElementById('genderDropdown');
+    dropdown.addEventListener('change', function() {
+        if (this.value) {
+            selectGender(this.value);
+        }
+    });
 }
 
 function selectGender(gender) {
     showLoading("লোড হচ্ছে...");
     currentUserGender = gender;
+    
     if (currentUser) {
         db.collection('users').doc(currentUser.uid).update({
             gender: gender,
@@ -183,14 +194,20 @@ function selectGender(gender) {
         }).then(function() {
             setTimeout(function() {
                 hideLoading();
-                document.getElementById('genderModal').style.display = 'none';
+                const container = document.getElementById('genderSelectionContainer');
+                if (container) {
+                    container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (gender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
+                }
                 loadZones();
             }, 2000);
         });
     } else {
         setTimeout(function() {
             hideLoading();
-            document.getElementById('genderModal').style.display = 'none';
+            const container = document.getElementById('genderSelectionContainer');
+            if (container) {
+                container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (gender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
+            }
             loadZones();
         }, 2000);
     }
@@ -201,10 +218,16 @@ function showHome() {
     document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
     document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
-    if ((currentUserRole === 'tutor' || currentUserRole === 'guardian') && !currentUserGender) {
-        setTimeout(function() {
-            showGenderSelection();
-        }, 500);
+    // Show gender dropdown for tutor mode only
+    const container = document.getElementById('genderSelectionContainer');
+    if (container) {
+        if (currentUserRole === 'tutor' && !currentUserGender) {
+            showGenderDropdown();
+        } else if (currentUserRole === 'tutor' && currentUserGender) {
+            container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (currentUserGender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
+        } else {
+            container.innerHTML = '';
+        }
     }
     
     loadAllSettings();
@@ -473,8 +496,6 @@ function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
-    const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    const canSeeNote = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     zones.forEach(function(z) {
         const card = document.createElement('div');
@@ -484,36 +505,25 @@ function renderZones(zones) {
         }).join('') : '';
         let btns = '';
         
-        if (canSee) {
-            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
-                btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>';
-            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
-                btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>';
-            } else if (!currentUserGender && (currentUserRole === 'tutor' || currentUserRole === 'guardian')) {
-                btns = '<div style="text-align:center;padding:15px;background:#f0f0f0;border-radius:8px;margin:10px 0;"><p style="margin:0 0 10px 0;color:#666;">Please select your gender to view WhatsApp groups</p><button onclick="showGenderSelection()" style="background:#0074D9;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Select Gender</button></div>';
+        // Admin always sees both buttons
+        if (currentUserRole === 'admin') {
+            if (z.maleLink && z.maleLink.trim() !== '') {
+                btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn" style="margin-right:5px;">📱 Join WhatsApp Group (Male)</a>';
             }
+            if (z.femaleLink && z.femaleLink.trim() !== '') {
+                btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group (Female)</a>';
+            }
+        }
+        // Tutor/Guardian sees buttons based on gender selection
+        else if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
+            btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>';
+        } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
+            btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>';
         }
         
         card.innerHTML = '<h3>' + z.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div style="margin-top:10px;">' + btns + '</div>' : '');
         c.appendChild(card);
     });
-    
-    if (canSeeNote) {
-        db.collection('settings').doc('zones').get().then(function(doc) {
-            if (doc.exists && doc.data().tutorNote) {
-                const zt = document.getElementById('zoneTitle');
-                if (zt) {
-                    const old = zt.parentNode.querySelector('.tutor-note');
-                    if (old) old.remove();
-                    const note = document.createElement('p');
-                    note.className = 'tutor-note';
-                    note.style.cssText = 'background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:' + (doc.data().tutorNoteSize || 16) + 'px;';
-                    note.innerText = '📢 ' + doc.data().tutorNote;
-                    zt.parentNode.insertBefore(note, zt.nextSibling);
-                }
-            }
-        });
-    }
 }
 
 function loadReviews() {
@@ -574,7 +584,6 @@ function submitReview() {
 
 window.onclick = function(e) {
     if (e.target === document.getElementById('loginModal')) closeModal();
-    if (e.target === document.getElementById('genderModal')) document.getElementById('genderModal').style.display = 'none';
 };
 
 console.log("✅ app.js loaded successfully");
