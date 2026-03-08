@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
+    <title>Tutors Valley</title>
     
     <!-- ✅ Google Fonts - Bangla Support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,12 @@
     
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ✅ Font Load Guarantee -->
+    <style>
+        * { font-feature-settings: "calt" 1; text-rendering: optimizeLegibility; }
+        #branding, #motto, #zoneTitle, #reviewTitle, #ceoName, #ceoTitle, #ceoDesc, #copyright { font-display: swap; }
+    </style>
 </head>
 <body>
     <!-- Login Page -->
@@ -78,9 +84,7 @@
                 <h3>কন্ট্রোল প্যানেল</h3>
                 <span class="close" onclick="toggleControl()">&times;</span>
             </div>
-            <div class="control-body" id="controlBody">
-                <!-- Content loaded by JavaScript -->
-            </div>
+            <div class="control-body" id="controlBody"></div>
         </div>
 
         <!-- Zone Cards -->
