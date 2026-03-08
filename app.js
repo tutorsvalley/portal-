@@ -1,7 +1,8 @@
 // ============================================
 // 🔥 TUTORS VALLEY - FINAL FIXED VERSION
-// ✅ Instant Mode Switch (No Old Interface)
+// ✅ Instant Logout (No Old Interface)
 // ✅ 2 Second Loading Animation
+// ✅ All Syntax Errors Fixed
 // ============================================
 
 // Firebase Config
@@ -47,7 +48,7 @@ const defaultZones = [
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     
-    // Hide ALL pages immediately
+    // Hide ALL pages immediately (before showing loading)
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
     
     const div = document.createElement('div');
@@ -70,7 +71,7 @@ function hideLoading() {
     }
 }
 
-// ✅ Guest Login (No Old Interface)
+// ✅ Guest Login
 function guestLogin() {
     // Show loading FIRST (before any operation)
     showLoading("লগইন হচ্ছে...");
@@ -103,14 +104,25 @@ function guestLogin() {
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Show loading immediately (hide everything)
     showLoading("লোড হচ্ছে...");
+    
     auth.onAuthStateChanged(user => {
         if (user) { 
             currentUser = user; 
             loadUser(user.uid); 
         } else { 
-            hideLoading();
-            showPage('loginPage'); 
+            // Wait for minimum 2 seconds before showing login page
+            const loadingDiv = document.getElementById('loadingScreen');
+            if (loadingDiv && loadingDiv.ready) {
+                hideLoading();
+                showPage('loginPage');
+            } else if (loadingDiv) {
+                loadingDiv.minTime = setTimeout(() => {
+                    hideLoading();
+                    showPage('loginPage');
+                }, 2000);
+            }
         }
     });
 });
@@ -121,7 +133,7 @@ function loadUser(uid) {
             currentUserRole = doc.data().role; 
             console.log("Role:", currentUserRole); 
             
-            // Wait for minimum loading time
+            // Wait for minimum 2 seconds
             const loadingDiv = document.getElementById('loadingScreen');
             if (loadingDiv && loadingDiv.ready) {
                 hideLoading();
@@ -135,6 +147,9 @@ function loadUser(uid) {
         } else { 
             logout(); 
         }
+    }).catch(error => {
+        console.error("Load user error:", error);
+        logout();
     });
 }
 
@@ -154,7 +169,7 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none'; 
 }
 
-// ✅ Google Login (No Old Interface)
+// ✅ Google Login
 function googleLogin() {
     // Show loading FIRST
     showLoading("লগইন হচ্ছে...");
@@ -226,9 +241,9 @@ function showHome() {
     loadReviews();
 }
 
-// ✅ Logout (2 Second Loading)
+// ✅ Logout (2 Second Loading - No Old Interface)
 function logout() {
-    // Show loading FIRST
+    // Show loading FIRST (hide all pages immediately)
     showLoading("লগআউট হচ্ছে...");
     
     // Clear all state immediately
@@ -253,7 +268,7 @@ function logout() {
     
     // Sign out
     auth.signOut().then(() => {
-        // Wait for minimum 2 seconds
+        // Wait for minimum 2 seconds before showing login page
         const loadingDiv = document.getElementById('loadingScreen');
         if (loadingDiv && loadingDiv.ready) {
             hideLoading();
