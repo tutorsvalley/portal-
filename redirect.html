@@ -47,19 +47,11 @@
             margin-bottom: 20px;
             font-size: 0.95em;
         }
-        .timer {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            display: inline-block;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
         .btn-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 20px;
         }
         .primary-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -116,7 +108,6 @@
         <div class="spinner"></div>
         <h1>ওপেন হচ্ছে...</h1>
         <p>আপনার ব্রাউজারে ওপেন করা হচ্ছে</p>
-        <div class="timer">অপেক্ষা করুন: <span id="countdown">5</span> সেকেন্ড</div>
         
         <div class="btn-container">
             <button onclick="openInBrowser()" class="primary-btn">
@@ -152,34 +143,9 @@
         document.getElementById('directLink').href = targetUrl;
         document.getElementById('directLink').setAttribute('target', '_blank');
         
-        // Countdown
-        let seconds = 5;
-        const countdownEl = document.getElementById('countdown');
-        let autoRedirectAttempted = false;
-        
-        const timer = setInterval(function() {
-            seconds--;
-            countdownEl.textContent = seconds;
-            
-            if (seconds <= 0) {
-                clearInterval(timer);
-                if (!autoRedirectAttempted) {
-                    autoRedirectAttempted = true;
-                    openInBrowser();
-                }
-            }
-        }, 1000);
-        
-        // Main function to open in browser
+        // ✅ IMMEDIATE REDIRECT - No waiting
         function openInBrowser() {
-            if (autoRedirectAttempted && seconds > 0) {
-                // User clicked manually before countdown finished
-                clearInterval(timer);
-            }
-            
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            
-            // Try multiple methods to open in external browser
             
             // Method 1: Try to open in new window/tab
             const newWindow = window.open(targetUrl, '_blank');
@@ -205,41 +171,25 @@
                 link.click();
                 document.body.removeChild(link);
             }, 1000);
-            
-            // Show alert for user to manually open
+        }
+        
+        // ✅ AUTO REDIRECT IMMEDIATELY on page load
+        window.addEventListener('load', function() {
+            // Small delay to allow page to render
             setTimeout(function() {
-                alert('যদি ব্রাউজারে না খোলে, তাহলে উপরের বাটনে ক্লিক করুন অথবা মেনু থেকে "Open in Browser" সিলেক্ট করুন');
-            }, 1500);
-        }
-        
-        // Auto-redirect after 5 seconds
-        setTimeout(function() {
-            if (!autoRedirectAttempted) {
-                autoRedirectAttempted = true;
                 openInBrowser();
-            }
-        }, 5000);
+            }, 100);
+        });
         
-        // Detect platform and show specific instructions
-        function detectPlatform() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            
-            if (/android/i.test(ua)) {
-                return 'Android';
-            } else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-                return 'iOS';
-            } else if (/FBAN|FBAV/i.test(ua)) {
-                return 'Facebook';
-            } else if (/Instagram/i.test(ua)) {
-                return 'Instagram';
-            } else if (/WhatsApp/i.test(ua)) {
-                return 'WhatsApp';
-            }
-            return 'Unknown';
-        }
+        // Also try on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                openInBrowser();
+            }, 50);
+        });
         
-        console.log('Platform:', detectPlatform());
         console.log('Target URL:', targetUrl);
+        console.log('Auto-redirecting immediately...');
     </script>
 </body>
 </html>
