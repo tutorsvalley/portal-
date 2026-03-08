@@ -33,19 +33,12 @@
         </div>
     </div>
 
-    <!-- Gender Selection Modal -->
-    <div id="genderModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h2 style="color:#001f3f;margin-bottom:15px;">Select Your Gender</h2>
-            <p style="color:#666;margin-bottom:30px;">আপনার লিঙ্গ নির্বাচন করুন। এটি WhatsApp গ্রুপ লিংক দেখাতে সাহায্য করবে।</p>
-            <button onclick="selectGender('male')" class="btn" style="background:#0074D9;">👨 Male (পুরুষ)</button>
-            <button onclick="selectGender('female')" class="btn" style="background:#FF4136;">👩 Female (নারী)</button>
-        </div>
-    </div>
-
     <!-- Home Page -->
     <div id="homePage" class="page">
+        <!-- Admin Icon -->
         <div id="adminIcon" class="admin-icon" onclick="toggleControl()" style="display:none;">⚙️</div>
+
+        <!-- Control Panel -->
         <div id="controlPanel" class="control-panel">
             <div class="control-header">
                 <h3>কন্ট্রোল প্যানেল</h3>
@@ -53,6 +46,8 @@
             </div>
             <div id="controlBody" class="control-body"></div>
         </div>
+
+        <!-- Header -->
         <header id="headerSection" class="header">
             <div class="header-content">
                 <div class="logo-section">
@@ -68,10 +63,16 @@
                 </div>
             </div>
         </header>
+
+        <!-- Zones Section -->
         <section class="section">
             <h2 id="zoneTitle" class="section-title">আমাদের এলাকা সমূহ</h2>
+            <!-- Gender Selection Dropdown -->
+            <div id="genderSelectionContainer" style="max-width:400px;margin:20px auto;"></div>
             <div id="zoneContainer" class="zone-container"></div>
         </section>
+
+        <!-- Review Section -->
         <section class="section">
             <h2 id="reviewTitle" class="section-title">রিভিউ সমূহ</h2>
             <div id="reviewBox" class="review-box" style="display:none;">
@@ -80,6 +81,8 @@
             </div>
             <div id="reviewList" class="review-list"></div>
         </section>
+
+        <!-- CEO Section -->
         <section class="section ceo-section">
             <div class="ceo-card">
                 <img id="ceoImg" src="https://placehold.co/150x150/001f3f/ffffff?text=CEO" alt="CEO" class="ceo-img">
@@ -88,10 +91,14 @@
                 <p id="ceoDesc">CEO description here...</p>
             </div>
         </section>
+
+        <!-- Footer -->
         <footer id="footerSection" class="footer">
             <p id="copyright">© 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।</p>
         </footer>
     </div>
+
+    <!-- App Logic -->
     <script src="app.js"></script>
 </body>
 </html>
