@@ -1,5 +1,6 @@
 // ============================================
 // 🔥 TUTORS VALLEY - FULL VERSION (FIXED)
+// ✅ Embedded Browser Support Added
 // ✅ Note Visibility Fixed (Admin & Tutor Only)
 // ============================================
 
@@ -98,15 +99,67 @@ function openModal(role) {
 
 function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
+// ✅ Embedded Browser Detection
+function isEmbeddedBrowser() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    return /(FBAN|FBAV|Messenger|wv|Instagram|LinkedInApp)/.test(ua);
+}
+
+// ✅ Open in External Browser
+function openInExternalBrowser() {
+    const url = window.location.href;
+    if (isEmbeddedBrowser()) {
+        window.location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        window.location.href = url;
+    }
+}
+
+// ✅ Embedded Browser Warning
+function showEmbeddedBrowserWarning() {
+    const warningHTML = `
+        <div class="embedded-warning">
+            <div class="embedded-warning-content">
+                <h2>⚠️ ব্রাউজার পরিবর্তন করুন</h2>
+                <p>Facebook/Messenger ব্রাউজার থেকে লগইন করা যাচ্ছে না।</p>
+                <p style="color:#333;margin-bottom:20px;font-weight:bold;">দয়া করে নিচের বাটনে ক্লিক করে Chrome বা Safari তে খুলুন:</p>
+                <button onclick="openInExternalBrowser()">🌐 ব্রাউজারে খুলুন</button>
+                <br>
+                <button class="cancel-btn" onclick="document.querySelector('.embedded-warning').remove()">বাতিল</button>
+            </div>
+        </div>
+    `;
+    const div = document.createElement('div');
+    div.innerHTML = warningHTML;
+    document.body.appendChild(div);
+}
+
+// ✅ Google Login (Fixed for Embedded Browsers)
 function googleLogin() {
     showLoading("লগইন হচ্ছে...");
+    
+    // Check for embedded browser
+    if (isEmbeddedBrowser()) {
+        hideLoading();
+        showEmbeddedBrowserWarning();
+        return;
+    }
+    
+    // Use Popup instead of Redirect
     auth.signInWithPopup(provider).then(r => {
         if (currentLoginRole === 'admin' && r.user.email !== OWNER_EMAIL) {
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
             auth.signOut(); closeModal(); hideLoading(); return;
         }
         db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => { closeModal(); hideLoading(); });
-    }).catch(e => { hideLoading(); alert("Error: " + e.message); });
+    }).catch(e => { 
+        hideLoading(); 
+        console.error("Login error:", e);
+        if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/popup-blocked') {
+            showEmbeddedBrowserWarning();
+        } else {
+            alert("লগইন সমস্যা: " + e.message + "\n\nদয়া করে Chrome বা Safari ব্রাউজার ব্যবহার করুন।");
+        }
+    });
 }
 
 function showHome() {
@@ -172,23 +225,13 @@ function applyFont(elementId, font) {
     }
     console.log("🎯 Applying font to", elementId, ":", font);
 
-    // Clear ALL existing styles
     el.style.cssText = '';
     el.removeAttribute('style');
-
-    // Force apply with !important
     el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
-
-    // Also set inline style
     el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
-
-    // Store in data attribute
     el.setAttribute('data-font', font);
-
-    // Force reflow
     void el.offsetWidth;
 
-    // Verify
     const computed = window.getComputedStyle(el).fontFamily;
     console.log("✅ Applied! Current font:", computed);
 
