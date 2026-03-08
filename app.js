@@ -412,6 +412,13 @@ function loadAllSettings() {
             if (d.titleFont) document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
+            // ✅ Load Tutor Note
+            if (d.tutorNote) {
+                // Will be displayed in renderZones
+            }
+            if (d.tutorNoteSize) {
+                // Will be used in renderZones
+            }
         }
         
         if (reviewsDoc.exists) {
@@ -566,9 +573,14 @@ function loadControlPanel() {
             ${canEditZoneTitle ? `
             <hr style="margin:15px 0;border:0;border-top:1px solid #eee;">
             <div class="control-group" style="background:#fff3cd; padding:10px; border-radius:5px;">
-                <label style="color:#856404;">⚠️ টিউটরদের জন্য নোট (শুধু টিউটর দেখবে):</label>
+                <label style="color:#856404;">⚠️ টিউটরদের জন্য নোট (শুধু টিউটর + এডমিন দেখবে):</label>
                 <input type="text" id="tutorZoneNote" placeholder="টিউটরদের জন্য বার্তা লিখুন..." onchange="saveSetting('zones','tutorNote',this.value)">
-                <small style="color:#856404;">এই টেক্সট শুধুমাত্র টিউটররা তাদের হোম পেজে দেখতে পাবে</small>
+                <small style="color:#856404;">এই টেক্সট শুধুমাত্র টিউটর এবং এডমিন তাদের হোম পেজে দেখতে পাবে</small>
+            </div>
+            <div class="control-group" style="background:#fff3cd; padding:10px; border-radius:5px;">
+                <label style="color:#856404;">নোট সাইজ (px):</label>
+                <input type="number" id="tutorNoteSize" value="16" min="10" max="40" onchange="saveSetting('zones','tutorNoteSize',this.value)">
+                <small style="color:#856404;">টিউটর নোটের ফন্ট সাইজ</small>
             </div>
             ` : ''}
             
@@ -677,9 +689,15 @@ function loadControlPanel() {
     
     if (canEditZoneTitle) {
         db.collection('settings').doc('zones').get().then(doc => {
-            if (doc.exists && doc.data().tutorNote) {
-                const noteInput = document.getElementById('tutorZoneNote');
-                if (noteInput) noteInput.value = doc.data().tutorNote;
+            if (doc.exists) {
+                if (doc.data().tutorNote) {
+                    const noteInput = document.getElementById('tutorZoneNote');
+                    if (noteInput) noteInput.value = doc.data().tutorNote;
+                }
+                if (doc.data().tutorNoteSize) {
+                    const sizeInput = document.getElementById('tutorNoteSize');
+                    if (sizeInput) sizeInput.value = doc.data().tutorNoteSize;
+                }
             }
         });
     }
@@ -771,7 +789,7 @@ function loadZones() {
     });
 }
 
-// ✅ Render Zones - Group buttons পাশাপাশি + Auto card size
+// ✅ Render Zones - Group buttons পাশাপাশি + Auto card size + Tutor Note Size
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
@@ -822,7 +840,7 @@ function renderZones(zones) {
         container.appendChild(card);
     });
     
-    // ✅ Tutor Note - শুধু Tutor & Admin দেখবে
+    // ✅ Tutor Note - শুধু Tutor & Admin দেখবে + Size Adjust
     if (currentUserRole === 'tutor' || currentUserRole === 'admin') {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
@@ -831,9 +849,11 @@ function renderZones(zones) {
                     const existingNote = zoneTitle.parentNode.querySelector('.tutor-note');
                     if (existingNote) existingNote.remove();
                     
+                    const noteSize = doc.data().tutorNoteSize || 16;
+                    
                     const note = document.createElement('p');
                     note.className = 'tutor-note';
-                    note.style.cssText = 'background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px;';
+                    note.style.cssText = `background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px; font-size:${noteSize}px;`;
                     note.innerText = '📢 ' + doc.data().tutorNote;
                     zoneTitle.parentNode.insertBefore(note, zoneTitle.nextSibling);
                 }
