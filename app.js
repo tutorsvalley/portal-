@@ -1,5 +1,5 @@
 // ============================================
-// 🔥 TUTORS VALLEY - ALL FEATURES FIXED
+// 🔥 TUTORS VALLEY - GENDER SELECTION FIXED
 // ============================================
 
 // Firebase Config
@@ -24,7 +24,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
-let currentUserGender = null;
+let currentUserGender = null; // Always null on page load
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -107,7 +107,9 @@ function loadUser(uid) {
     db.collection('users').doc(uid).get().then(function(doc) {
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            currentUserGender = doc.data().gender || null;
+            // DO NOT load gender from Firestore - always reset on page load
+            currentUserGender = null;
+            
             setTimeout(function() {
                 hideLoading();
                 showHome();
@@ -168,11 +170,12 @@ function googleLogin() {
     });
 }
 
-// Gender Selection Dropdown
+// Gender Selection Dropdown - ALWAYS show for Tutor mode
 function showGenderDropdown() {
     const container = document.getElementById('genderSelectionContainer');
     if (!container) return;
     
+    // Always show dropdown for tutor mode
     container.innerHTML = '<select id="genderDropdown" class="gender-dropdown"><option value="">লিঙ্গ নির্বাচন করুন</option><option value="male">👨 Male (পুরুষ)</option><option value="female">👩 Female (নারী)</option></select>';
     
     const dropdown = document.getElementById('genderDropdown');
@@ -187,30 +190,19 @@ function selectGender(gender) {
     showLoading("লোড হচ্ছে...");
     currentUserGender = gender;
     
-    if (currentUser) {
-        db.collection('users').doc(currentUser.uid).update({
-            gender: gender,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(function() {
-            setTimeout(function() {
-                hideLoading();
-                const container = document.getElementById('genderSelectionContainer');
-                if (container) {
-                    container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (gender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
-                }
-                loadZones();
-            }, 2000);
-        });
-    } else {
-        setTimeout(function() {
-            hideLoading();
-            const container = document.getElementById('genderSelectionContainer');
-            if (container) {
-                container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (gender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
-            }
-            loadZones();
-        }, 2000);
-    }
+    // 2 second loading animation
+    setTimeout(function() {
+        hideLoading();
+        
+        // Show success message
+        const container = document.getElementById('genderSelectionContainer');
+        if (container) {
+            container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (gender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
+        }
+        
+        // Show buttons after loading
+        loadZones();
+    }, 2000);
 }
 
 function showHome() {
@@ -218,13 +210,12 @@ function showHome() {
     document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
     document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
-    // Show gender dropdown for tutor mode only
+    // ALWAYS show gender dropdown for tutor mode (never load from Firestore)
     const container = document.getElementById('genderSelectionContainer');
     if (container) {
-        if (currentUserRole === 'tutor' && !currentUserGender) {
+        if (currentUserRole === 'tutor') {
+            // Always show dropdown for tutor, never show saved gender
             showGenderDropdown();
-        } else if (currentUserRole === 'tutor' && currentUserGender) {
-            container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (currentUserGender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
         } else {
             container.innerHTML = '';
         }
@@ -239,7 +230,7 @@ function logout() {
     showLoading("লগআউট হচ্ছে...");
     currentUser = null;
     currentUserRole = null;
-    currentUserGender = null;
+    currentUserGender = null; // Clear gender on logout
     document.getElementById('adminIcon').style.display = 'none';
     auth.signOut().then(function() {
         setTimeout(function() {
@@ -514,11 +505,15 @@ function renderZones(zones) {
                 btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group (Female)</a>';
             }
         }
-        // Tutor/Guardian sees buttons based on gender selection
+        // Tutor/Guardian sees buttons ONLY if gender is selected
         else if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
             btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>';
         } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
             btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>';
+        }
+        // If no gender selected, show message
+        else if (currentUserRole === 'tutor' && !currentUserGender) {
+            // No buttons shown - dropdown is already visible above
         }
         
         card.innerHTML = '<h3>' + z.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div style="margin-top:10px;">' + btns + '</div>' : '');
