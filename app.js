@@ -40,118 +40,74 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "" }
 ];
 
-// ✅ Professional Loading Screen - WHITE BACKGROUND
+// ✅ Professional Loading Screen
 function showLoading(message = "লোড হচ্ছে...") {
     hideLoading();
     
     const loadingDiv = document.createElement('div');
     loadingDiv.id = 'loadingScreen';
     loadingDiv.style.cssText = `
-        position:fixed;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        background:#ffffff;
-        z-index:9999;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        flex-direction:column;
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:#ffffff;z-index:9999;display:flex;
+        align-items:center;justify-content:center;flex-direction:column;
         transition:opacity 0.5s ease;
     `;
     
     loadingDiv.innerHTML = `
         <div style="width:60px;height:60px;border:4px solid #e0e0e0;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div>
-        <p style="margin-top:20px;color:#333;font-family:'Hind Siliguri',sans-serif;font-size:16px;font-weight:500;letter-spacing:0.5px;">${message}</p>
+        <p style="margin-top:20px;color:#333;font-family:'Hind Siliguri',sans-serif;font-size:16px;font-weight:500;">${message}</p>
         <div style="margin-top:20px;display:flex;gap:8px;">
             <div style="width:8px;height:8px;background:#0074D9;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both;"></div>
             <div style="width:8px;height:8px;background:#0074D9;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.16s;"></div>
             <div style="width:8px;height:8px;background:#0074D9;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both 0.32s;"></div>
         </div>
-        <style>
-            @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-            @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-        </style>
+        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}</style>
     `;
     
     document.body.appendChild(loadingDiv);
-    
-    setTimeout(() => {
-        loadingDiv.style.opacity = '1';
-    }, 10);
-    
-    // ✅ Auto-hide after 5 seconds
-    loadingDiv.autoHideTimeout = setTimeout(() => {
-        hideLoading();
-    }, 5000);
+    setTimeout(() => { loadingDiv.style.opacity = '1'; }, 10);
+    loadingDiv.autoHideTimeout = setTimeout(() => { hideLoading(); }, 5000);
 }
 
-// ✅ Hide Loading Screen
 function hideLoading() {
     const loadingDiv = document.getElementById('loadingScreen');
     if (loadingDiv) {
-        if (loadingDiv.autoHideTimeout) {
-            clearTimeout(loadingDiv.autoHideTimeout);
-        }
+        if (loadingDiv.autoHideTimeout) clearTimeout(loadingDiv.autoHideTimeout);
         loadingDiv.style.opacity = '0';
-        setTimeout(() => {
-            loadingDiv.remove();
-        }, 500);
+        setTimeout(() => { loadingDiv.remove(); }, 500);
     }
 }
 
-// ✅ Fade In Page
 function fadeInPage() {
     const activePage = document.querySelector('.page.active');
     if (activePage) {
         activePage.style.opacity = '0';
         activePage.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => {
-            activePage.style.opacity = '1';
-        }, 100);
+        setTimeout(() => { activePage.style.opacity = '1'; }, 100);
     }
 }
 
 // Guest Login
 function guestLogin() {
-    console.log("Guest login clicked");
     showLoading("গেস্ট লগইন হচ্ছে...");
-    
-    auth.signOut().then(() => {
-        return auth.signInAnonymously();
-    }).then((userCredential) => {
+    auth.signOut().then(() => auth.signInAnonymously()).then((userCredential) => {
         currentUser = userCredential.user;
         currentUserRole = 'guest';
         return db.collection('users').doc(userCredential.user.uid).set({
-            email: 'guest@tutorsvalley.com',
-            displayName: 'Guest User',
-            role: 'guest',
-            isGuest: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            email: 'guest@tutorsvalley.com', displayName: 'Guest User', role: 'guest',
+            isGuest: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-    }).then(() => {
-        console.log("Guest logged in successfully");
-        hideLoading();
-        fadeInPage();
-        showHome();
-    }).catch((error) => {
-        console.error("Guest login error:", error);
-        hideLoading();
-        alert("গেস্ট লগইন ব্যর্থ: " + error.message);
-    });
+    }).then(() => { hideLoading(); fadeInPage(); showHome(); })
+    .catch((error) => { hideLoading(); alert("গেস্ট লগইন ব্যর্থ: " + error.message); });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("Page loaded, checking auth...");
+    console.log("Page loaded");
     showLoading("অ্যাপ লোড হচ্ছে...");
     
     auth.getRedirectResult().then((result) => {
-        if (result.user) {
-            console.log("Redirect login successful");
-            handleLoginSuccess(result.user);
-        }
+        if (result.user) handleLoginSuccess(result.user);
     }).catch((error) => {
         console.error("Redirect error:", error);
         auth.signOut().catch(() => {});
@@ -160,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     let authTimeout = setTimeout(() => {
-        console.log("Auth timeout - forcing login page");
         authReady = true;
         showPage('loginPage');
         hideLoading();
@@ -168,14 +123,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     auth.onAuthStateChanged(user => {
         clearTimeout(authTimeout);
-        
         if (user) {
-            console.log("User authenticated:", user.email || 'Anonymous');
             currentUser = user;
             authReady = true;
             loadUser(user.uid);
         } else {
-            console.log("No user - showing login page");
             authReady = true;
             showPage('loginPage');
             hideLoading();
@@ -184,31 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Handle Login Success
 function handleLoginSuccess(user) {
     if (currentLoginRole === 'admin' && user.email !== OWNER_EMAIL) {
         alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
-        auth.signOut();
-        closeModal();
-        showPage('loginPage');
-        hideLoading();
-        return;
+        auth.signOut(); closeModal(); showPage('loginPage'); hideLoading(); return;
     }
     db.collection('users').doc(user.uid).set({
-        email: user.email,
-        displayName: user.displayName,
-        role: currentLoginRole,
+        email: user.email, displayName: user.displayName, role: currentLoginRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(() => {
-        console.log("User data saved");
-        closeModal();
-    });
+    }, { merge: true }).then(() => { closeModal(); });
 }
 
-// Load User Data
 function loadUser(uid) {
     showLoading("প্রোফাইল লোড হচ্ছে...");
-    
     db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
@@ -216,19 +156,10 @@ function loadUser(uid) {
             hideLoading();
             fadeInPage();
             showHome();
-        } else {
-            console.log("No user doc found - logging out");
-            hideLoading();
-            logout();
-        }
-    }).catch(error => {
-        console.error("Load user error:", error);
-        hideLoading();
-        logout();
-    });
+        } else { hideLoading(); logout(); }
+    }).catch(error => { console.error("Load user error:", error); hideLoading(); logout(); });
 }
 
-// Show Page
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => {
         p.style.display = 'none';
@@ -244,40 +175,27 @@ function showPage(pageId) {
     }
 }
 
-// Open Modal
 function openModal(role) {
     currentLoginRole = role;
     auth.signOut().catch(() => {});
-    
     const titles = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' };
     document.getElementById('modalTitle').innerText = titles[role];
     document.getElementById('loginModal').style.display = 'block';
 }
 
-// Close Modal
-function closeModal() {
-    document.getElementById('loginModal').style.display = 'none';
-}
+function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
-// Google Login
 function googleLogin() {
-    console.log("Google login clicked for:", currentLoginRole);
     showLoading("Google লগইন হচ্ছে...");
-    
-    auth.signOut().then(() => {
-        return auth.signInWithPopup(provider);
-    }).then(result => {
-        console.log("Google login successful");
+    auth.signOut().then(() => auth.signInWithPopup(provider)).then(result => {
         handleLoginSuccess(result.user);
     }).catch(error => {
-        console.error("Google login error:", error);
         hideLoading();
-        
         if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
             try { sessionStorage.setItem('loginRole', currentLoginRole); } catch(e) {}
             auth.signInWithRedirect(provider);
         } else if (error.code === 'auth/internal-error' || error.message.includes('missing initial state')) {
-            alert("লগইন সমস্যা: Chrome বা Firefox browser ব্যবহার করুন। Messenger/WhatsApp থেকে চেষ্টা করবেন না।");
+            alert("লগইন সমস্যা: Chrome বা Firefox browser ব্যবহার করুন।");
             showPage('loginPage');
         } else {
             alert("Login failed: " + error.message);
@@ -286,7 +204,6 @@ function googleLogin() {
     });
 }
 
-// Show Home
 function showHome() {
     console.log("Showing home page for role:", currentUserRole);
     showPage('homePage');
@@ -300,23 +217,14 @@ function showHome() {
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
-    Promise.all([
-        loadAllSettings(),
-        loadZones(),
-        loadReviews()
-    ]).then(() => {
+    Promise.all([loadAllSettings(), loadZones(), loadReviews()]).then(() => {
         console.log("All home data loaded");
         fadeInPage();
-    }).catch(error => {
-        console.error("Error loading home data:", error);
-    });
+    }).catch(error => { console.error("Error loading home data:", error); });
 }
 
-// Logout
 function logout() {
-    console.log("Logging out...");
     showLoading("লগআউট হচ্ছে...");
-    
     currentUser = null;
     currentUserRole = null;
     const adminIcon = document.getElementById('adminIcon');
@@ -324,20 +232,10 @@ function logout() {
     const controlPanel = document.getElementById('controlPanel');
     if (controlPanel) controlPanel.style.display = 'none';
     
-    auth.signOut().then(() => {
-        console.log("Logged out successfully");
-        hideLoading();
-        showPage('loginPage');
-        fadeInPage();
-    }).catch(error => {
-        console.error("Logout error:", error);
-        hideLoading();
-        showPage('loginPage');
-        fadeInPage();
-    });
+    auth.signOut().then(() => { hideLoading(); showPage('loginPage'); fadeInPage(); })
+    .catch(error => { console.error("Logout error:", error); hideLoading(); showPage('loginPage'); fadeInPage(); });
 }
 
-// Toggle Control Panel
 function toggleControl() {
     const panel = document.getElementById('controlPanel');
     if (!panel) return;
@@ -349,7 +247,6 @@ function toggleControl() {
     }
 }
 
-// Generate Font Options
 function generateFontOptions(currentFont) {
     let html = '<optgroup label="🇬🇧 English Fonts">';
     fonts.english.forEach(f => html += `<option value="${f}" ${f===currentFont?'selected':''}>${f}</option>`);
@@ -359,7 +256,6 @@ function generateFontOptions(currentFont) {
     return html;
 }
 
-// RGB to Hex
 function rgbToHex(rgb) {
     if (!rgb || rgb.startsWith('#')) return rgb || '#001f3f';
     const v = rgb.match(/\d+/g);
@@ -367,20 +263,20 @@ function rgbToHex(rgb) {
     return "#" + ((1<<24)+(parseInt(v[0])<<16)+(parseInt(v[1])<<8)+parseInt(v[2])).toString(16).slice(1);
 }
 
-// Get Element Style
 function getStyle(id, prop) {
     const el = document.getElementById(id);
     return el ? (el.style[prop] || '') : '';
 }
 
-// Get Element Text
 function getText(id) {
     const el = document.getElementById(id);
     return el ? el.innerText : '';
 }
 
-// LOAD ALL SETTINGS
+// ✅ LOAD ALL SETTINGS - Font সহ সব load হবে
 function loadAllSettings() {
+    console.log("Loading all settings from Firestore...");
+    
     return Promise.all([
         db.collection('settings').doc('header').get(),
         db.collection('settings').doc('zones').get(),
@@ -390,47 +286,67 @@ function loadAllSettings() {
     ]).then(results => {
         const [headerDoc, zonesDoc, reviewsDoc, ceoDoc, footerDoc] = results;
         
+        // Header Settings
         if (headerDoc.exists) {
             const d = headerDoc.data();
+            console.log("Header settings loaded:", d);
+            
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
             if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
             if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
-            if (d.brandingFont) document.getElementById('branding').style.fontFamily = d.brandingFont;
+            
+            // ✅ FONTS - Force apply from Firestore
+            if (d.brandingFont) {
+                document.getElementById('branding').style.fontFamily = d.brandingFont;
+                console.log("Branding font applied:", d.brandingFont);
+            }
             if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
             if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
-            if (d.mottoFont) document.getElementById('motto').style.fontFamily = d.mottoFont;
+            
+            if (d.mottoFont) {
+                document.getElementById('motto').style.fontFamily = d.mottoFont;
+                console.log("Motto font applied:", d.mottoFont);
+            }
             if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
         
+        // Zones Settings
         if (zonesDoc.exists) {
             const d = zonesDoc.data();
+            console.log("Zones settings loaded:", d);
+            
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
-            if (d.titleFont) document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
+            if (d.titleFont) {
+                document.getElementById('zoneTitle').style.fontFamily = d.titleFont;
+                console.log("Zone title font applied:", d.titleFont);
+            }
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
-            // ✅ Load Tutor Note
-            if (d.tutorNote) {
-                // Will be displayed in renderZones
-            }
-            if (d.tutorNoteSize) {
-                // Will be used in renderZones
-            }
         }
         
+        // Reviews Settings
         if (reviewsDoc.exists) {
             const d = reviewsDoc.data();
+            console.log("Reviews settings loaded:", d);
+            
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
-            if (d.titleFont) document.getElementById('reviewTitle').style.fontFamily = d.titleFont;
+            if (d.titleFont) {
+                document.getElementById('reviewTitle').style.fontFamily = d.titleFont;
+                console.log("Review title font applied:", d.titleFont);
+            }
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
         
+        // CEO Settings
         if (ceoDoc.exists) {
             const d = ceoDoc.data();
+            console.log("CEO settings loaded:", d);
+            
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
@@ -442,22 +358,32 @@ function loadAllSettings() {
             if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
         }
         
+        // Footer Settings
         if (footerDoc.exists) {
             const d = footerDoc.data();
+            console.log("Footer settings loaded:", d);
+            
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
             if (d.copyrightFont) document.getElementById('copyright').style.fontFamily = d.copyrightFont;
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
+        
+        console.log("✅ All settings loaded successfully");
+    }).catch(error => {
+        console.error("Error loading settings:", error);
     });
 }
 
-// LOAD CONTROL PANEL
+// ✅ LOAD CONTROL PANEL - Current values from Firestore
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
     
+    console.log("Loading control panel...");
+    
+    // Get current styles (fallback if Firestore not loaded yet)
     const brandingFont = getStyle('branding', 'fontFamily') || '';
     const brandingSize = parseInt(getStyle('branding', 'fontSize')) || 32;
     const brandingColor = getStyle('branding', 'color') || '#ffffff';
@@ -687,6 +613,7 @@ function loadControlPanel() {
         </div>
     `;
     
+    // Load tutor note settings
     if (canEditZoneTitle) {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists) {
@@ -703,17 +630,22 @@ function loadControlPanel() {
     }
     
     loadZoneCardsSettings();
+    console.log("Control panel loaded");
 }
 
-// SAVE SETTING
+// ✅ SAVE SETTING - Firestore এ save করবে
 function saveSetting(collection, field, value) {
+    console.log(`Saving: ${collection}.${field} = ${value}`);
     db.collection('settings').doc(collection).update({ [field]: value })
-        .catch(() => {
+        .then(() => {
+            console.log(`✅ Saved ${collection}.${field}`);
+        })
+        .catch((error) => {
+            console.error(`Error saving ${collection}.${field}:`, error);
             db.collection('settings').doc(collection).set({ [field]: value });
         });
 }
 
-// Update Logo
 function updateLogo() {
     const file = document.getElementById('logoInput').files[0];
     if (!file) return;
@@ -725,7 +657,6 @@ function updateLogo() {
     reader.readAsDataURL(file);
 }
 
-// Update CEO Image
 function updateCeoImage() {
     const file = document.getElementById('ceoImageInput').files[0];
     if (!file) return;
@@ -737,7 +668,6 @@ function updateCeoImage() {
     reader.readAsDataURL(file);
 }
 
-// Update Functions
 function updateText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
 function updateFont(id, font) { const el = document.getElementById(id); if (el) el.style.fontFamily = font; }
 function updateSize(id, size) { const el = document.getElementById(id); if (el) el.style.fontSize = size+'px'; }
@@ -748,7 +678,6 @@ function updateFbUrl(url) {
     db.collection('settings').doc('header').update({ fbUrl: url });
 }
 
-// Load Zone Cards Settings - NO MIXED GROUP LINK
 function loadZoneCardsSettings() {
     db.collection('zones').get().then(snapshot => {
         const container = document.getElementById('zoneCardsSettings');
@@ -769,13 +698,11 @@ function loadZoneCardsSettings() {
     });
 }
 
-// Update Zone
 function updateZone(id, field, val) {
     if (field === 'areas') val = val.split(',').map(a=>a.trim()).filter(a=>a);
     db.collection('zones').doc(id.toString()).update({ [field]: val });
 }
 
-// Load Zones
 function loadZones() {
     return db.collection('zones').get().then(snapshot => {
         if (snapshot.empty) {
@@ -789,7 +716,7 @@ function loadZones() {
     });
 }
 
-// ✅ Render Zones - Group buttons পাশাপাশি + Auto card size + Tutor Note Size
+// ✅ Render Zones
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
@@ -807,7 +734,6 @@ function renderZones(zones) {
             areas = zone.areas.map(a => `<span class="area-tag" style="display:inline-block; margin:3px;">${a}</span>`).join('');
         }
         
-        // ✅ শুধু Male & Female buttons - পাশাপাশি
         if (canSeeButtons) {
             const buttonContainer = document.createElement('div');
             buttonContainer.style.cssText = 'margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-start;';
@@ -840,7 +766,7 @@ function renderZones(zones) {
         container.appendChild(card);
     });
     
-    // ✅ Tutor Note - শুধু Tutor & Admin দেখবে + Size Adjust
+    // ✅ Tutor Note - শুধু Tutor & Admin দেখবে
     if (currentUserRole === 'tutor' || currentUserRole === 'admin') {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
@@ -850,7 +776,6 @@ function renderZones(zones) {
                     if (existingNote) existingNote.remove();
                     
                     const noteSize = doc.data().tutorNoteSize || 16;
-                    
                     const note = document.createElement('p');
                     note.className = 'tutor-note';
                     note.style.cssText = `background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px; font-size:${noteSize}px;`;
@@ -862,7 +787,6 @@ function renderZones(zones) {
     }
 }
 
-// Load Reviews
 function loadReviews() {
     return db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(snapshot => {
         const container = document.getElementById('reviewList');
@@ -885,7 +809,6 @@ function loadReviews() {
     });
 }
 
-// Delete Review
 function deleteReview(reviewId) {
     if (currentUserRole !== 'admin') { alert("শুধুমাত্র এডমিন রিভিউ ডিলিট করতে পারবেন"); return; }
     if (confirm("আপনি কি এই রিভিউ ডিলিট করতে চান?")) {
@@ -896,7 +819,6 @@ function deleteReview(reviewId) {
     }
 }
 
-// Submit Review
 function submitReview() {
     if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') {
         alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন");
@@ -916,7 +838,6 @@ function submitReview() {
     });
 }
 
-// Close modal on outside click
 window.onclick = function(e) {
     if (e.target === document.getElementById('loginModal')) closeModal();
 };
