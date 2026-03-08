@@ -1,7 +1,8 @@
 // ============================================
 // 🔥 TUTORS VALLEY - FULLY FIXED
 // ✅ All Syntax Errors Fixed
-// ✅ Google Login Working
+// ✅ Gender Selection Added
+// ✅ 2 Second Loading Animation
 // ============================================
 
 // Firebase Config
@@ -26,6 +27,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
+let currentUserGender = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -43,7 +45,7 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: " ", femaleLink: " " }
 ];
 
-// Loading
+// Loading Function
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
@@ -81,7 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) { currentUserRole = doc.data().role; console.log("Role:", currentUserRole); showHome(); }
+        if (doc.exists) { 
+            currentUserRole = doc.data().role; 
+            currentUserGender = doc.data().gender || null;
+            console.log("Role:", currentUserRole, "Gender:", currentUserGender); 
+            showHome(); 
+        }
         else { logout(); }
     });
 }
@@ -120,7 +127,9 @@ function showHome() {
 }
 
 function logout() {
-    currentUser = null; currentUserRole = null;
+    currentUser = null; 
+    currentUserRole = null;
+    currentUserGender = null;
     document.getElementById('adminIcon').style.display = 'none';
     auth.signOut().then(() => showPage('loginPage'));
 }
@@ -129,6 +138,52 @@ function toggleControl() {
     const p = document.getElementById('controlPanel');
     p.style.display = (p.style.display === 'block') ? 'none' : 'block';
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
+}
+
+// ✅ Gender Selection Function
+function showGenderSelection() {
+    const genderHTML = `
+        <div id="genderModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;">
+            <div style="background:white;padding:40px;border-radius:20px;max-width:450px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+                <h2 style="color:#001f3f;margin-bottom:15px;font-size:1.8em;">Select Your Gender</h2>
+                <p style="color:#666;margin-bottom:30px;font-size:1em;">আপনার লিঙ্গ নির্বাচন করুন। এটি WhatsApp গ্রুপ লিংক দেখাতে সাহায্য করবে।</p>
+                <button onclick="selectGender('male')" style="background:#0074D9;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;font-weight:600;transition:all 0.3s;">👨 Male (পুরুষ)</button>
+                <button onclick="selectGender('female')" style="background:#FF4136;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;font-weight:600;transition:all 0.3s;">👩 Female (নারী)</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', genderHTML);
+}
+
+function selectGender(gender) {
+    showLoading("লোড হচ্ছে...");
+    currentUserGender = gender;
+    
+    // Save to Firestore
+    if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({ 
+            gender: gender,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            // 2 second loading then show zones
+            setTimeout(() => {
+                hideLoading();
+                const modal = document.getElementById('genderModal');
+                if (modal) modal.remove();
+                loadZones();
+            }, 2000);
+        }).catch(e => {
+            hideLoading();
+            console.error("Error saving gender:", e);
+        });
+    } else {
+        setTimeout(() => {
+            hideLoading();
+            const modal = document.getElementById('genderModal');
+            if (modal) modal.remove();
+            loadZones();
+        }, 2000);
+    }
 }
 
 function generateFontOptions(current) {
@@ -426,33 +481,33 @@ function renderZones(zones) {
     if (!c) return;
     c.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    
     zones.forEach(z => {
         const card = document.createElement('div');
         card.className = 'zone-card';
         let areas = z.areas ? z.areas.map(a => `<span class="area-tag">${a}</span>`).join('') : '';
         let btns = '';
+        
         if (canSee) {
-            if (z.maleLink && z.maleLink.trim() !== ' ') btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
-            if (z.femaleLink && z.femaleLink.trim() !== ' ') btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
+            // Show buttons based on gender
+            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== ' ') {
+                btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>`;
+            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== ' ') {
+                btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>`;
+            } else if (!currentUserGender && (currentUserRole === 'tutor' || currentUserRole === 'guardian')) {
+                // Show gender selection if not selected
+                btns = `<div style="text-align:center;padding:15px;background:#f0f0f0;border-radius:8px;margin:10px 0;"><p style="margin:0 0 10px 0;color:#666;">Please select your gender to view WhatsApp groups</p><button onclick="showGenderSelection()" style="background:#0074D9;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Select Gender</button></div>`;
+            }
         }
-        card.innerHTML = `<h3>${z.title}</h3> <div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
+        
+        card.innerHTML = `<h3>${z.title}</h3><div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
         c.appendChild(card);
     });
-    if (canSee) {
-        db.collection('settings').doc('zones').get().then(doc => {
-            if (doc.exists && doc.data().tutorNote) {
-                const zt = document.getElementById('zoneTitle');
-                if (zt) {
-                    const old = zt.parentNode.querySelector('.tutor-note');
-                    if (old) old.remove();
-                    const note = document.createElement('p');
-                    note.className = 'tutor-note';
-                    note.style.cssText = `background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:${doc.data().tutorNoteSize || 16}px;`;
-                    note.innerText = '📢 ' + doc.data().tutorNote;
-                    zt.parentNode.insertBefore(note, zt.nextSibling);
-                }
-            }
-        });
+
+    if (canSee && !currentUserGender && (currentUserRole === 'tutor' || currentUserRole === 'guardian')) {
+        setTimeout(() => {
+            showGenderSelection();
+        }, 500);
     }
 }
 
