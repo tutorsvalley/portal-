@@ -21,9 +21,20 @@ let currentUserRole = null;
 let currentLoginRole = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// ✅ Fonts - Exact Google Fonts Names
+// ✅ 10 Bangla Fonts + 10 English Fonts
 const fonts = {
-    bangla: ['Hind Siliguri','Noto Sans Bengali','Baloo Da 2','Mukta'],
+    bangla: [
+        'Hind Siliguri',
+        'Noto Sans Bengali',
+        'Baloo Da 2',
+        'Mukta',
+        'Tiro Bangla',
+        'Kalam',
+        'Khand',
+        'Yantramanav',
+        'Amita',
+        'Akaya Telivigala'
+    ],
     english: ['Poppins','Roboto','Open Sans','Lato','Montserrat','Arial','Georgia','Verdana','Calibri','Times New Roman']
 };
 
@@ -80,7 +91,10 @@ function loadUser(uid) {
 }
 
 function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.page').forEach(p => {
+        p.style.display = 'none';
+        p.classList.remove('active');
+    });
     document.getElementById(id).style.display = 'block';
 }
 
@@ -125,26 +139,36 @@ function toggleControl() {
 }
 
 function generateFontOptions(current) {
-    let h = '';
-    fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (Bangla)</option>`);
+    let h = '<option value="">ডিফল্ট</option>';
+    fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
     fonts.english.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f}</option>`);
     return h;
 }
 
-// ✅ APPLY FONT - Fixed Version
+// ✅ APPLY FONT - Mobile Compatible
 function applyFont(elementId, font) {
     const el = document.getElementById(elementId);
     if (el && font) {
-        // ✅ Use setProperty with !important
+        // ✅ Remove existing font-family
+        el.style.removeProperty('font-family');
+        
+        // ✅ Force apply with !important using setProperty
         el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
+        
+        // ✅ Also set as attribute for mobile compatibility
+        el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
+        
         console.log(`✅ Font applied to ${elementId}:`, font);
         
-        // ✅ Force reflow
+        // ✅ Force reflow for mobile
         void el.offsetWidth;
+        
+        // ✅ Add data attribute for debugging
+        el.setAttribute('data-font', font);
     }
 }
 
-// ✅ UPDATE FONT - Fixed Version
+// ✅ UPDATE FONT - Mobile Compatible
 function updateFont(elementId, font) {
     if (!font) {
         console.log("No font selected");
@@ -153,7 +177,7 @@ function updateFont(elementId, font) {
     
     console.log("Font selected:", elementId, font);
     
-    // ✅ Apply immediately
+    // ✅ Apply immediately to DOM
     applyFont(elementId, font);
     
     // ✅ Determine collection and field
@@ -184,16 +208,38 @@ function updateFont(elementId, font) {
     // ✅ Save to Firestore
     if (collection && field) {
         saveSetting(collection, field, font);
+        
+        // ✅ Update select immediately
+        setTimeout(() => {
+            const selectId = elementId + 'FontSelect';
+            const select = document.getElementById(selectId);
+            if (select) select.value = font;
+        }, 100);
     }
 }
 
 // ✅ SAVE SETTING
 function saveSetting(collection, field, value) {
     console.log(`Saving: ${collection}.${field} = ${value}`);
-    db.collection('settings').doc(collection).update({ [field]: value })
-        .catch(() => db.collection('settings').doc(collection).set({ [field]: value }));
-    // ✅ Reload after 1 second
-    setTimeout(loadAllSettings, 1000);
+    
+    // ✅ Add timestamp to force update
+    const updateData = {
+        [field]: value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    db.collection('settings').doc(collection).update(updateData)
+        .then(() => {
+            console.log(`✅ Saved ${collection}.${field}`);
+            // ✅ Reload settings after save
+            setTimeout(() => {
+                loadAllSettings();
+            }, 500);
+        })
+        .catch((error) => {
+            console.error("Error saving:", error);
+            db.collection('settings').doc(collection).set(updateData);
+        });
 }
 
 // Update Functions
@@ -201,7 +247,10 @@ function updateLogo() {
     const f = document.getElementById('logoInput').files[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = e => { document.getElementById('logo').src = e.target.result; db.collection('settings').doc('header').update({ logoUrl: e.target.result }); };
+    r.onload = e => { 
+        document.getElementById('logo').src = e.target.result; 
+        db.collection('settings').doc('header').update({ logoUrl: e.target.result }); 
+    };
     r.readAsDataURL(f);
 }
 
@@ -209,7 +258,10 @@ function updateCeoImage() {
     const f = document.getElementById('ceoImageInput').files[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = e => { document.getElementById('ceoImg').src = e.target.result; db.collection('settings').doc('ceo').update({ imageUrl: e.target.result }); };
+    r.onload = e => { 
+        document.getElementById('ceoImg').src = e.target.result; 
+        db.collection('settings').doc('ceo').update({ imageUrl: e.target.result }); 
+    };
     r.readAsDataURL(f);
 }
 
@@ -222,9 +274,9 @@ function updateFbUrl(url) {
     db.collection('settings').doc('header').update({ fbUrl: url });
 }
 
-// ✅ LOAD ALL SETTINGS
+// ✅ LOAD ALL SETTINGS - Mobile Compatible
 function loadAllSettings() {
-    console.log("Loading settings...");
+    console.log("Loading settings from Firestore...");
     
     Promise.all([
         db.collection('settings').doc('header').get(),
@@ -238,6 +290,8 @@ function loadAllSettings() {
         // Header
         if (h.exists) {
             const d = h.data();
+            console.log("Header loaded:", d);
+            
             if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
             if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
@@ -245,12 +299,18 @@ function loadAllSettings() {
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
             
-            // ✅ FONTS - Force Apply
-            if (d.brandingFont) applyFont('branding', d.brandingFont);
+            // ✅ FONTS - Force Apply for Mobile
+            if (d.brandingFont) {
+                applyFont('branding', d.brandingFont);
+                console.log("✅ Branding font:", d.brandingFont);
+            }
             if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
             if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
             
-            if (d.mottoFont) applyFont('motto', d.mottoFont);
+            if (d.mottoFont) {
+                applyFont('motto', d.mottoFont);
+                console.log("✅ Motto font:", d.mottoFont);
+            }
             if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
@@ -258,8 +318,13 @@ function loadAllSettings() {
         // Zones
         if (z.exists) {
             const d = z.data();
+            console.log("Zones loaded:", d);
+            
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
-            if (d.titleFont) applyFont('zoneTitle', d.titleFont);
+            if (d.titleFont) {
+                applyFont('zoneTitle', d.titleFont);
+                console.log("✅ Zone title font:", d.titleFont);
+            }
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
@@ -267,8 +332,13 @@ function loadAllSettings() {
         // Reviews
         if (r.exists) {
             const d = r.data();
+            console.log("Reviews loaded:", d);
+            
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
-            if (d.titleFont) applyFont('reviewTitle', d.titleFont);
+            if (d.titleFont) {
+                applyFont('reviewTitle', d.titleFont);
+                console.log("✅ Review title font:", d.titleFont);
+            }
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
@@ -276,11 +346,16 @@ function loadAllSettings() {
         // CEO
         if (c.exists) {
             const d = c.data();
+            console.log("CEO loaded:", d);
+            
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
             if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
-            if (d.nameFont) applyFont('ceoName', d.nameFont);
+            if (d.nameFont) {
+                applyFont('ceoName', d.nameFont);
+                console.log("✅ CEO name font:", d.nameFont);
+            }
             if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
             if (d.titleFont) applyFont('ceoTitle', d.titleFont);
             if (d.descFont) applyFont('ceoDesc', d.descFont);
@@ -289,25 +364,36 @@ function loadAllSettings() {
         // Footer
         if (f.exists) {
             const d = f.data();
+            console.log("Footer loaded:", d);
+            
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
-            if (d.copyrightFont) applyFont('copyright', d.copyrightFont);
+            if (d.copyrightFont) {
+                applyFont('copyright', d.copyrightFont);
+                console.log("✅ Copyright font:", d.copyrightFont);
+            }
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
         
-        console.log("✅ All settings loaded");
+        console.log("✅ All settings loaded and applied");
         
-        // Update font selects after loading
-        setTimeout(updateFontSelects, 100);
+        // Update font selects
+        setTimeout(updateFontSelects, 200);
+    }).catch(error => {
+        console.error("Error loading settings:", error);
     });
 }
 
-// ✅ Update Font Selects to show current value
+// ✅ Update Font Selects
 function updateFontSelects() {
     const getFontValue = (id) => {
         const el = document.getElementById(id);
         if (!el) return '';
+        // ✅ Check data attribute first (for mobile)
+        const dataFont = el.getAttribute('data-font');
+        if (dataFont) return dataFont;
+        
         const font = el.style.fontFamily || '';
         return font.replace(/'/g, '').split(',')[0].trim();
     };
@@ -316,6 +402,7 @@ function updateFontSelects() {
         const select = document.getElementById(selectId);
         if (select && value) {
             select.value = value;
+            console.log(`Set ${selectId} to ${value}`);
         }
     };
     
@@ -341,11 +428,11 @@ function loadControlPanel() {
             <h3>🔷 হেডার</h3>
             <div class="control-group"><label>লোগো:</label><input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"></div>
             <div class="control-group"><label>ব্র্যান্ডিং:</label><input type="text" value="${document.getElementById('branding').innerText}" oninput="updateText('branding',this.value);saveSetting('header','brandingText',this.value)"></div>
-            <div class="control-group"><label>ব্র্যান্ডিং ফন্ট:</label><select id="brandingFontSelect" onchange="updateFont('branding',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('branding'))}</select></div>
+            <div class="control-group"><label>ব্র্যান্ডিং ফন্ট:</label><select id="brandingFontSelect" onchange="updateFont('branding',this.value)">${generateFontOptions(getFontValue('branding'))}</select></div>
             <div class="control-group"><label>ব্র্যান্ডিং সাইজ:</label><input type="number" value="${parseInt(document.getElementById('branding').style.fontSize)||32}" onchange="updateSize('branding',this.value);saveSetting('header','brandingSize',this.value)"></div>
             <div class="control-group"><label>ব্র্যান্ডিং কালার:</label><input type="color" value="#ffffff" onchange="updateColor('branding','color',this.value);saveSetting('header','brandingColor',this.value)"></div>
             <hr><div class="control-group"><label>মotto:</label><input type="text" value="${document.getElementById('motto').innerText}" oninput="updateText('motto',this.value);saveSetting('header','mottoText',this.value)"></div>
-            <div class="control-group"><label>মotto ফন্ট:</label><select id="mottoFontSelect" onchange="updateFont('motto',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('motto'))}</select></div>
+            <div class="control-group"><label>মotto ফন্ট:</label><select id="mottoFontSelect" onchange="updateFont('motto',this.value)">${generateFontOptions(getFontValue('motto'))}</select></div>
             <div class="control-group"><label>মotto সাইজ:</label><input type="number" value="${parseInt(document.getElementById('motto').style.fontSize)||18}" onchange="updateSize('motto',this.value);saveSetting('header','mottoSize',this.value)"></div>
             <div class="control-group"><label>মotto কালার:</label><input type="color" value="#ffd700" onchange="updateColor('motto','color',this.value);saveSetting('header','mottoColor',this.value)"></div>
             <hr><div class="control-group"><label>হেডার ব্যাকগ্রাউন্ড:</label><input type="color" value="#001f3f" onchange="updateColor('headerSection','background',this.value);saveSetting('header','headerBg',this.value)"></div>
@@ -360,7 +447,7 @@ function loadControlPanel() {
         <div class="control-section">
             <h3>📍 জোন কার্ড</h3>
             <div class="control-group"><label>শিরোনাম:</label><input type="text" value="${document.getElementById('zoneTitle').innerText}" oninput="updateText('zoneTitle',this.value);saveSetting('zones','titleText',this.value)"></div>
-            <div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="zoneTitleFontSelect" onchange="updateFont('zoneTitle',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('zoneTitle'))}</select></div>
+            <div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="zoneTitleFontSelect" onchange="updateFont('zoneTitle',this.value)">${generateFontOptions(getFontValue('zoneTitle'))}</select></div>
             <div class="control-group"><label>শিরোনাম সাইজ:</label><input type="number" value="${parseInt(document.getElementById('zoneTitle').style.fontSize)||32}" onchange="updateSize('zoneTitle',this.value);saveSetting('zones','titleSize',this.value)"></div>
             <div class="control-group"><label>শিরোনাম কালার:</label><input type="color" value="#001f3f" onchange="updateColor('zoneTitle','color',this.value);saveSetting('zones','titleColor',this.value)"></div>
             ${canEdit ? `<hr><div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"><label>⚠️ টিউটর নোট:</label><input type="text" id="tutorNote" placeholder="বার্তা লিখুন..." onchange="saveSetting('zones','tutorNote',this.value)"></div><div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"><label>নোট সাইজ:</label><input type="number" value="16" min="10" max="40" onchange="saveSetting('zones','tutorNoteSize',this.value)"></div>` : ''}
@@ -370,7 +457,7 @@ function loadControlPanel() {
         <div class="control-section">
             <h3>💬 রিভিউ</h3>
             <div class="control-group"><label>শিরোনাম:</label><input type="text" value="${document.getElementById('reviewTitle').innerText}" oninput="updateText('reviewTitle',this.value);saveSetting('reviews','titleText',this.value)"></div>
-            <div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="reviewTitleFontSelect" onchange="updateFont('reviewTitle',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('reviewTitle'))}</select></div>
+            <div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="reviewTitleFontSelect" onchange="updateFont('reviewTitle',this.value)">${generateFontOptions(getFontValue('reviewTitle'))}</select></div>
             <div class="control-group"><label>শিরোনাম সাইজ:</label><input type="number" value="${parseInt(document.getElementById('reviewTitle').style.fontSize)||32}" onchange="updateSize('reviewTitle',this.value);saveSetting('reviews','titleSize',this.value)"></div>
             <div class="control-group"><label>শিরোনাম কালার:</label><input type="color" value="#001f3f" onchange="updateColor('reviewTitle','color',this.value);saveSetting('reviews','titleColor',this.value)"></div>
         </div>
@@ -379,17 +466,17 @@ function loadControlPanel() {
             <h3>👔 CEO</h3>
             <div class="control-group"><label>ইমেজ:</label><input type="file" id="ceoImageInput" accept="image/*" onchange="updateCeoImage()"></div>
             <div class="control-group"><label>নাম:</label><input type="text" value="${document.getElementById('ceoName').innerText}" oninput="updateText('ceoName',this.value);saveSetting('ceo','nameText',this.value)"></div>
-            <div class="control-group"><label>নাম ফন্ট:</label><select id="ceoNameFontSelect" onchange="updateFont('ceoName',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('ceoName'))}</select></div>
+            <div class="control-group"><label>নাম ফন্ট:</label><select id="ceoNameFontSelect" onchange="updateFont('ceoName',this.value)">${generateFontOptions(getFontValue('ceoName'))}</select></div>
             <div class="control-group"><label>পদবী:</label><input type="text" value="${document.getElementById('ceoTitle').innerText}" oninput="updateText('ceoTitle',this.value);saveSetting('ceo','titleText',this.value)"></div>
-            <div class="control-group"><label>পদবী ফন্ট:</label><select id="ceoTitleFontSelect" onchange="updateFont('ceoTitle',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('ceoTitle'))}</select></div>
+            <div class="control-group"><label>পদবী ফন্ট:</label><select id="ceoTitleFontSelect" onchange="updateFont('ceoTitle',this.value)">${generateFontOptions(getFontValue('ceoTitle'))}</select></div>
             <div class="control-group"><label>বিবরণ:</label><textarea oninput="updateText('ceoDesc',this.value);saveSetting('ceo','descText',this.value)">${document.getElementById('ceoDesc').innerText}</textarea></div>
-            <div class="control-group"><label>বিবরণ ফন্ট:</label><select id="ceoDescFontSelect" onchange="updateFont('ceoDesc',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('ceoDesc'))}</select></div>
+            <div class="control-group"><label>বিবরণ ফন্ট:</label><select id="ceoDescFontSelect" onchange="updateFont('ceoDesc',this.value)">${generateFontOptions(getFontValue('ceoDesc'))}</select></div>
         </div>
         
         <div class="control-section">
             <h3>🔻 ফুটার</h3>
             <div class="control-group"><label>কপিরাইট:</label><input type="text" value="${document.getElementById('copyright').innerText}" oninput="updateText('copyright',this.value);saveSetting('footer','copyrightText',this.value)"></div>
-            <div class="control-group"><label>কপিরাইট ফন্ট:</label><select id="copyrightFontSelect" onchange="updateFont('copyright',this.value)"><option value="">ডিফল্ট</option>${generateFontOptions(getFontValue('copyright'))}</select></div>
+            <div class="control-group"><label>কপিরাইট ফন্ট:</label><select id="copyrightFontSelect" onchange="updateFont('copyright',this.value)">${generateFontOptions(getFontValue('copyright'))}</select></div>
             <div class="control-group"><label>কপিরাইট সাইজ:</label><input type="number" value="${parseInt(document.getElementById('copyright').style.fontSize)||14}" onchange="updateSize('copyright',this.value);saveSetting('footer','copyrightSize',this.value)"></div>
             <div class="control-group"><label>কপিরাইট কালার:</label><input type="color" value="#ffffff" onchange="updateColor('copyright','color',this.value);saveSetting('footer','copyrightColor',this.value)"></div>
             <div class="control-group"><label>ব্যাকগ্রাউন্ড:</label><input type="color" value="#001f3f" onchange="updateColor('footerSection','background',this.value);saveSetting('footer','bgColor',this.value)"></div>
@@ -403,6 +490,10 @@ function loadControlPanel() {
 function getFontValue(id) {
     const el = document.getElementById(id);
     if (!el) return '';
+    // ✅ Check data attribute first (for mobile)
+    const dataFont = el.getAttribute('data-font');
+    if (dataFont) return dataFont;
+    
     const font = el.style.fontFamily || '';
     return font.replace(/'/g, '').split(',')[0].trim();
 }
