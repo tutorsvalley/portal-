@@ -152,7 +152,7 @@ function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            console.log("User role:", currentUserRole);
+            console.log("✅ User role loaded:", currentUserRole);
             hideLoading();
             fadeInPage();
             showHome();
@@ -205,7 +205,7 @@ function googleLogin() {
 }
 
 function showHome() {
-    console.log("Showing home page for role:", currentUserRole);
+    console.log("Showing home page, current user role:", currentUserRole);
     showPage('homePage');
     
     const controlPanel = document.getElementById('controlPanel');
@@ -273,7 +273,7 @@ function getText(id) {
     return el ? el.innerText : '';
 }
 
-// ✅ LOAD ALL SETTINGS - Font সহ সব load হবে
+// ✅ LOAD ALL SETTINGS
 function loadAllSettings() {
     console.log("Loading all settings from Firestore...");
     
@@ -286,7 +286,6 @@ function loadAllSettings() {
     ]).then(results => {
         const [headerDoc, zonesDoc, reviewsDoc, ceoDoc, footerDoc] = results;
         
-        // Header Settings
         if (headerDoc.exists) {
             const d = headerDoc.data();
             console.log("Header settings loaded:", d);
@@ -298,7 +297,6 @@ function loadAllSettings() {
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
             
-            // ✅ FONTS - Force apply from Firestore
             if (d.brandingFont) {
                 document.getElementById('branding').style.fontFamily = d.brandingFont;
                 console.log("Branding font applied:", d.brandingFont);
@@ -314,7 +312,6 @@ function loadAllSettings() {
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
         
-        // Zones Settings
         if (zonesDoc.exists) {
             const d = zonesDoc.data();
             console.log("Zones settings loaded:", d);
@@ -328,7 +325,6 @@ function loadAllSettings() {
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
         
-        // Reviews Settings
         if (reviewsDoc.exists) {
             const d = reviewsDoc.data();
             console.log("Reviews settings loaded:", d);
@@ -342,7 +338,6 @@ function loadAllSettings() {
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
         
-        // CEO Settings
         if (ceoDoc.exists) {
             const d = ceoDoc.data();
             console.log("CEO settings loaded:", d);
@@ -358,7 +353,6 @@ function loadAllSettings() {
             if (d.descFont) document.getElementById('ceoDesc').style.fontFamily = d.descFont;
         }
         
-        // Footer Settings
         if (footerDoc.exists) {
             const d = footerDoc.data();
             console.log("Footer settings loaded:", d);
@@ -376,14 +370,13 @@ function loadAllSettings() {
     });
 }
 
-// ✅ LOAD CONTROL PANEL - Current values from Firestore
+// ✅ LOAD CONTROL PANEL
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
     
-    console.log("Loading control panel...");
+    console.log("Loading control panel, user role:", currentUserRole);
     
-    // Get current styles (fallback if Firestore not loaded yet)
     const brandingFont = getStyle('branding', 'fontFamily') || '';
     const brandingSize = parseInt(getStyle('branding', 'fontSize')) || 32;
     const brandingColor = getStyle('branding', 'color') || '#ffffff';
@@ -408,6 +401,7 @@ function loadControlPanel() {
     const footerBg = getStyle('footerSection', 'background') || '#001f3f';
     
     const canEditZoneTitle = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    console.log("Can edit zone title:", canEditZoneTitle, "Role:", currentUserRole);
     
     body.innerHTML = `
         <div class="control-section">
@@ -613,7 +607,6 @@ function loadControlPanel() {
         </div>
     `;
     
-    // Load tutor note settings
     if (canEditZoneTitle) {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists) {
@@ -633,7 +626,7 @@ function loadControlPanel() {
     console.log("Control panel loaded");
 }
 
-// ✅ SAVE SETTING - Firestore এ save করবে
+// ✅ SAVE SETTING
 function saveSetting(collection, field, value) {
     console.log(`Saving: ${collection}.${field} = ${value}`);
     db.collection('settings').doc(collection).update({ [field]: value })
@@ -716,13 +709,18 @@ function loadZones() {
     });
 }
 
-// ✅ Render Zones
+// ✅ Render Zones - Tutor Note শুধু Tutor & Admin দেখবে
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
     container.innerHTML = '';
     
+    console.log("📍 renderZones called, currentUserRole:", currentUserRole);
+    
     const canSeeButtons = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    const canSeeNote = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    
+    console.log("Can see buttons:", canSeeButtons, "Can see note:", canSeeNote);
     
     zones.forEach(zone => {
         const card = document.createElement('div');
@@ -767,9 +765,12 @@ function renderZones(zones) {
     });
     
     // ✅ Tutor Note - শুধু Tutor & Admin দেখবে
-    if (currentUserRole === 'tutor' || currentUserRole === 'admin') {
+    console.log("Checking tutor note visibility, role:", currentUserRole);
+    if (canSeeNote) {
+        console.log("✅ User can see tutor note");
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
+                console.log("Tutor note exists, displaying...");
                 const zoneTitle = document.getElementById('zoneTitle');
                 if (zoneTitle) {
                     const existingNote = zoneTitle.parentNode.querySelector('.tutor-note');
@@ -781,9 +782,14 @@ function renderZones(zones) {
                     note.style.cssText = `background:#fff3cd; color:#856404; padding:10px; border-radius:5px; text-align:center; margin:10px auto; max-width:600px; font-size:${noteSize}px;`;
                     note.innerText = '📢 ' + doc.data().tutorNote;
                     zoneTitle.parentNode.insertBefore(note, zoneTitle.nextSibling);
+                    console.log("Tutor note displayed");
                 }
+            } else {
+                console.log("No tutor note in Firestore");
             }
         });
+    } else {
+        console.log("❌ User cannot see tutor note (role:", currentUserRole, ")");
     }
 }
 
