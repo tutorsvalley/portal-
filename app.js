@@ -1,5 +1,6 @@
 // ============================================
-// 🔥 TUTORS VALLEY - GENDER SELECTION FIXED
+// 🔥 TUTORS VALLEY - FULLY FIXED
+// ✅ Blank Page Issue Fixed
 // ============================================
 
 // Firebase Config
@@ -24,7 +25,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
-let currentUserGender = null; // Always null on page load
+let currentUserGender = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -107,7 +108,6 @@ function loadUser(uid) {
     db.collection('users').doc(uid).get().then(function(doc) {
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            // DO NOT load gender from Firestore - always reset on page load
             currentUserGender = null;
             
             setTimeout(function() {
@@ -170,12 +170,11 @@ function googleLogin() {
     });
 }
 
-// Gender Selection Dropdown - ALWAYS show for Tutor mode
+// Gender Selection Dropdown
 function showGenderDropdown() {
     const container = document.getElementById('genderSelectionContainer');
     if (!container) return;
     
-    // Always show dropdown for tutor mode
     container.innerHTML = '<select id="genderDropdown" class="gender-dropdown"><option value="">লিঙ্গ নির্বাচন করুন</option><option value="male">👨 Male (পুরুষ)</option><option value="female">👩 Female (নারী)</option></select>';
     
     const dropdown = document.getElementById('genderDropdown');
@@ -186,13 +185,16 @@ function showGenderDropdown() {
     });
 }
 
+// ✅ FIXED - Show home page after loading
 function selectGender(gender) {
     showLoading("লোড হচ্ছে...");
     currentUserGender = gender;
     
-    // 2 second loading animation
     setTimeout(function() {
         hideLoading();
+        
+        // ✅ Show home page again
+        showPage('homePage');
         
         // Show success message
         const container = document.getElementById('genderSelectionContainer');
@@ -200,7 +202,7 @@ function selectGender(gender) {
             container.innerHTML = '<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ' + (gender === 'male' ? 'পুরুষ' : 'নারী') + '</div>';
         }
         
-        // Show buttons after loading
+        // Show buttons
         loadZones();
     }, 2000);
 }
@@ -210,11 +212,9 @@ function showHome() {
     document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
     document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
-    // ALWAYS show gender dropdown for tutor mode (never load from Firestore)
     const container = document.getElementById('genderSelectionContainer');
     if (container) {
         if (currentUserRole === 'tutor') {
-            // Always show dropdown for tutor, never show saved gender
             showGenderDropdown();
         } else {
             container.innerHTML = '';
@@ -230,7 +230,7 @@ function logout() {
     showLoading("লগআউট হচ্ছে...");
     currentUser = null;
     currentUserRole = null;
-    currentUserGender = null; // Clear gender on logout
+    currentUserGender = null;
     document.getElementById('adminIcon').style.display = 'none';
     auth.signOut().then(function() {
         setTimeout(function() {
@@ -496,7 +496,6 @@ function renderZones(zones) {
         }).join('') : '';
         let btns = '';
         
-        // Admin always sees both buttons
         if (currentUserRole === 'admin') {
             if (z.maleLink && z.maleLink.trim() !== '') {
                 btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn" style="margin-right:5px;">📱 Join WhatsApp Group (Male)</a>';
@@ -505,15 +504,10 @@ function renderZones(zones) {
                 btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group (Female)</a>';
             }
         }
-        // Tutor/Guardian sees buttons ONLY if gender is selected
         else if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
             btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>';
         } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
             btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>';
-        }
-        // If no gender selected, show message
-        else if (currentUserRole === 'tutor' && !currentUserGender) {
-            // No buttons shown - dropdown is already visible above
         }
         
         card.innerHTML = '<h3>' + z.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div style="margin-top:10px;">' + btns + '</div>' : '');
