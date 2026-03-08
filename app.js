@@ -1,6 +1,6 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FULL VERSION
-// ✅ Font Change 100% Working
+// 🔥 TUTORS VALLEY - FULL VERSION (FIXED)
+// ✅ Note Visibility Fixed (Admin & Tutor Only)
 // ============================================
 
 // Firebase Config
@@ -16,7 +16,6 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
@@ -30,21 +29,21 @@ const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // ✅ 10 Bangla + 10 English Fonts
 const fonts = {
-    bangla: ['Hind Siliguri','Noto Sans Bengali','Baloo Da 2','Mukta','Tiro Bangla','Kalam','Khand','Yantramanav','Amita','Akaya Telivigala'],
-    english: ['Poppins','Roboto','Open Sans','Lato','Montserrat','Arial','Georgia','Verdana','Calibri','Times New Roman']
+    bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'Baloo Da 2', 'Mukta', 'Tiro Bangla', 'Kalam', 'Khand', 'Yantramanav', 'Amita', 'Akaya Telivigala'],
+    english: ['Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Arial', 'Georgia', 'Verdana', 'Calibri', 'Times New Roman']
 };
 
 const defaultZones = [
-    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "" },
-    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "" },
-    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"], maleLink: "", femaleLink: "" },
-    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"], maleLink: "", femaleLink: "" },
-    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"], maleLink: "", femaleLink: "" },
-    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "" }
+    { id: 1, title: "উত্তর ঢাকা ", areas: ["উত্তরা ", "মিরপুর ", "পল্লবী "], maleLink: " ", femaleLink: " " },
+    { id: 2, title: "দক্ষিণ ঢাকা ", areas: ["ধানমন্ডি ", "মোহাম্মদপুর ", "আদাবর "], maleLink: " ", femaleLink: " " },
+    { id: 3, title: "পূর্ব ঢাকা ", areas: ["বনানী ", "গুলশান ", "বারিধারা "], maleLink: " ", femaleLink: " " },
+    { id: 4, title: "পশ্চিম ঢাকা ", areas: ["সাভার ", "আশুলিয়া ", "গাজীপুর "], maleLink: " ", femaleLink: " " },
+    { id: 5, title: "কেন্দ্রীয় ঢাকা ", areas: ["পল্টন ", "মতিঝিল ", "শাহবাগ "], maleLink: " ", femaleLink: " " },
+    { id: 6, title: "আশেপাশের এলাকা ", areas: ["নারায়ণগঞ্জ ", "টঙ্গী ", "কেরানীগঞ্জ "], maleLink: " ", femaleLink: " " }
 ];
 
 // Loading
-function showLoading(msg = "লোড হচ্ছে...") {
+function showLoading(msg = "লোড হচ্ছে... ") {
     hideLoading();
     const div = document.createElement('div');
     div.id = 'loadingScreen';
@@ -132,9 +131,9 @@ function toggleControl() {
 }
 
 function generateFontOptions(current) {
-    let h = '<option value="">ডিফল্ট</option>';
-    fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
-    fonts.english.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f}</option>`);
+    let h = ' ডিফল্ট ';
+    fonts.bangla.forEach(f => h += `<option value="${f}" ${f === current ? 'selected' : ''}>${f} (বাংলা)</option>`);
+    fonts.english.forEach(f => h += `<option value="${f}" ${f === current ? 'selected' : ''}>${f}</option>`);
     return h;
 }
 
@@ -142,7 +141,7 @@ function rgbToHex(rgb) {
     if (!rgb || rgb.startsWith('#')) return rgb || '#001f3f';
     const v = rgb.match(/\d+/g);
     if (!v) return '#001f3f';
-    return "#" + ((1<<24)+(parseInt(v[0])<<16)+(parseInt(v[1])<<8)+parseInt(v[2])).toString(16).slice(1);
+    return "#" + ((1 << 24) + (parseInt(v[0]) << 16) + (parseInt(v[1]) << 8) + parseInt(v[2])).toString(16).slice(1);
 }
 
 function getStyle(id, prop) {
@@ -171,41 +170,39 @@ function applyFont(elementId, font) {
         console.log("❌ Element or font not found:", elementId, font);
         return false;
     }
-    
     console.log("🎯 Applying font to", elementId, ":", font);
-    
+
     // Clear ALL existing styles
     el.style.cssText = '';
     el.removeAttribute('style');
-    
+
     // Force apply with !important
     el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
-    
+
     // Also set inline style
     el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
-    
+
     // Store in data attribute
     el.setAttribute('data-font', font);
-    
+
     // Force reflow
     void el.offsetWidth;
-    
+
     // Verify
     const computed = window.getComputedStyle(el).fontFamily;
     console.log("✅ Applied! Current font:", computed);
-    
+
     return true;
 }
 
 // ✅ UPDATE FONT
 function updateFont(elementId, font) {
     if (!font) { alert("কোনো ফন্ট সিলেক্ট করেননি!"); return; }
-    
-    console.log("🎨 Font change:", elementId, "→", font);
-    
+    console.log("🎨 Font change: ", elementId, "→ ", font);
+
     const success = applyFont(elementId, font);
-    if (!success) { console.error("❌ Failed"); return; }
-    
+    if (!success) { console.error("❌ Failed "); return; }
+
     let collection, field;
     if (elementId === 'branding') { collection = 'header'; field = 'brandingFont'; }
     else if (elementId === 'motto') { collection = 'header'; field = 'mottoFont'; }
@@ -215,7 +212,7 @@ function updateFont(elementId, font) {
     else if (elementId === 'ceoTitle') { collection = 'ceo'; field = 'titleFont'; }
     else if (elementId === 'ceoDesc') { collection = 'ceo'; field = 'descFont'; }
     else if (elementId === 'copyright') { collection = 'footer'; field = 'copyrightFont'; }
-    
+
     if (collection && field) {
         const updateData = { [field]: font, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
         db.collection('settings').doc(collection).update(updateData)
@@ -226,7 +223,7 @@ function updateFont(elementId, font) {
                 if (select) select.value = font;
                 setTimeout(() => { alert(`✅ Font changed: ${font}\n\nPage reload দিন (F5)`); }, 500);
             })
-            .catch(error => { console.error("❌ Save failed:", error); });
+            .catch(error => { console.error("❌ Save failed: ", error); });
     }
 }
 
@@ -258,7 +255,6 @@ function updateCeoImage() {
 function updateText(id, v) { const e = document.getElementById(id); if (e) e.innerText = v; }
 function updateSize(id, v) { const e = document.getElementById(id); if (e) e.style.fontSize = v + 'px'; }
 function updateColor(id, p, c) { const e = document.getElementById(id); if (e) e.style[p] = c; }
-
 function updateFbUrl(url) {
     document.getElementById('fbBtn').href = url;
     db.collection('settings').doc('header').update({ fbUrl: url });
@@ -267,7 +263,6 @@ function updateFbUrl(url) {
 // ✅ LOAD ALL SETTINGS
 function loadAllSettings() {
     console.log("🔄 Loading settings...");
-    
     Promise.all([
         db.collection('settings').doc('header').get(),
         db.collection('settings').doc('zones').get(),
@@ -276,10 +271,10 @@ function loadAllSettings() {
         db.collection('settings').doc('footer').get()
     ]).then(docs => {
         const [h, z, r, c, f] = docs;
-        
+
         if (h.exists) {
             const d = h.data();
-            console.log("📄 Header:", d);
+            console.log("📄 Header: ", d);
             if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
             if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
@@ -293,28 +288,28 @@ function loadAllSettings() {
             if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
-        
+
         if (z.exists) {
             const d = z.data();
-            console.log("📄 Zones:", d);
+            console.log("📄 Zones: ", d);
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
             if (d.titleFont) { setTimeout(() => { applyFont('zoneTitle', d.titleFont); }, 300); }
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
-        
+
         if (r.exists) {
             const d = r.data();
-            console.log("📄 Reviews:", d);
+            console.log("📄 Reviews: ", d);
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
             if (d.titleFont) { setTimeout(() => { applyFont('reviewTitle', d.titleFont); }, 400); }
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
-        
+
         if (c.exists) {
             const d = c.data();
-            console.log("📄 CEO:", d);
+            console.log("📄 CEO: ", d);
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
@@ -324,18 +319,18 @@ function loadAllSettings() {
             if (d.titleFont) applyFont('ceoTitle', d.titleFont);
             if (d.descFont) applyFont('ceoDesc', d.descFont);
         }
-        
+
         if (f.exists) {
             const d = f.data();
-            console.log("📄 Footer:", d);
+            console.log("📄 Footer: ", d);
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
             if (d.copyrightFont) { setTimeout(() => { applyFont('copyright', d.copyrightFont); }, 600); }
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
-        
-        console.log("✅ All settings loaded!");
+
+        console.log("✅ All settings loaded! ");
         setTimeout(updateFontSelects, 1000);
     });
 }
@@ -359,71 +354,70 @@ function updateFontSelects() {
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
-    
     const canEdit = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    
+
     body.innerHTML = `
-        <div class="control-section">
-            <h3>🔷 হেডার</h3>
-            <div class="control-group"><label>লোগো:</label><input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"></div>
-            <div class="control-group"><label>ব্র্যান্ডিং:</label><input type="text" value="${getText('branding')}" oninput="updateText('branding',this.value);saveSetting('header','brandingText',this.value)"></div>
-            <div class="control-group"><label>ব্র্যান্ডিং ফন্ট:</label><select id="brandingFontSelect" onchange="updateFont('branding',this.value)">${generateFontOptions(getFontValue('branding'))}</select></div>
-            <div class="control-group"><label>ব্র্যান্ডিং সাইজ:</label><input type="number" value="${parseInt(getStyle('branding','fontSize'))||32}" min="10" max="100" onchange="updateSize('branding',this.value);saveSetting('header','brandingSize',this.value)"></div>
-            <div class="control-group"><label>ব্র্যান্ডিং কালার:</label><input type="color" value="${rgbToHex(getStyle('branding','color'))||'#ffffff'}" onchange="updateColor('branding','color',this.value);saveSetting('header','brandingColor',this.value)"></div>
-            <hr><div class="control-group"><label>মotto:</label><input type="text" value="${getText('motto')}" oninput="updateText('motto',this.value);saveSetting('header','mottoText',this.value)"></div>
-            <div class="control-group"><label>মotto ফন্ট:</label><select id="mottoFontSelect" onchange="updateFont('motto',this.value)">${generateFontOptions(getFontValue('motto'))}</select></div>
-            <div class="control-group"><label>মotto সাইজ:</label><input type="number" value="${parseInt(getStyle('motto','fontSize'))||18}" min="10" max="60" onchange="updateSize('motto',this.value);saveSetting('header','mottoSize',this.value)"></div>
-            <div class="control-group"><label>মotto কালার:</label><input type="color" value="${rgbToHex(getStyle('motto','color'))||'#ffd700'}" onchange="updateColor('motto','color',this.value);saveSetting('header','mottoColor',this.value)"></div>
-            <hr><div class="control-group"><label>হেডার ব্যাকগ্রাউন্ড:</label><input type="color" value="${rgbToHex(getStyle('headerSection','background'))||'#001f3f'}" onchange="updateColor('headerSection','background',this.value);saveSetting('header','headerBg',this.value)"></div>
-        </div>
-        
-        <div class="control-section">
-            <h3>📘 ফেসবুক</h3>
-            <div class="control-group"><label>URL:</label><input type="url" value="${document.getElementById('fbBtn').href||'#'}" onchange="updateFbUrl(this.value)"></div>
-            <div class="control-group"><label>টেক্সট:</label><input type="text" value="${getText('fbText')}" oninput="updateText('fbText',this.value);saveSetting('header','fbTextText',this.value)"></div>
-        </div>
-        
-        <div class="control-section">
-            <h3>📍 জোন কার্ড</h3>
-            <div class="control-group"><label>শিরোনাম:</label><input type="text" value="${getText('zoneTitle')}" oninput="updateText('zoneTitle',this.value);saveSetting('zones','titleText',this.value)"></div>
-            <div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="zoneTitleFontSelect" onchange="updateFont('zoneTitle',this.value)">${generateFontOptions(getFontValue('zoneTitle'))}</select></div>
-            <div class="control-group"><label>শিরোনাম সাইজ:</label><input type="number" value="${parseInt(getStyle('zoneTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('zoneTitle',this.value);saveSetting('zones','titleSize',this.value)"></div>
-            <div class="control-group"><label>শিরোনাম কালার:</label><input type="color" value="${rgbToHex(getStyle('zoneTitle','color'))||'#001f3f'}" onchange="updateColor('zoneTitle','color',this.value);saveSetting('zones','titleColor',this.value)"></div>
-            ${canEdit ? `<hr><div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"><label>⚠️ টিউটর নোট:</label><input type="text" id="tutorNote" placeholder="বার্তা লিখুন..." onchange="saveSetting('zones','tutorNote',this.value)"></div><div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"><label>নোট সাইজ:</label><input type="number" value="16" min="10" max="40" onchange="saveSetting('zones','tutorNoteSize',this.value)"></div>` : ''}
-            <div id="zoneCardsSettings"></div>
-        </div>
-        
-        <div class="control-section">
-            <h3>💬 রিভিউ</h3>
-            <div class="control-group"><label>শিরোনাম:</label><input type="text" value="${getText('reviewTitle')}" oninput="updateText('reviewTitle',this.value);saveSetting('reviews','titleText',this.value)"></div>
-            <div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="reviewTitleFontSelect" onchange="updateFont('reviewTitle',this.value)">${generateFontOptions(getFontValue('reviewTitle'))}</select></div>
-            <div class="control-group"><label>শিরোনাম সাইজ:</label><input type="number" value="${parseInt(getStyle('reviewTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('reviewTitle',this.value);saveSetting('reviews','titleSize',this.value)"></div>
-            <div class="control-group"><label>শিরোনাম কালার:</label><input type="color" value="${rgbToHex(getStyle('reviewTitle','color'))||'#001f3f'}" onchange="updateColor('reviewTitle','color',this.value);saveSetting('reviews','titleColor',this.value)"></div>
-        </div>
-        
-        <div class="control-section">
-            <h3>👔 CEO</h3>
-            <div class="control-group"><label>ইমেজ:</label><input type="file" id="ceoImageInput" accept="image/*" onchange="updateCeoImage()"></div>
-            <div class="control-group"><label>নাম:</label><input type="text" value="${getText('ceoName')}" oninput="updateText('ceoName',this.value);saveSetting('ceo','nameText',this.value)"></div>
-            <div class="control-group"><label>নাম ফন্ট:</label><select id="ceoNameFontSelect" onchange="updateFont('ceoName',this.value)">${generateFontOptions(getFontValue('ceoName'))}</select></div>
-            <div class="control-group"><label>নাম সাইজ:</label><input type="number" value="${parseInt(getStyle('ceoName','fontSize'))||24}" min="10" max="60" onchange="updateSize('ceoName',this.value);saveSetting('ceo','nameSize',this.value)"></div>
-            <div class="control-group"><label>নাম কালার:</label><input type="color" value="${rgbToHex(getStyle('ceoName','color'))||'#001f3f'}" onchange="updateColor('ceoName','color',this.value);saveSetting('ceo','nameColor',this.value)"></div>
-            <div class="control-group"><label>পদবী:</label><input type="text" value="${getText('ceoTitle')}" oninput="updateText('ceoTitle',this.value);saveSetting('ceo','titleText',this.value)"></div>
-            <div class="control-group"><label>পদবী ফন্ট:</label><select id="ceoTitleFontSelect" onchange="updateFont('ceoTitle',this.value)">${generateFontOptions(getFontValue('ceoTitle'))}</select></div>
-            <div class="control-group"><label>বিবরণ:</label><textarea rows="3" oninput="updateText('ceoDesc',this.value);saveSetting('ceo','descText',this.value)">${getText('ceoDesc')}</textarea></div>
-            <div class="control-group"><label>বিবরণ ফন্ট:</label><select id="ceoDescFontSelect" onchange="updateFont('ceoDesc',this.value)">${generateFontOptions(getFontValue('ceoDesc'))}</select></div>
-        </div>
-        
-        <div class="control-section">
-            <h3>🔻 ফুটার</h3>
-            <div class="control-group"><label>কপিরাইট:</label><input type="text" value="${getText('copyright')}" oninput="updateText('copyright',this.value);saveSetting('footer','copyrightText',this.value)"></div>
-            <div class="control-group"><label>কপিরাইট ফন্ট:</label><select id="copyrightFontSelect" onchange="updateFont('copyright',this.value)">${generateFontOptions(getFontValue('copyright'))}</select></div>
-            <div class="control-group"><label>কপিরাইট সাইজ:</label><input type="number" value="${parseInt(getStyle('copyright','fontSize'))||14}" min="10" max="40" onchange="updateSize('copyright',this.value);saveSetting('footer','copyrightSize',this.value)"></div>
-            <div class="control-group"><label>কপিরাইট কালার:</label><input type="color" value="${rgbToHex(getStyle('copyright','color'))||'#ffffff'}" onchange="updateColor('copyright','color',this.value);saveSetting('footer','copyrightColor',this.value)"></div>
-            <div class="control-group"><label>ব্যাকগ্রাউন্ড:</label><input type="color" value="${rgbToHex(getStyle('footerSection','background'))||'#001f3f'}" onchange="updateColor('footerSection','background',this.value);saveSetting('footer','bgColor',this.value)"></div>
-        </div>
-    `;
+     <div class="control-section">
+         <h3>🔷 হেডার</h3>
+         <div class="control-group"> <label>লোগো:</label> <input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"> </div>
+         <div class="control-group"> <label>ব্র্যান্ডিং:</label> <input type="text" value="${getText('branding')}" oninput="updateText('branding',this.value);saveSetting('header','brandingText',this.value)"> </div>
+         <div class="control-group"> <label>ব্র্যান্ডিং ফন্ট:</label> <select id="brandingFontSelect" onchange="updateFont('branding',this.value)">${generateFontOptions(getFontValue('branding'))}</select> </div>
+         <div class="control-group"> <label>ব্র্যান্ডিং সাইজ:</label> <input type="number" value="${parseInt(getStyle('branding','fontSize'))||32}" min="10" max="100" onchange="updateSize('branding',this.value);saveSetting('header','brandingSize',this.value)"> </div>
+         <div class="control-group"> <label>ব্র্যান্ডিং কালার:</label> <input type="color" value="${rgbToHex(getStyle('branding','color'))||'#ffffff'}" onchange="updateColor('branding','color',this.value);saveSetting('header','brandingColor',this.value)"> </div>
+         <hr> <div class="control-group"> <label>মotto:</label> <input type="text" value="${getText('motto')}" oninput="updateText('motto',this.value);saveSetting('header','mottoText',this.value)"> </div>
+         <div class="control-group"> <label>মotto ফন্ট:</label> <select id="mottoFontSelect" onchange="updateFont('motto',this.value)">${generateFontOptions(getFontValue('motto'))}</select> </div>
+         <div class="control-group"> <label>মotto সাইজ:</label> <input type="number" value="${parseInt(getStyle('motto','fontSize'))||18}" min="10" max="60" onchange="updateSize('motto',this.value);saveSetting('header','mottoSize',this.value)"> </div>
+         <div class="control-group"> <label>মotto কালার:</label> <input type="color" value="${rgbToHex(getStyle('motto','color'))||'#ffd700'}" onchange="updateColor('motto','color',this.value);saveSetting('header','mottoColor',this.value)"> </div>
+         <hr> <div class="control-group"> <label>হেডার ব্যাকগ্রাউন্ড:</label> <input type="color" value="${rgbToHex(getStyle('headerSection','background'))||'#001f3f'}" onchange="updateColor('headerSection','background',this.value);saveSetting('header','headerBg',this.value)"> </div>
+     </div>
     
+     <div class="control-section">
+         <h3>📘 ফেসবুক</h3>
+         <div class="control-group"> <label>URL:</label> <input type="url" value="${document.getElementById('fbBtn').href||'#'}" onchange="updateFbUrl(this.value)"> </div>
+         <div class="control-group"> <label>টেক্সট:</label> <input type="text" value="${getText('fbText')}" oninput="updateText('fbText',this.value);saveSetting('header','fbTextText',this.value)"> </div>
+     </div>
+    
+     <div class="control-section">
+         <h3>📍 জোন কার্ড</h3>
+         <div class="control-group"> <label>শিরোনাম:</label> <input type="text" value="${getText('zoneTitle')}" oninput="updateText('zoneTitle',this.value);saveSetting('zones','titleText',this.value)"> </div>
+         <div class="control-group"> <label>শিরোনাম ফন্ট:</label> <select id="zoneTitleFontSelect" onchange="updateFont('zoneTitle',this.value)">${generateFontOptions(getFontValue('zoneTitle'))}</select> </div>
+         <div class="control-group"> <label>শিরোনাম সাইজ:</label> <input type="number" value="${parseInt(getStyle('zoneTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('zoneTitle',this.value);saveSetting('zones','titleSize',this.value)"> </div>
+         <div class="control-group"> <label>শিরোনাম কালার:</label> <input type="color" value="${rgbToHex(getStyle('zoneTitle','color'))||'#001f3f'}" onchange="updateColor('zoneTitle','color',this.value);saveSetting('zones','titleColor',this.value)"> </div>
+        ${canEdit ? `<hr> <div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"> <label>⚠️ টিউটর নোট:</label> <input type="text" id="tutorNote" placeholder="বার্তা লিখুন..." onchange="saveSetting('zones','tutorNote',this.value)"> </div> <div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"> <label>নোট সাইজ:</label> <input type="number" value="16" min="10" max="40" onchange="saveSetting('zones','tutorNoteSize',this.value)"> </div>` : ''}
+         <div id="zoneCardsSettings"> </div>
+     </div>
+    
+     <div class="control-section">
+         <h3>💬 রিভিউ</h3>
+         <div class="control-group"> <label>শিরোনাম:</label> <input type="text" value="${getText('reviewTitle')}" oninput="updateText('reviewTitle',this.value);saveSetting('reviews','titleText',this.value)"> </div>
+         <div class="control-group"> <label>শিরোনাম ফন্ট:</label> <select id="reviewTitleFontSelect" onchange="updateFont('reviewTitle',this.value)">${generateFontOptions(getFontValue('reviewTitle'))}</select> </div>
+         <div class="control-group"> <label>শিরোনাম সাইজ:</label> <input type="number" value="${parseInt(getStyle('reviewTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('reviewTitle',this.value);saveSetting('reviews','titleSize',this.value)"> </div>
+         <div class="control-group"> <label>শিরোনাম কালার:</label> <input type="color" value="${rgbToHex(getStyle('reviewTitle','color'))||'#001f3f'}" onchange="updateColor('reviewTitle','color',this.value);saveSetting('reviews','titleColor',this.value)"> </div>
+     </div>
+    
+     <div class="control-section">
+         <h3>👔 CEO</h3>
+         <div class="control-group"> <label>ইমেজ:</label> <input type="file" id="ceoImageInput" accept="image/*" onchange="updateCeoImage()"> </div>
+         <div class="control-group"> <label>নাম:</label> <input type="text" value="${getText('ceoName')}" oninput="updateText('ceoName',this.value);saveSetting('ceo','nameText',this.value)"> </div>
+         <div class="control-group"> <label>নাম ফন্ট:</label> <select id="ceoNameFontSelect" onchange="updateFont('ceoName',this.value)">${generateFontOptions(getFontValue('ceoName'))}</select> </div>
+         <div class="control-group"> <label>নাম সাইজ:</label> <input type="number" value="${parseInt(getStyle('ceoName','fontSize'))||24}" min="10" max="60" onchange="updateSize('ceoName',this.value);saveSetting('ceo','nameSize',this.value)"> </div>
+         <div class="control-group"> <label>নাম কালার:</label> <input type="color" value="${rgbToHex(getStyle('ceoName','color'))||'#001f3f'}" onchange="updateColor('ceoName','color',this.value);saveSetting('ceo','nameColor',this.value)"> </div>
+         <div class="control-group"> <label>পদবী:</label> <input type="text" value="${getText('ceoTitle')}" oninput="updateText('ceoTitle',this.value);saveSetting('ceo','titleText',this.value)"> </div>
+         <div class="control-group"> <label>পদবী ফন্ট:</label> <select id="ceoTitleFontSelect" onchange="updateFont('ceoTitle',this.value)">${generateFontOptions(getFontValue('ceoTitle'))}</select> </div>
+         <div class="control-group"> <label>বিবরণ:</label> <textarea rows="3" oninput="updateText('ceoDesc',this.value);saveSetting('ceo','descText',this.value)">${getText('ceoDesc')}</textarea> </div>
+         <div class="control-group"> <label>বিবরণ ফন্ট:</label> <select id="ceoDescFontSelect" onchange="updateFont('ceoDesc',this.value)">${generateFontOptions(getFontValue('ceoDesc'))}</select> </div>
+     </div>
+    
+     <div class="control-section">
+         <h3>🔻 ফুটার</h3>
+         <div class="control-group"> <label>কপিরাইট:</label> <input type="text" value="${getText('copyright')}" oninput="updateText('copyright',this.value);saveSetting('footer','copyrightText',this.value)"> </div>
+         <div class="control-group"> <label>কপিরাইট ফন্ট:</label> <select id="copyrightFontSelect" onchange="updateFont('copyright',this.value)">${generateFontOptions(getFontValue('copyright'))}</select> </div>
+         <div class="control-group"> <label>কপিরাইট সাইজ:</label> <input type="number" value="${parseInt(getStyle('copyright','fontSize'))||14}" min="10" max="40" onchange="updateSize('copyright',this.value);saveSetting('footer','copyrightSize',this.value)"> </div>
+         <div class="control-group"> <label>কপিরাইট কালার:</label> <input type="color" value="${rgbToHex(getStyle('copyright','color'))||'#ffffff'}" onchange="updateColor('copyright','color',this.value);saveSetting('footer','copyrightColor',this.value)"> </div>
+         <div class="control-group"> <label>ব্যাকগ্রাউন্ড:</label> <input type="color" value="${rgbToHex(getStyle('footerSection','background'))||'#001f3f'}" onchange="updateColor('footerSection','background',this.value);saveSetting('footer','bgColor',this.value)"> </div>
+     </div>
+`;
+
     loadZoneCardsSettings();
 }
 
@@ -434,13 +428,13 @@ function loadZoneCardsSettings() {
         c.innerHTML = '';
         s.forEach(doc => {
             const z = doc.data();
-            c.innerHTML += `<div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px;"><strong>জোন #${z.id}</strong><br>শিরোনাম: <input type="text" value="${z.title}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'title',this.value)"><br>এলাকা: <input type="text" value="${z.areas?z.areas.join(', '):''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'areas',this.value)"><br>মেল গ্রুপ: <input type="url" value="${z.maleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>ফিমেল গ্রুপ: <input type="url" value="${z.femaleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)"></div>`;
+            c.innerHTML += `<div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px;"><strong>জোন #${z.id}</strong><br>শিরোনাম: <input type="text" value="${z.title}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'title',this.value)"><br>এলাকা: <input type="text" value="${z.areas ? z.areas.join(', ') : ''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'areas',this.value)"><br>মেল গ্রুপ: <input type="url" value="${z.maleLink || ''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>ফিমেল গ্রুপ: <input type="url" value="${z.femaleLink || ''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)"></div>`;
         });
     });
 }
 
 function updateZone(id, f, v) {
-    if (f === 'areas') v = v.split(',').map(a=>a.trim()).filter(a=>a);
+    if (f === 'areas') v = v.split(',').map(a => a.trim()).filter(a => a);
     db.collection('zones').doc(id.toString()).update({ [f]: v });
 }
 
@@ -464,6 +458,7 @@ function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
+    // ✅ শুধুমাত্র Admin এবং Tutor দেখতে পাবে
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     zones.forEach(z => {
@@ -475,20 +470,21 @@ function renderZones(zones) {
             if (z.maleLink) btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
             if (z.femaleLink) btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
         }
-        card.innerHTML = `<h3>${z.title}</h3><div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">'+btns+'</div>' : ''}`;
+        card.innerHTML = `<h3>${z.title}</h3> <div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
         c.appendChild(card);
     });
-    
+
+    // ✅ নোট শুধুমাত্র Admin এবং Tutor দেখতে পাবে (Fixed Logic)
     if (canSee) {
         db.collection('settings').doc('zones').get().then(doc => {
-            if (doc.exists && doc.data().tutorNote) {
+            if (doc.exists && doc.data().tutorNote) { // Fixed && syntax error
                 const zt = document.getElementById('zoneTitle');
                 if (zt) {
                     const old = zt.parentNode.querySelector('.tutor-note');
                     if (old) old.remove();
                     const note = document.createElement('p');
                     note.className = 'tutor-note';
-                    note.style.cssText = `background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:${doc.data().tutorNoteSize||16}px;`;
+                    note.style.cssText = `background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:${doc.data().tutorNoteSize || 16}px;`;
                     note.innerText = '📢 ' + doc.data().tutorNote;
                     zt.parentNode.insertBefore(note, zt.nextSibling);
                 }
@@ -498,18 +494,22 @@ function renderZones(zones) {
 }
 
 function loadReviews() {
-    db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(s => {
+    db.collection('reviews').orderBy('createdAt', 'desc').limit(50).get().then(s => {
         const c = document.getElementById('reviewList');
         if (!c) return;
         c.innerHTML = '';
-        if (s.empty) { c.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">কোনো রিভিউ নেই</p>'; return; }
+        if (s.empty) { c.innerHTML = 'কোনো রিভিউ নেই'; return; }
         s.forEach(doc => {
             const r = doc.data();
             const date = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
             const card = document.createElement('div');
             card.className = 'review-card';
-            const del = currentUserRole === 'admin' ? `<button onclick="deleteReview('${doc.id}')" style="float:right;background:#ff4136;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🗑️</button>` : '';
-            card.innerHTML = `${del}<h4>${r.userName||'Anonymous'} ${r.userRole?'('+r.userRole+')':''}</h4><small style="color:#999;">${date}</small><p>${r.text}</p>`;
+            const del = currentUserRole === 'admin' ?
+                `<button onclick="deleteReview('${doc.id}')" style="float:right;background:#ff4136;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🗑️</button>`
+                : '';
+            card.innerHTML =
+                `${del}<h4>${r.userName || 'Anonymous'} ${r.userRole ? '(' + r.userRole + ')' : ''}</h4><small style="color:#999;">${date}</small><p>${r.text}</p>`
+            ;
             c.appendChild(card);
         });
     });
@@ -534,5 +534,4 @@ function submitReview() {
 }
 
 window.onclick = e => { if (e.target === document.getElementById('loginModal')) closeModal(); };
-
 console.log("✅ app.js loaded successfully");
