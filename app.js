@@ -1,7 +1,6 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FULL VERSION (FIXED)
-// ✅ Embedded Browser Support Added
-// ✅ Note Visibility Fixed (Admin & Tutor Only)
+// 🔥 TUTORS VALLEY - FONT SIZE FIX
+// ✅ Font Size Now Working Properly
 // ============================================
 
 // Firebase Config
@@ -137,14 +136,12 @@ function showEmbeddedBrowserWarning() {
 function googleLogin() {
     showLoading("লগইন হচ্ছে...");
     
-    // Check for embedded browser
     if (isEmbeddedBrowser()) {
         hideLoading();
         showEmbeddedBrowserWarning();
         return;
     }
     
-    // Use Popup instead of Redirect
     auth.signInWithPopup(provider).then(r => {
         if (currentLoginRole === 'admin' && r.user.email !== OWNER_EMAIL) {
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
@@ -216,7 +213,7 @@ function getFontValue(id) {
     return font.replace(/'/g, '').split(',')[0].trim();
 }
 
-// ✅ APPLY FONT - ULTIMATE FIX
+// ✅ APPLY FONT - FIXED (Preserves Font Size)
 function applyFont(elementId, font) {
     const el = document.getElementById(elementId);
     if (!el || !font) {
@@ -225,13 +222,33 @@ function applyFont(elementId, font) {
     }
     console.log("🎯 Applying font to", elementId, ":", font);
 
+    // ✅ Save current font-size BEFORE clearing styles
+    const currentFontSize = el.style.fontSize || '';
+    const currentColor = el.style.color || '';
+
+    // Clear ALL existing styles
     el.style.cssText = '';
     el.removeAttribute('style');
+
+    // ✅ Restore font-size and color
+    if (currentFontSize) {
+        el.style.fontSize = currentFontSize;
+    }
+    if (currentColor) {
+        el.style.color = currentColor;
+    }
+
+    // Force apply font-family with !important
     el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
-    el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
+    el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important; font-size: ${currentFontSize}; color: ${currentColor};`);
+
+    // Store in data attribute
     el.setAttribute('data-font', font);
+
+    // Force reflow
     void el.offsetWidth;
 
+    // Verify
     const computed = window.getComputedStyle(el).fontFamily;
     console.log("✅ Applied! Current font:", computed);
 
@@ -275,8 +292,57 @@ function saveSetting(collection, field, value) {
     console.log(`💾 Saving: ${collection}.${field} = ${value}`);
     const updateData = { [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
     db.collection('settings').doc(collection).update(updateData)
-        .then(() => { console.log(`✅ Saved ${collection}.${field}`); setTimeout(() => { loadAllSettings(); }, 500); })
+        .then(() => { 
+            console.log(`✅ Saved ${collection}.${field}`); 
+            // ✅ Apply font size immediately after saving
+            applySettingToElement(collection, field, value);
+            setTimeout(() => { loadAllSettings(); }, 500); 
+        })
         .catch((error) => { console.error(`❌ Error:`, error); db.collection('settings').doc(collection).set(updateData); });
+}
+
+// ✅ Apply Setting to Element Immediately
+function applySettingToElement(collection, field, value) {
+    const mappings = {
+        'header': {
+            'brandingSize': { id: 'branding', prop: 'fontSize' },
+            'brandingColor': { id: 'branding', prop: 'color' },
+            'mottoSize': { id: 'motto', prop: 'fontSize' },
+            'mottoColor': { id: 'motto', prop: 'color' },
+            'headerBg': { id: 'headerSection', prop: 'background' }
+        },
+        'zones': {
+            'titleSize': { id: 'zoneTitle', prop: 'fontSize' },
+            'titleColor': { id: 'zoneTitle', prop: 'color' },
+            'tutorNoteSize': { id: 'zoneTitle', prop: 'fontSize' }
+        },
+        'reviews': {
+            'titleSize': { id: 'reviewTitle', prop: 'fontSize' },
+            'titleColor': { id: 'reviewTitle', prop: 'color' }
+        },
+        'ceo': {
+            'nameSize': { id: 'ceoName', prop: 'fontSize' },
+            'nameColor': { id: 'ceoName', prop: 'color' }
+        },
+        'footer': {
+            'copyrightSize': { id: 'copyright', prop: 'fontSize' },
+            'copyrightColor': { id: 'copyright', prop: 'color' },
+            'bgColor': { id: 'footerSection', prop: 'background' }
+        }
+    };
+
+    if (mappings[collection] && mappings[collection][field]) {
+        const { id, prop } = mappings[collection][field];
+        const el = document.getElementById(id);
+        if (el) {
+            if (prop === 'fontSize') {
+                el.style.fontSize = value + 'px';
+            } else {
+                el.style[prop] = value;
+            }
+            console.log(`✅ Applied ${field} to ${id}: ${value}`);
+        }
+    }
 }
 
 function updateLogo() {
@@ -296,14 +362,24 @@ function updateCeoImage() {
 }
 
 function updateText(id, v) { const e = document.getElementById(id); if (e) e.innerText = v; }
-function updateSize(id, v) { const e = document.getElementById(id); if (e) e.style.fontSize = v + 'px'; }
+
+// ✅ UPDATE SIZE - FIXED
+function updateSize(id, v) { 
+    const e = document.getElementById(id); 
+    if (e) { 
+        e.style.fontSize = v + 'px';
+        // Also save to data attribute for persistence
+        e.setAttribute('data-fontsize', v + 'px');
+    }
+}
+
 function updateColor(id, p, c) { const e = document.getElementById(id); if (e) e.style[p] = c; }
 function updateFbUrl(url) {
     document.getElementById('fbBtn').href = url;
     db.collection('settings').doc('header').update({ fbUrl: url });
 }
 
-// ✅ LOAD ALL SETTINGS
+// ✅ LOAD ALL SETTINGS - FIXED
 function loadAllSettings() {
     console.log("🔄 Loading settings...");
     Promise.all([
@@ -325,10 +401,16 @@ function loadAllSettings() {
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
             if (d.brandingFont) { setTimeout(() => { applyFont('branding', d.brandingFont); }, 100); }
-            if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
+            if (d.brandingSize) {
+                document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
+                document.getElementById('branding').setAttribute('data-fontsize', d.brandingSize + 'px');
+            }
             if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
             if (d.mottoFont) { setTimeout(() => { applyFont('motto', d.mottoFont); }, 200); }
-            if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
+            if (d.mottoSize) {
+                document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
+                document.getElementById('motto').setAttribute('data-fontsize', d.mottoSize + 'px');
+            }
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
 
@@ -337,7 +419,10 @@ function loadAllSettings() {
             console.log("📄 Zones: ", d);
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
             if (d.titleFont) { setTimeout(() => { applyFont('zoneTitle', d.titleFont); }, 300); }
-            if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
+            if (d.titleSize) {
+                document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
+                document.getElementById('zoneTitle').setAttribute('data-fontsize', d.titleSize + 'px');
+            }
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
 
@@ -346,7 +431,10 @@ function loadAllSettings() {
             console.log("📄 Reviews: ", d);
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
             if (d.titleFont) { setTimeout(() => { applyFont('reviewTitle', d.titleFont); }, 400); }
-            if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
+            if (d.titleSize) {
+                document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
+                document.getElementById('reviewTitle').setAttribute('data-fontsize', d.titleSize + 'px');
+            }
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
 
@@ -358,7 +446,10 @@ function loadAllSettings() {
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
             if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
             if (d.nameFont) { setTimeout(() => { applyFont('ceoName', d.nameFont); }, 500); }
-            if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
+            if (d.nameSize) {
+                document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
+                document.getElementById('ceoName').setAttribute('data-fontsize', d.nameSize + 'px');
+            }
             if (d.titleFont) applyFont('ceoTitle', d.titleFont);
             if (d.descFont) applyFont('ceoDesc', d.descFont);
         }
@@ -369,7 +460,10 @@ function loadAllSettings() {
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
             if (d.copyrightFont) { setTimeout(() => { applyFont('copyright', d.copyrightFont); }, 600); }
-            if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
+            if (d.copyrightSize) {
+                document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
+                document.getElementById('copyright').setAttribute('data-fontsize', d.copyrightSize + 'px');
+            }
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
 
@@ -501,7 +595,6 @@ function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
-    // ✅ শুধুমাত্র Admin এবং Tutor দেখতে পাবে
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
     zones.forEach(z => {
@@ -517,10 +610,9 @@ function renderZones(zones) {
         c.appendChild(card);
     });
 
-    // ✅ নোট শুধুমাত্র Admin এবং Tutor দেখতে পাবে (Fixed Logic)
     if (canSee) {
         db.collection('settings').doc('zones').get().then(doc => {
-            if (doc.exists && doc.data().tutorNote) { // Fixed && syntax error
+            if (doc.exists && doc.data().tutorNote) {
                 const zt = document.getElementById('zoneTitle');
                 if (zt) {
                     const old = zt.parentNode.querySelector('.tutor-note');
