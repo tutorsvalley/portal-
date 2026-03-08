@@ -32,12 +32,12 @@ const fonts = {
 
 // Default Zones
 const defaultZones = [
-    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "", mixedLink: "" },
-    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "", mixedLink: "" },
-    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"], maleLink: "", femaleLink: "", mixedLink: "" },
-    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"], maleLink: "", femaleLink: "", mixedLink: "" },
-    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"], maleLink: "", femaleLink: "", mixedLink: "" },
-    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", mixedLink: "" }
+    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "" },
+    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "" },
+    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"], maleLink: "", femaleLink: "" },
+    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"], maleLink: "", femaleLink: "" },
+    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"], maleLink: "", femaleLink: "" },
+    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "" }
 ];
 
 // ✅ Professional Loading Screen - WHITE BACKGROUND
@@ -730,7 +730,7 @@ function updateFbUrl(url) {
     db.collection('settings').doc('header').update({ fbUrl: url });
 }
 
-// Load Zone Cards Settings
+// Load Zone Cards Settings - NO MIXED GROUP LINK
 function loadZoneCardsSettings() {
     db.collection('zones').get().then(snapshot => {
         const container = document.getElementById('zoneCardsSettings');
@@ -744,8 +744,7 @@ function loadZoneCardsSettings() {
                     শিরোনাম: <input type="text" value="${z.title}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'title',this.value)"><br>
                     এলাকা: <input type="text" value="${z.areas?z.areas.join(', '):''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'areas',this.value)"><br>
                     মেল গ্রুপ লিঙ্ক: <input type="url" value="${z.maleLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>
-                    ফিমেল গ্রুপ লিঙ্ক: <input type="url" value="${z.femaleLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)"><br>
-                    মিক্সড গ্রুপ লিঙ্ক: <input type="url" value="${z.mixedLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'mixedLink',this.value)">
+                    ফিমেল গ্রুপ লিঙ্ক: <input type="url" value="${z.femaleLink||''}" placeholder="WhatsApp/Telegram link" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)">
                 </div>
             `;
         });
@@ -772,7 +771,7 @@ function loadZones() {
     });
 }
 
-// ✅ Render Zones - Tutor Note শুধু Tutor & Admin দেখবে
+// ✅ Render Zones - Group buttons পাশাপাশি + Auto card size
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer');
     if (!container) return;
@@ -783,18 +782,43 @@ function renderZones(zones) {
     zones.forEach(zone => {
         const card = document.createElement('div');
         card.className = 'zone-card';
+        card.style.cssText = 'min-height:auto; height:auto;';
         
         let areas = '';
-        if (zone.areas) areas = zone.areas.map(a => `<span class="area-tag">${a}</span>`).join('');
-        
-        let buttons = '';
-        if (canSeeButtons) {
-            if (zone.maleLink) buttons += `<a href="${zone.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a><br>`;
-            if (zone.femaleLink) buttons += `<a href="${zone.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a><br>`;
-            if (zone.mixedLink) buttons += `<a href="${zone.mixedLink}" target="_blank" class="group-btn mixed-btn">👥 মিক্সড গ্রুপ</a>`;
+        if (zone.areas) {
+            areas = zone.areas.map(a => `<span class="area-tag" style="display:inline-block; margin:3px;">${a}</span>`).join('');
         }
         
-        card.innerHTML = `<h3>${zone.title}</h3><div class="area-tags">${areas}</div>${buttons ? '<div style="margin-top:10px;">'+buttons+'</div>' : ''}`;
+        // ✅ শুধু Male & Female buttons - পাশাপাশি
+        if (canSeeButtons) {
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.cssText = 'margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-start;';
+            
+            if (zone.maleLink) {
+                const maleBtn = document.createElement('a');
+                maleBtn.href = zone.maleLink;
+                maleBtn.target = '_blank';
+                maleBtn.className = 'group-btn male-btn';
+                maleBtn.innerHTML = '👨 মেল গ্রুপ';
+                maleBtn.style.cssText = 'flex:1; min-width:120px; text-align:center;';
+                buttonContainer.appendChild(maleBtn);
+            }
+            if (zone.femaleLink) {
+                const femaleBtn = document.createElement('a');
+                femaleBtn.href = zone.femaleLink;
+                femaleBtn.target = '_blank';
+                femaleBtn.className = 'group-btn female-btn';
+                femaleBtn.innerHTML = '👩 ফিমেল গ্রুপ';
+                femaleBtn.style.cssText = 'flex:1; min-width:120px; text-align:center;';
+                buttonContainer.appendChild(femaleBtn);
+            }
+            
+            if (buttonContainer.children.length > 0) {
+                card.appendChild(buttonContainer);
+            }
+        }
+        
+        card.innerHTML = `<h3>${zone.title}</h3><div class="area-tags" style="margin:10px 0;">${areas}</div>`;
         container.appendChild(card);
     });
     
@@ -804,7 +828,6 @@ function renderZones(zones) {
             if (doc.exists && doc.data().tutorNote) {
                 const zoneTitle = document.getElementById('zoneTitle');
                 if (zoneTitle) {
-                    // Remove existing note if any
                     const existingNote = zoneTitle.parentNode.querySelector('.tutor-note');
                     if (existingNote) existingNote.remove();
                     
