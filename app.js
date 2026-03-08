@@ -1,8 +1,7 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FULLY FIXED
+// 🔥 TUTORS VALLEY - MOBILE FIXED
 // ✅ All Syntax Errors Fixed
-// ✅ Gender Selection Added
-// ✅ 2 Second Loading Animation
+// ✅ Google Login Working on Mobile
 // ============================================
 
 // Firebase Config
@@ -27,7 +26,6 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
-let currentUserGender = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -45,7 +43,7 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: " ", femaleLink: " " }
 ];
 
-// Loading Function
+// Loading
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
@@ -83,12 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) { 
-            currentUserRole = doc.data().role; 
-            currentUserGender = doc.data().gender || null;
-            console.log("Role:", currentUserRole, "Gender:", currentUserGender); 
-            showHome(); 
-        }
+        if (doc.exists) { currentUserRole = doc.data().role; console.log("Role:", currentUserRole); showHome(); }
         else { logout(); }
     });
 }
@@ -127,9 +120,7 @@ function showHome() {
 }
 
 function logout() {
-    currentUser = null; 
-    currentUserRole = null;
-    currentUserGender = null;
+    currentUser = null; currentUserRole = null;
     document.getElementById('adminIcon').style.display = 'none';
     auth.signOut().then(() => showPage('loginPage'));
 }
@@ -138,52 +129,6 @@ function toggleControl() {
     const p = document.getElementById('controlPanel');
     p.style.display = (p.style.display === 'block') ? 'none' : 'block';
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
-}
-
-// ✅ Gender Selection Function
-function showGenderSelection() {
-    const genderHTML = `
-        <div id="genderModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;">
-            <div style="background:white;padding:40px;border-radius:20px;max-width:450px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
-                <h2 style="color:#001f3f;margin-bottom:15px;font-size:1.8em;">Select Your Gender</h2>
-                <p style="color:#666;margin-bottom:30px;font-size:1em;">আপনার লিঙ্গ নির্বাচন করুন। এটি WhatsApp গ্রুপ লিংক দেখাতে সাহায্য করবে।</p>
-                <button onclick="selectGender('male')" style="background:#0074D9;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;font-weight:600;transition:all 0.3s;">👨 Male (পুরুষ)</button>
-                <button onclick="selectGender('female')" style="background:#FF4136;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;font-weight:600;transition:all 0.3s;">👩 Female (নারী)</button>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', genderHTML);
-}
-
-function selectGender(gender) {
-    showLoading("লোড হচ্ছে...");
-    currentUserGender = gender;
-    
-    // Save to Firestore
-    if (currentUser) {
-        db.collection('users').doc(currentUser.uid).update({ 
-            gender: gender,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            // 2 second loading then show zones
-            setTimeout(() => {
-                hideLoading();
-                const modal = document.getElementById('genderModal');
-                if (modal) modal.remove();
-                loadZones();
-            }, 2000);
-        }).catch(e => {
-            hideLoading();
-            console.error("Error saving gender:", e);
-        });
-    } else {
-        setTimeout(() => {
-            hideLoading();
-            const modal = document.getElementById('genderModal');
-            if (modal) modal.remove();
-            loadZones();
-        }, 2000);
-    }
 }
 
 function generateFontOptions(current) {
@@ -221,27 +166,15 @@ function getFontValue(id) {
 
 function applyFont(elementId, font) {
     const el = document.getElementById(elementId);
-    if (!el || !font) {
-        console.log("❌ Element or font not found:", elementId, font);
-        return false;
-    }
-    console.log("🎯 Applying font to", elementId, ":", font);
-    el.style.cssText = '';
-    el.removeAttribute('style');
-    el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
-    el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
+    if (!el || !font) return false;
+    el.style.fontFamily = `'${font}', 'Hind Siliguri', sans-serif`;
     el.setAttribute('data-font', font);
-    void el.offsetWidth;
-    const computed = window.getComputedStyle(el).fontFamily;
-    console.log("✅ Applied! Current font:", computed);
     return true;
 }
 
 function updateFont(elementId, font) {
     if (!font) { alert("কোনো ফন্ট সিলেক্ট করেননি!"); return; }
-    console.log("🎨 Font change: ", elementId, "→ ", font);
-    const success = applyFont(elementId, font);
-    if (!success) { console.error("❌ Failed"); return; }
+    applyFont(elementId, font);
     let collection, field;
     if (elementId === 'branding') { collection = 'header'; field = 'brandingFont'; }
     else if (elementId === 'motto') { collection = 'header'; field = 'mottoFont'; }
@@ -252,25 +185,12 @@ function updateFont(elementId, font) {
     else if (elementId === 'ceoDesc') { collection = 'ceo'; field = 'descFont'; }
     else if (elementId === 'copyright') { collection = 'footer'; field = 'copyrightFont'; }
     if (collection && field) {
-        const updateData = { [field]: font, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-        db.collection('settings').doc(collection).update(updateData)
-            .then(() => {
-                console.log(`✅ Saved: ${collection}.${field} = ${font}`);
-                const selectId = elementId + 'FontSelect';
-                const select = document.getElementById(selectId);
-                if (select) select.value = font;
-                setTimeout(() => { alert(`✅ Font changed: ${font}\n\nPage reload দিন (F5)`); }, 500);
-            })
-            .catch(error => { console.error("❌ Save failed: ", error); });
+        db.collection('settings').doc(collection).update({ [field]: font });
     }
 }
 
 function saveSetting(collection, field, value) {
-    console.log(`💾 Saving: ${collection}.${field} = ${value}`);
-    const updateData = { [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-    db.collection('settings').doc(collection).update(updateData)
-        .then(() => { console.log(`✅ Saved ${collection}.${field}`); setTimeout(() => { loadAllSettings(); }, 500); })
-        .catch((error) => { console.error(`❌ Error:`, error); db.collection('settings').doc(collection).set(updateData); });
+    db.collection('settings').doc(collection).update({ [field]: value });
 }
 
 function updateLogo() {
@@ -298,7 +218,6 @@ function updateFbUrl(url) {
 }
 
 function loadAllSettings() {
-    console.log("🔄 Loading settings...");
     Promise.all([
         db.collection('settings').doc('header').get(),
         db.collection('settings').doc('zones').get(),
@@ -309,75 +228,53 @@ function loadAllSettings() {
         const [h, z, r, c, f] = docs;
         if (h.exists) {
             const d = h.data();
-            console.log("📄 Header: ", d);
             if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
             if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
             if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
-            if (d.brandingFont) { setTimeout(() => { applyFont('branding', d.brandingFont); }, 100); }
+            if (d.brandingFont) applyFont('branding', d.brandingFont);
             if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
             if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
-            if (d.mottoFont) { setTimeout(() => { applyFont('motto', d.mottoFont); }, 200); }
+            if (d.mottoFont) applyFont('motto', d.mottoFont);
             if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
         if (z.exists) {
             const d = z.data();
-            console.log("📄 Zones: ", d);
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
-            if (d.titleFont) { setTimeout(() => { applyFont('zoneTitle', d.titleFont); }, 300); }
+            if (d.titleFont) applyFont('zoneTitle', d.titleFont);
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
         if (r.exists) {
             const d = r.data();
-            console.log("📄 Reviews: ", d);
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
-            if (d.titleFont) { setTimeout(() => { applyFont('reviewTitle', d.titleFont); }, 400); }
+            if (d.titleFont) applyFont('reviewTitle', d.titleFont);
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
         if (c.exists) {
             const d = c.data();
-            console.log("📄 CEO: ", d);
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
             if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
-            if (d.nameFont) { setTimeout(() => { applyFont('ceoName', d.nameFont); }, 500); }
+            if (d.nameFont) applyFont('ceoName', d.nameFont);
             if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
             if (d.titleFont) applyFont('ceoTitle', d.titleFont);
             if (d.descFont) applyFont('ceoDesc', d.descFont);
         }
         if (f.exists) {
             const d = f.data();
-            console.log("📄 Footer: ", d);
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
-            if (d.copyrightFont) { setTimeout(() => { applyFont('copyright', d.copyrightFont); }, 600); }
+            if (d.copyrightFont) applyFont('copyright', d.copyrightFont);
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
-        console.log("✅ All settings loaded!");
-        setTimeout(updateFontSelects, 1000);
     });
-}
-
-function updateFontSelects() {
-    const setSelectValue = (selectId, value) => {
-        const select = document.getElementById(selectId);
-        if (select && value) { select.value = value; console.log("✅ Set", selectId, "to", value); }
-    };
-    setSelectValue('brandingFontSelect', getFontValue('branding'));
-    setSelectValue('mottoFontSelect', getFontValue('motto'));
-    setSelectValue('zoneTitleFontSelect', getFontValue('zoneTitle'));
-    setSelectValue('reviewTitleFontSelect', getFontValue('reviewTitle'));
-    setSelectValue('ceoNameFontSelect', getFontValue('ceoName'));
-    setSelectValue('ceoTitleFontSelect', getFontValue('ceoTitle'));
-    setSelectValue('ceoDescFontSelect', getFontValue('ceoDesc'));
-    setSelectValue('copyrightFontSelect', getFontValue('copyright'));
 }
 
 function loadControlPanel() {
@@ -481,34 +378,18 @@ function renderZones(zones) {
     if (!c) return;
     c.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    
     zones.forEach(z => {
         const card = document.createElement('div');
         card.className = 'zone-card';
         let areas = z.areas ? z.areas.map(a => `<span class="area-tag">${a}</span>`).join('') : '';
         let btns = '';
-        
         if (canSee) {
-            // Show buttons based on gender
-            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== ' ') {
-                btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>`;
-            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== ' ') {
-                btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>`;
-            } else if (!currentUserGender && (currentUserRole === 'tutor' || currentUserRole === 'guardian')) {
-                // Show gender selection if not selected
-                btns = `<div style="text-align:center;padding:15px;background:#f0f0f0;border-radius:8px;margin:10px 0;"><p style="margin:0 0 10px 0;color:#666;">Please select your gender to view WhatsApp groups</p><button onclick="showGenderSelection()" style="background:#0074D9;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Select Gender</button></div>`;
-            }
+            if (z.maleLink && z.maleLink.trim() !== ' ') btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
+            if (z.femaleLink && z.femaleLink.trim() !== ' ') btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
         }
-        
-        card.innerHTML = `<h3>${z.title}</h3><div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
+        card.innerHTML = `<h3>${z.title}</h3> <div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
         c.appendChild(card);
     });
-
-    if (canSee && !currentUserGender && (currentUserRole === 'tutor' || currentUserRole === 'guardian')) {
-        setTimeout(() => {
-            showGenderSelection();
-        }, 500);
-    }
 }
 
 function loadReviews() {
