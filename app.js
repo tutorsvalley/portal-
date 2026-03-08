@@ -1,8 +1,7 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FINAL FIXED VERSION
-// ✅ Instant Logout (No Old Interface)
-// ✅ 2 Second Loading Animation
-// ✅ All Syntax Errors Fixed
+// 🔥 TUTORS VALLEY - GENDER BASED WHATSAPP
+// ✅ Gender Selection Working
+// ✅ WhatsApp Group Links
 // ============================================
 
 // Firebase Config
@@ -27,6 +26,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
+let currentUserGender = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -44,119 +44,67 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: " ", femaleLink: " " }
 ];
 
-// ✅ Loading Function (2 Seconds Minimum)
+// Loading
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
-    
-    // Hide ALL pages immediately (before showing loading)
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    
     const div = document.createElement('div');
     div.id = 'loadingScreen';
     div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
     div.innerHTML = `<div style="width:60px;height:60px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:20px;color:#333;font-size:1.2em;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
     document.body.appendChild(div);
-    
-    // Minimum 2 seconds loading
-    div.minTime = setTimeout(() => {
-        div.ready = true;
-    }, 2000);
+    div.minTime = setTimeout(() => { div.ready = true; }, 2000);
 }
 
 function hideLoading() {
     const div = document.getElementById('loadingScreen');
-    if (div) { 
-        if (div.minTime) clearTimeout(div.minTime); 
-        div.remove(); 
-    }
+    if (div) { if (div.minTime) clearTimeout(div.minTime); div.remove(); }
 }
 
-// ✅ Guest Login
+// Guest Login
 function guestLogin() {
-    // Show loading FIRST (before any operation)
     showLoading("লগইন হচ্ছে...");
-    
-    // Clear all state immediately
     currentUser = null;
     currentUserRole = null;
-    
     auth.signOut().then(() => auth.signInAnonymously()).then(u => {
         currentUser = u.user;
         currentUserRole = 'guest';
         return db.collection('users').doc(u.user.uid).set({ email: 'guest@tutorsvalley.com', displayName: 'Guest', role: 'guest', isGuest: true }, { merge: true });
-    }).then(() => { 
-        // Wait for minimum 2 seconds
+    }).then(() => {
         const loadingDiv = document.getElementById('loadingScreen');
-        if (loadingDiv && loadingDiv.ready) {
-            hideLoading();
-            showHome();
-        } else if (loadingDiv) {
-            loadingDiv.minTime = setTimeout(() => {
-                hideLoading();
-                showHome();
-            }, 2000);
-        }
-    }).catch(e => { 
-        hideLoading(); 
-        alert("Error: " + e.message); 
-    });
+        if (loadingDiv && loadingDiv.ready) { hideLoading(); showHome(); }
+        else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showHome(); }, 2000); }
+    }).catch(e => { hideLoading(); alert("Error: " + e.message); });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Show loading immediately (hide everything)
     showLoading("লোড হচ্ছে...");
-    
     auth.onAuthStateChanged(user => {
-        if (user) { 
-            currentUser = user; 
-            loadUser(user.uid); 
-        } else { 
-            // Wait for minimum 2 seconds before showing login page
+        if (user) { currentUser = user; loadUser(user.uid); }
+        else {
             const loadingDiv = document.getElementById('loadingScreen');
-            if (loadingDiv && loadingDiv.ready) {
-                hideLoading();
-                showPage('loginPage');
-            } else if (loadingDiv) {
-                loadingDiv.minTime = setTimeout(() => {
-                    hideLoading();
-                    showPage('loginPage');
-                }, 2000);
-            }
+            if (loadingDiv && loadingDiv.ready) { hideLoading(); showPage('loginPage'); }
+            else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showPage('loginPage'); }, 2000); }
         }
     });
 });
 
 function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) { 
-            currentUserRole = doc.data().role; 
-            console.log("Role:", currentUserRole); 
-            
-            // Wait for minimum 2 seconds
+        if (doc.exists) {
+            currentUserRole = doc.data().role;
+            currentUserGender = doc.data().gender || null;
+            console.log("Role:", currentUserRole, "Gender:", currentUserGender);
             const loadingDiv = document.getElementById('loadingScreen');
-            if (loadingDiv && loadingDiv.ready) {
-                hideLoading();
-                showHome();
-            } else if (loadingDiv) {
-                loadingDiv.minTime = setTimeout(() => {
-                    hideLoading();
-                    showHome();
-                }, 2000);
-            }
-        } else { 
-            logout(); 
-        }
-    }).catch(error => {
-        console.error("Load user error:", error);
-        logout();
+            if (loadingDiv && loadingDiv.ready) { hideLoading(); showHome(); }
+            else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showHome(); }, 2000); }
+        } else { logout(); }
     });
 }
 
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    const page = document.getElementById(id);
-    if (page) page.style.display = 'block';
+    document.getElementById(id).style.display = 'block';
 }
 
 function openModal(role) {
@@ -165,124 +113,86 @@ function openModal(role) {
     document.getElementById('loginModal').style.display = 'block';
 }
 
-function closeModal() { 
-    document.getElementById('loginModal').style.display = 'none'; 
-}
+function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
-// ✅ Google Login
 function googleLogin() {
-    // Show loading FIRST
     showLoading("লগইন হচ্ছে...");
-    
-    // Clear state immediately
     currentUser = null;
     currentUserRole = null;
-    
     auth.signInWithPopup(provider).then(r => {
         if (currentLoginRole === 'admin' && r.user.email !== OWNER_EMAIL) {
             hideLoading();
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
-            auth.signOut(); 
-            closeModal(); 
-            return;
+            auth.signOut(); closeModal(); return;
         }
-        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => { 
-            closeModal(); 
-            
-            // Wait for minimum 2 seconds
+        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => {
+            closeModal();
             const loadingDiv = document.getElementById('loadingScreen');
-            if (loadingDiv && loadingDiv.ready) {
-                hideLoading();
-                showHome();
-            } else if (loadingDiv) {
-                loadingDiv.minTime = setTimeout(() => {
-                    hideLoading();
-                    showHome();
-                }, 2000);
-            }
+            if (loadingDiv && loadingDiv.ready) { hideLoading(); showHome(); }
+            else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showHome(); }, 2000); }
         });
-    }).catch(e => { 
-        hideLoading(); 
-        alert("Error: " + e.message); 
-    });
+    }).catch(e => { hideLoading(); alert("Error: " + e.message); });
 }
 
-// ✅ Show Home (Clear All Old Data First)
+// ✅ Gender Selection
+function selectGender(gender) {
+    currentUserGender = gender;
+    if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({ gender: gender });
+    }
+    const modal = document.getElementById('genderModal');
+    if (modal) modal.remove();
+    loadZones();
+}
+
+function showGenderSelection() {
+    const genderHTML = `
+        <div id="genderModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;">
+            <div style="background:white;padding:40px;border-radius:20px;max-width:400px;text-align:center;">
+                <h2 style="color:#001f3f;margin-bottom:20px;">আপনার লিঙ্গ নির্বাচন করুন</h2>
+                <p style="color:#666;margin-bottom:30px;">আপনার লিঙ্গ অনুযায়ী WhatsApp গ্রুপ লিংক দেখানো হবে</p>
+                <button onclick="selectGender('male')" style="background:#0074D9;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;">👨 পুরুষ</button>
+                <button onclick="selectGender('female')" style="background:#FF4136;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;">👩 নারী</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', genderHTML);
+}
+
 function showHome() {
-    // Clear all old content FIRST
-    const zoneContainer = document.getElementById('zoneContainer');
-    const reviewList = document.getElementById('reviewList');
-    const controlBody = document.getElementById('controlBody');
-    const controlPanel = document.getElementById('controlPanel');
-    
-    if (zoneContainer) zoneContainer.innerHTML = '';
-    if (reviewList) reviewList.innerHTML = '';
-    if (controlBody) controlBody.innerHTML = '';
-    if (controlPanel) controlPanel.style.display = 'none';
-    
-    // Then show page
     showPage('homePage');
-    
-    // Update UI elements
-    const adminIcon = document.getElementById('adminIcon');
-    const reviewBox = document.getElementById('reviewBox');
-    
-    if (adminIcon) {
-        adminIcon.style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
+    if (currentUser && !currentUserGender) {
+        showGenderSelection();
     }
-    
-    if (reviewBox) {
-        reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
-    }
-    
-    // Load new data
+    document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
+    document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     loadAllSettings();
     loadZones();
     loadReviews();
 }
 
-// ✅ Logout (2 Second Loading - No Old Interface)
 function logout() {
-    // Show loading FIRST (hide all pages immediately)
     showLoading("লগআউট হচ্ছে...");
-    
-    // Clear all state immediately
     currentUser = null;
     currentUserRole = null;
-    currentLoginRole = null;
-    
-    // Hide all UI elements immediately
+    currentUserGender = null;
     const adminIcon = document.getElementById('adminIcon');
     const reviewBox = document.getElementById('reviewBox');
     const zoneContainer = document.getElementById('zoneContainer');
     const reviewList = document.getElementById('reviewList');
     const controlBody = document.getElementById('controlBody');
     const controlPanel = document.getElementById('controlPanel');
-    
     if (adminIcon) adminIcon.style.display = 'none';
     if (reviewBox) reviewBox.style.display = 'none';
     if (zoneContainer) zoneContainer.innerHTML = '';
     if (reviewList) reviewList.innerHTML = '';
     if (controlBody) controlBody.innerHTML = '';
     if (controlPanel) controlPanel.style.display = 'none';
-    
-    // Sign out
     auth.signOut().then(() => {
-        // Wait for minimum 2 seconds before showing login page
         const loadingDiv = document.getElementById('loadingScreen');
-        if (loadingDiv && loadingDiv.ready) {
-            hideLoading();
-            showPage('loginPage');
-        } else if (loadingDiv) {
-            loadingDiv.minTime = setTimeout(() => {
-                hideLoading();
-                showPage('loginPage');
-            }, 2000);
-        }
-    }).catch(error => {
-        hideLoading();
-        showPage('loginPage');
-    });
+        if (loadingDiv && loadingDiv.ready) { hideLoading(); showPage('loginPage'); }
+        else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showPage('loginPage'); }, 2000); }
+    }).catch(error => { hideLoading(); showPage('loginPage'); });
 }
 
 function toggleControl() {
@@ -326,10 +236,7 @@ function getFontValue(id) {
 
 function applyFont(elementId, font) {
     const el = document.getElementById(elementId);
-    if (!el || !font) {
-        console.log("❌ Element or font not found:", elementId, font);
-        return false;
-    }
+    if (!el || !font) { console.log("❌ Element or font not found:", elementId, font); return false; }
     el.style.cssText = '';
     el.removeAttribute('style');
     el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
@@ -568,23 +475,40 @@ function loadZones() {
     });
 }
 
+// ✅ Render Zones with Gender Filter
 function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    
     zones.forEach(z => {
         const card = document.createElement('div');
         card.className = 'zone-card';
         let areas = z.areas ? z.areas.map(a => `<span class="area-tag">${a}</span>`).join('') : '';
         let btns = '';
+        
         if (canSee) {
-            if (z.maleLink) btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
-            if (z.femaleLink) btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
+            // Show buttons based on gender
+            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== ' ') {
+                btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>`;
+            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== ' ') {
+                btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>`;
+            } else if (!currentUserGender) {
+                // If no gender selected, show both
+                if (z.maleLink && z.maleLink.trim() !== ' ') {
+                    btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group (Male)</a>`;
+                }
+                if (z.femaleLink && z.femaleLink.trim() !== ' ') {
+                    btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group (Female)</a>`;
+                }
+            }
         }
+        
         card.innerHTML = `<h3>${z.title}</h3> <div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
         c.appendChild(card);
     });
+
     if (canSee) {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
