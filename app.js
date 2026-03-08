@@ -1,7 +1,7 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FULLY FIXED
-// ✅ All Syntax Errors Removed
-// ✅ Login Working 100%
+// 🔥 TUTORS VALLEY - FINAL FIXED VERSION
+// ✅ Instant Mode Switch (No Old Interface)
+// ✅ 2 Second Loading Animation
 // ============================================
 
 // Firebase Config
@@ -43,44 +43,73 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: " ", femaleLink: " " }
 ];
 
-// Loading Function
+// ✅ Loading Function (2 Seconds Minimum)
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
+    
+    // Hide ALL pages immediately
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    
     const div = document.createElement('div');
     div.id = 'loadingScreen';
-    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-    div.innerHTML = `<div style="width:60px;height:60px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:20px;color:#333;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+    div.innerHTML = `<div style="width:60px;height:60px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:20px;color:#333;font-size:1.2em;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
     document.body.appendChild(div);
-    div.autoHide = setTimeout(() => hideLoading(), 5000);
+    
+    // Minimum 2 seconds loading
+    div.minTime = setTimeout(() => {
+        div.ready = true;
+    }, 2000);
 }
 
 function hideLoading() {
     const div = document.getElementById('loadingScreen');
     if (div) { 
-        if (div.autoHide) clearTimeout(div.autoHide); 
+        if (div.minTime) clearTimeout(div.minTime); 
         div.remove(); 
     }
 }
 
-// Guest Login
+// ✅ Guest Login (No Old Interface)
 function guestLogin() {
+    // Show loading FIRST (before any operation)
     showLoading("লগইন হচ্ছে...");
+    
+    // Clear all state immediately
+    currentUser = null;
+    currentUserRole = null;
+    
     auth.signOut().then(() => auth.signInAnonymously()).then(u => {
         currentUser = u.user;
         currentUserRole = 'guest';
         return db.collection('users').doc(u.user.uid).set({ email: 'guest@tutorsvalley.com', displayName: 'Guest', role: 'guest', isGuest: true }, { merge: true });
-    }).then(() => { hideLoading(); showHome(); }).catch(e => { hideLoading(); alert("Error: " + e.message); });
+    }).then(() => { 
+        // Wait for minimum 2 seconds
+        const loadingDiv = document.getElementById('loadingScreen');
+        if (loadingDiv && loadingDiv.ready) {
+            hideLoading();
+            showHome();
+        } else if (loadingDiv) {
+            loadingDiv.minTime = setTimeout(() => {
+                hideLoading();
+                showHome();
+            }, 2000);
+        }
+    }).catch(e => { 
+        hideLoading(); 
+        alert("Error: " + e.message); 
+    });
 }
 
 // DOM Loaded
 document.addEventListener('DOMContentLoaded', () => {
     showLoading("লোড হচ্ছে...");
     auth.onAuthStateChanged(user => {
-        hideLoading();
         if (user) { 
             currentUser = user; 
             loadUser(user.uid); 
         } else { 
+            hideLoading();
             showPage('loginPage'); 
         }
     });
@@ -91,7 +120,18 @@ function loadUser(uid) {
         if (doc.exists) { 
             currentUserRole = doc.data().role; 
             console.log("Role:", currentUserRole); 
-            showHome(); 
+            
+            // Wait for minimum loading time
+            const loadingDiv = document.getElementById('loadingScreen');
+            if (loadingDiv && loadingDiv.ready) {
+                hideLoading();
+                showHome();
+            } else if (loadingDiv) {
+                loadingDiv.minTime = setTimeout(() => {
+                    hideLoading();
+                    showHome();
+                }, 2000);
+            }
         } else { 
             logout(); 
         }
@@ -100,7 +140,8 @@ function loadUser(uid) {
 
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
+    const page = document.getElementById(id);
+    if (page) page.style.display = 'block';
 }
 
 function openModal(role) {
@@ -113,31 +154,120 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none'; 
 }
 
+// ✅ Google Login (No Old Interface)
 function googleLogin() {
+    // Show loading FIRST
     showLoading("লগইন হচ্ছে...");
+    
+    // Clear state immediately
+    currentUser = null;
+    currentUserRole = null;
+    
     auth.signInWithPopup(provider).then(r => {
         if (currentLoginRole === 'admin' && r.user.email !== OWNER_EMAIL) {
+            hideLoading();
             alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
-            auth.signOut(); closeModal(); hideLoading(); return;
+            auth.signOut(); 
+            closeModal(); 
+            return;
         }
-        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => { closeModal(); hideLoading(); });
-    }).catch(e => { hideLoading(); alert("Error: " + e.message); });
+        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => { 
+            closeModal(); 
+            
+            // Wait for minimum 2 seconds
+            const loadingDiv = document.getElementById('loadingScreen');
+            if (loadingDiv && loadingDiv.ready) {
+                hideLoading();
+                showHome();
+            } else if (loadingDiv) {
+                loadingDiv.minTime = setTimeout(() => {
+                    hideLoading();
+                    showHome();
+                }, 2000);
+            }
+        });
+    }).catch(e => { 
+        hideLoading(); 
+        alert("Error: " + e.message); 
+    });
 }
 
+// ✅ Show Home (Clear All Old Data First)
 function showHome() {
+    // Clear all old content FIRST
+    const zoneContainer = document.getElementById('zoneContainer');
+    const reviewList = document.getElementById('reviewList');
+    const controlBody = document.getElementById('controlBody');
+    const controlPanel = document.getElementById('controlPanel');
+    
+    if (zoneContainer) zoneContainer.innerHTML = '';
+    if (reviewList) reviewList.innerHTML = '';
+    if (controlBody) controlBody.innerHTML = '';
+    if (controlPanel) controlPanel.style.display = 'none';
+    
+    // Then show page
     showPage('homePage');
-    document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
-    document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
+    
+    // Update UI elements
+    const adminIcon = document.getElementById('adminIcon');
+    const reviewBox = document.getElementById('reviewBox');
+    
+    if (adminIcon) {
+        adminIcon.style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
+    }
+    
+    if (reviewBox) {
+        reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
+    }
+    
+    // Load new data
     loadAllSettings();
     loadZones();
     loadReviews();
 }
 
+// ✅ Logout (2 Second Loading)
 function logout() {
-    currentUser = null; 
+    // Show loading FIRST
+    showLoading("লগআউট হচ্ছে...");
+    
+    // Clear all state immediately
+    currentUser = null;
     currentUserRole = null;
-    document.getElementById('adminIcon').style.display = 'none';
-    auth.signOut().then(() => showPage('loginPage'));
+    currentLoginRole = null;
+    
+    // Hide all UI elements immediately
+    const adminIcon = document.getElementById('adminIcon');
+    const reviewBox = document.getElementById('reviewBox');
+    const zoneContainer = document.getElementById('zoneContainer');
+    const reviewList = document.getElementById('reviewList');
+    const controlBody = document.getElementById('controlBody');
+    const controlPanel = document.getElementById('controlPanel');
+    
+    if (adminIcon) adminIcon.style.display = 'none';
+    if (reviewBox) reviewBox.style.display = 'none';
+    if (zoneContainer) zoneContainer.innerHTML = '';
+    if (reviewList) reviewList.innerHTML = '';
+    if (controlBody) controlBody.innerHTML = '';
+    if (controlPanel) controlPanel.style.display = 'none';
+    
+    // Sign out
+    auth.signOut().then(() => {
+        // Wait for minimum 2 seconds
+        const loadingDiv = document.getElementById('loadingScreen');
+        if (loadingDiv && loadingDiv.ready) {
+            hideLoading();
+            showPage('loginPage');
+        } else if (loadingDiv) {
+            loadingDiv.minTime = setTimeout(() => {
+                hideLoading();
+                showPage('loginPage');
+            }, 2000);
+        }
+    }).catch(error => {
+        hideLoading();
+        showPage('loginPage');
+    });
 }
 
 function toggleControl() {
@@ -185,23 +315,19 @@ function applyFont(elementId, font) {
         console.log("❌ Element or font not found:", elementId, font);
         return false;
     }
-    console.log("🎯 Applying font to", elementId, ":", font);
     el.style.cssText = '';
     el.removeAttribute('style');
     el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
     el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
     el.setAttribute('data-font', font);
     void el.offsetWidth;
-    const computed = window.getComputedStyle(el).fontFamily;
-    console.log("✅ Applied! Current font:", computed);
     return true;
 }
 
 function updateFont(elementId, font) {
     if (!font) { alert("কোনো ফন্ট সিলেক্ট করেননি!"); return; }
-    console.log("🎨 Font change: ", elementId, "→ ", font);
     const success = applyFont(elementId, font);
-    if (!success) { console.error("❌ Failed"); return; }
+    if (!success) { return; }
     let collection, field;
     if (elementId === 'branding') { collection = 'header'; field = 'brandingFont'; }
     else if (elementId === 'motto') { collection = 'header'; field = 'mottoFont'; }
@@ -215,7 +341,6 @@ function updateFont(elementId, font) {
         const updateData = { [field]: font, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
         db.collection('settings').doc(collection).update(updateData)
             .then(() => {
-                console.log(`✅ Saved: ${collection}.${field} = ${font}`);
                 const selectId = elementId + 'FontSelect';
                 const select = document.getElementById(selectId);
                 if (select) select.value = font;
@@ -226,10 +351,9 @@ function updateFont(elementId, font) {
 }
 
 function saveSetting(collection, field, value) {
-    console.log(`💾 Saving: ${collection}.${field} = ${value}`);
     const updateData = { [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
     db.collection('settings').doc(collection).update(updateData)
-        .then(() => { console.log(`✅ Saved ${collection}.${field}`); setTimeout(() => { loadAllSettings(); }, 500); })
+        .then(() => { setTimeout(() => { loadAllSettings(); }, 500); })
         .catch((error) => { console.error(`❌ Error:`, error); db.collection('settings').doc(collection).set(updateData); });
 }
 
@@ -258,7 +382,6 @@ function updateFbUrl(url) {
 }
 
 function loadAllSettings() {
-    console.log("🔄 Loading settings...");
     Promise.all([
         db.collection('settings').doc('header').get(),
         db.collection('settings').doc('zones').get(),
@@ -269,7 +392,6 @@ function loadAllSettings() {
         const [h, z, r, c, f] = docs;
         if (h.exists) {
             const d = h.data();
-            console.log("📄 Header: ", d);
             if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
             if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
@@ -285,7 +407,6 @@ function loadAllSettings() {
         }
         if (z.exists) {
             const d = z.data();
-            console.log("📄 Zones: ", d);
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
             if (d.titleFont) { setTimeout(() => { applyFont('zoneTitle', d.titleFont); }, 300); }
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
@@ -293,7 +414,6 @@ function loadAllSettings() {
         }
         if (r.exists) {
             const d = r.data();
-            console.log("📄 Reviews: ", d);
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
             if (d.titleFont) { setTimeout(() => { applyFont('reviewTitle', d.titleFont); }, 400); }
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
@@ -301,7 +421,6 @@ function loadAllSettings() {
         }
         if (c.exists) {
             const d = c.data();
-            console.log("📄 CEO: ", d);
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
@@ -313,14 +432,12 @@ function loadAllSettings() {
         }
         if (f.exists) {
             const d = f.data();
-            console.log("📄 Footer: ", d);
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
             if (d.copyrightFont) { setTimeout(() => { applyFont('copyright', d.copyrightFont); }, 600); }
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
-        console.log("✅ All settings loaded!");
         setTimeout(updateFontSelects, 1000);
     });
 }
@@ -328,7 +445,7 @@ function loadAllSettings() {
 function updateFontSelects() {
     const setSelectValue = (selectId, value) => {
         const select = document.getElementById(selectId);
-        if (select && value) { select.value = value; console.log("✅ Set", selectId, "to", value); }
+        if (select && value) { select.value = value; }
     };
     setSelectValue('brandingFontSelect', getFontValue('branding'));
     setSelectValue('mottoFontSelect', getFontValue('motto'));
