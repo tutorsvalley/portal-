@@ -3,6 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ✅ In-App Browser Redirect Detection -->
+    <script>
+        // Detect if opened from in-app browser (Facebook, Instagram, WhatsApp, Messenger)
+        function detectInAppBrowser() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            const isFacebook = /FBAN|FBAV/i.test(userAgent);
+            const isInstagram = /Instagram/i.test(userAgent);
+            const isWhatsApp = /WhatsApp/i.test(userAgent);
+            const isMessenger = /Messenger/i.test(userAgent);
+            
+            if (isFacebook || isInstagram || isWhatsApp || isMessenger) {
+                // Redirect to redirect.html with current URL as parameter
+                const currentUrl = encodeURIComponent(window.location.href);
+                window.location.href = 'redirect.html?url=' + currentUrl;
+            }
+        }
+        
+        // Run detection immediately on page load
+        detectInAppBrowser();
+    </script>
+    
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
