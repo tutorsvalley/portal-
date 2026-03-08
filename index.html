@@ -3,31 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     
-    <!-- SEO & Social Media Meta Tags -->
-    <meta name="description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। টিউটর এবং অভিভাবকদের জন্য সেরা প্ল্যাটফর্ম।">
-    <meta property="og:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
-    <meta property="og:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। এখনই জয়েন করুন!">
-    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/tutors-valley-6ddb0.appspot.com/o/logo.png?alt=media">
-    <meta property="og:url" content="https://tutors-valley.web.app">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#001f3f">
+    <!-- ✅ Primary SEO Meta Tags -->
+    <title>Tutors Valley - ঢাকার সেরা টিউটর প্ল্যাটফর্ম</title>
+    <meta name="description" content="Tutors Valley হলো ঢাকার সেরা টিউটর খুঁজে পাওয়ার প্ল্যাটফর্ম। টিউটর এবং অভিভাবকদের জন্য নিরাপদ ও সহজ মাধ্যম। এখনই জয়েন করুন!">
+    <meta name="keywords" content="tutor, tuition, dhaka, tutoring, home tutor, online tutor, bangla tutor, education, private tutor">
+    <meta name="author" content="Tutors Valley">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://tutorsvalley.github.io/portal-/">
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- ✅ Open Graph / Facebook / WhatsApp Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tutorsvalley.github.io/portal-/">
+    <meta property="og:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
+    <meta property="og:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। টিউটর এবং অভিভাবকদের জন্য সেরা প্ল্যাটফর্ম।">
+    <meta property="og:image" content="https://tutorsvalley.github.io/portal-/logo.png">
+    <meta property="og:site_name" content="Tutors Valley">
+    <meta property="og:locale" content="bn_BD">
+
+    <!-- ✅ Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://tutorsvalley.github.io/portal-/">
+    <meta name="twitter:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
+    <meta name="twitter:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। এখনই জয়েন করুন!">
+    <meta name="twitter:image" content="https://tutorsvalley.github.io/portal-/logo.png">
+
+    <!-- ✅ Theme & Icons -->
+    <meta name="theme-color" content="#001f3f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+
+    <!-- ✅ Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Styles -->
+    <!-- ✅ Styles -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase SDK (Version 8 Compat) -->
+    <!-- ✅ Firebase SDK (Version 8 Compat) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- ✅ Structured Data (JSON-LD for Google) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Tutors Valley",
+      "url": "https://tutorsvalley.github.io/portal-/",
+      "logo": "https://tutorsvalley.github.io/portal-/logo.png",
+      "description": "ঢাকার সেরা টিউটর খুঁজে পাওয়ার প্ল্যাটফর্ম",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Dhaka",
+        "addressCountry": "BD"
+      },
+      "sameAs": [
+        "https://facebook.com/tutorsvalley"
+      ]
+    }
+    </script>
 </head>
 <body>
 
-    <!-- Login Page -->
+    <!-- 🔹 Login Page -->
     <div id="loginPage" class="page active">
         <div class="login-box">
             <h1>Tutors Valley</h1>
@@ -39,7 +82,7 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
+    <!-- 🔹 Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -49,8 +92,9 @@
         </div>
     </div>
 
-    <!-- Home Page -->
+    <!-- 🔹 Home Page -->
     <div id="homePage" class="page">
+        
         <!-- Admin Icon -->
         <div id="adminIcon" class="admin-icon" onclick="toggleControl()" style="display:none;">⚙️</div>
 
@@ -67,7 +111,7 @@
         <header id="headerSection" class="header">
             <div class="header-content">
                 <div class="logo-section">
-                    <img id="logo" src="https://via.placeholder.com/100" alt="Logo" class="logo">
+                    <img id="logo" src="logo.png" alt="Tutors Valley Logo" class="logo" onerror="this.src='https://via.placeholder.com/100'">
                     <h1 id="branding">Tutors Valley</h1>
                     <p id="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
                 </div>
@@ -99,7 +143,7 @@
         <!-- CEO Section -->
         <section class="section ceo-section">
             <div class="ceo-card">
-                <img id="ceoImg" src="https://via.placeholder.com/150" alt="CEO" class="ceo-img">
+                <img id="ceoImg" src="ceo.png" alt="CEO" class="ceo-img" onerror="this.src='https://via.placeholder.com/150'">
                 <h3 id="ceoName">CEO Name</h3>
                 <p id="ceoTitle" style="color:#0074D9;font-weight:bold;">Founder & CEO</p>
                 <p id="ceoDesc">CEO description here...</p>
@@ -112,7 +156,7 @@
         </footer>
     </div>
 
-    <!-- App Logic -->
+    <!-- 🔹 App Logic -->
     <script src="app.js"></script>
 </body>
 </html>
