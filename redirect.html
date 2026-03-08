@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hind Siliguri', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .redirect-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #eee;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .timer {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        .manual-btn {
+            background: #2ECC40;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .manual-btn:hover {
+            background: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-box">
+        <div class="spinner"></div>
+        <h1>ওপেন হচ্ছে...</h1>
+        <p>আপনার ব্রাউজারে ওপেন করা হচ্ছে</p>
+        <div class="timer">অপেক্ষা করুন: <span id="countdown">5</span> সেকেন্ড</div>
+        <br>
+        <a href="#" id="manualOpen" class="manual-btn">এখনই ওপেন করুন</a>
+    </div>
+
+    <script>
+        // Get the actual site URL from query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUrl = urlParams.get('url') || 'https://tutorsvalley.github.io/portal-/';
+        
+        // Set manual button href
+        document.getElementById('manualOpen').href = targetUrl;
+        
+        // Countdown and redirect
+        let seconds = 5;
+        const countdownEl = document.getElementById('countdown');
+        
+        const timer = setInterval(function() {
+            seconds--;
+            countdownEl.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(timer);
+                // Try to open in external browser
+                openInExternalBrowser(targetUrl);
+            }
+        }, 1000);
+        
+        // Function to detect in-app browser and open external
+        function openInExternalBrowser(url) {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // Facebook in-app browser
+            if (/FBAN|FBAV/i.test(userAgent)) {
+                window.location.href = 'fb://browser/' + encodeURIComponent(url);
+                setTimeout(function() {
+                    window.location.href = url;
+                }, 500);
+                return;
+            }
+            
+            // Instagram in-app browser
+            if (/Instagram/i.test(userAgent)) {
+                window.location.href = url;
+                return;
+            }
+            
+            // WhatsApp in-app browser
+            if (/WhatsApp/i.test(userAgent)) {
+                window.location.href = url;
+                return;
+            }
+            
+            // Messenger in-app browser
+            if (/Messenger/i.test(userAgent)) {
+                window.location.href = url;
+                return;
+            }
+            
+            // Default: just redirect
+            window.location.href = url;
+        }
+        
+        // Auto redirect after 5 seconds
+        setTimeout(function() {
+            openInExternalBrowser(targetUrl);
+        }, 5000);
+    </script>
+</body>
+</html>
