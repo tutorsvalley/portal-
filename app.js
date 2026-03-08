@@ -1,5 +1,5 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FULL VERSION (ALL ERRORS FIXED)
+// 🔥 TUTORS VALLEY - ALL ERRORS FIXED
 // ============================================
 
 // Firebase Config
@@ -24,6 +24,7 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
+let currentUserGender = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -44,83 +45,185 @@ const defaultZones = [
 // Loading
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
     const div = document.createElement('div');
     div.id = 'loadingScreen';
-    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-    div.innerHTML = `<div style="width:60px;height:60px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:20px;color:#333;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+    div.innerHTML = '<div style="width:60px;height:60px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:20px;color:#333;">' + msg + '</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
     document.body.appendChild(div);
-    div.autoHide = setTimeout(() => hideLoading(), 5000);
+    div.autoHide = setTimeout(function() { hideLoading(); }, 5000);
 }
 
 function hideLoading() {
     const div = document.getElementById('loadingScreen');
-    if (div) { if (div.autoHide) clearTimeout(div.autoHide); div.remove(); }
+    if (div) {
+        if (div.autoHide) clearTimeout(div.autoHide);
+        div.remove();
+    }
 }
 
 // Guest Login
 function guestLogin() {
     showLoading("লগইন হচ্ছে...");
-    auth.signOut().then(() => auth.signInAnonymously()).then(u => {
+    auth.signOut().then(function() {
+        return auth.signInAnonymously();
+    }).then(function(u) {
         currentUser = u.user;
         currentUserRole = 'guest';
-        return db.collection('users').doc(u.user.uid).set({ email: 'guest@tutorsvalley.com', displayName: 'Guest', role: 'guest', isGuest: true }, { merge: true });
-    }).then(() => { hideLoading(); showHome(); }).catch(e => { hideLoading(); alert("Error: " + e.message); });
+        return db.collection('users').doc(u.user.uid).set({
+            email: 'guest@tutorsvalley.com',
+            displayName: 'Guest',
+            role: 'guest',
+            isGuest: true
+        }, { merge: true });
+    }).then(function() {
+        setTimeout(function() {
+            hideLoading();
+            showHome();
+        }, 2000);
+    }).catch(function(e) {
+        hideLoading();
+        alert("Error: " + e.message);
+    });
 }
 
 // DOM Loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     showLoading("লোড হচ্ছে...");
-    auth.onAuthStateChanged(user => {
-        hideLoading();
-        if (user) { currentUser = user; loadUser(user.uid); }
-        else { showPage('loginPage'); }
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            currentUser = user;
+            loadUser(user.uid);
+        } else {
+            setTimeout(function() {
+                hideLoading();
+                showPage('loginPage');
+            }, 2000);
+        }
     });
 });
 
 function loadUser(uid) {
-    db.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) { currentUserRole = doc.data().role; console.log("Role:", currentUserRole); showHome(); }
-        else { logout(); }
+    db.collection('users').doc(uid).get().then(function(doc) {
+        if (doc.exists) {
+            currentUserRole = doc.data().role;
+            currentUserGender = doc.data().gender || null;
+            setTimeout(function() {
+                hideLoading();
+                showHome();
+            }, 2000);
+        } else {
+            logout();
+        }
     });
 }
 
 function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.page').forEach(function(p) {
+        p.style.display = 'none';
+    });
     document.getElementById(id).style.display = 'block';
 }
 
 function openModal(role) {
     currentLoginRole = role;
-    document.getElementById('modalTitle').innerText = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' }[role];
+    document.getElementById('modalTitle').innerText = {
+        'tutor': 'টিউটর লগইন',
+        'guardian': 'অভিভাবক লগইন',
+        'admin': 'এডমিন লগইন'
+    }[role];
     document.getElementById('loginModal').style.display = 'block';
 }
 
-function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
+function closeModal() {
+    document.getElementById('loginModal').style.display = 'none';
+}
 
 function googleLogin() {
     showLoading("লগইন হচ্ছে...");
-    auth.signInWithPopup(provider).then(r => {
+    auth.signInWithPopup(provider).then(function(r) {
         if (currentLoginRole === 'admin' && r.user.email !== OWNER_EMAIL) {
-            alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
-            auth.signOut(); closeModal(); hideLoading(); return;
+            setTimeout(function() {
+                hideLoading();
+                alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
+            }, 2000);
+            auth.signOut();
+            closeModal();
+            return;
         }
-        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => { closeModal(); hideLoading(); });
-    }).catch(e => { hideLoading(); alert("Error: " + e.message); });
+        db.collection('users').doc(r.user.uid).set({
+            email: r.user.email,
+            displayName: r.user.displayName,
+            role: currentLoginRole
+        }, { merge: true }).then(function() {
+            closeModal();
+            setTimeout(function() {
+                hideLoading();
+                showHome();
+            }, 2000);
+        });
+    }).catch(function(e) {
+        hideLoading();
+        alert("Error: " + e.message);
+    });
+}
+
+// Gender Selection
+function showGenderSelection() {
+    document.getElementById('genderModal').style.display = 'block';
+}
+
+function selectGender(gender) {
+    showLoading("লোড হচ্ছে...");
+    currentUserGender = gender;
+    if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({
+            gender: gender,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() {
+            setTimeout(function() {
+                hideLoading();
+                document.getElementById('genderModal').style.display = 'none';
+                loadZones();
+            }, 2000);
+        });
+    } else {
+        setTimeout(function() {
+            hideLoading();
+            document.getElementById('genderModal').style.display = 'none';
+            loadZones();
+        }, 2000);
+    }
 }
 
 function showHome() {
     showPage('homePage');
     document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
     document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
+    
+    if ((currentUserRole === 'tutor' || currentUserRole === 'guardian') && !currentUserGender) {
+        setTimeout(function() {
+            showGenderSelection();
+        }, 500);
+    }
+    
     loadAllSettings();
     loadZones();
     loadReviews();
 }
 
 function logout() {
-    currentUser = null; currentUserRole = null;
+    showLoading("লগআউট হচ্ছে...");
+    currentUser = null;
+    currentUserRole = null;
+    currentUserGender = null;
     document.getElementById('adminIcon').style.display = 'none';
-    auth.signOut().then(() => showPage('loginPage'));
+    auth.signOut().then(function() {
+        setTimeout(function() {
+            hideLoading();
+            showPage('loginPage');
+        }, 2000);
+    });
 }
 
 function toggleControl() {
@@ -130,9 +233,13 @@ function toggleControl() {
 }
 
 function generateFontOptions(current) {
-    let h = ' ডিফল্ট ';
-    fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
-    fonts.english.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f}</option>`);
+    let h = '<option value="">ডিফল্ট</option>';
+    fonts.bangla.forEach(function(f) {
+        h += '<option value="' + f + '" ' + (f === current ? 'selected' : '') + '>' + f + ' (বাংলা)</option>';
+    });
+    fonts.english.forEach(function(f) {
+        h += '<option value="' + f + '" ' + (f === current ? 'selected' : '') + '>' + f + '</option>';
+    });
     return h;
 }
 
@@ -140,7 +247,7 @@ function rgbToHex(rgb) {
     if (!rgb || rgb.startsWith('#')) return rgb || '#001f3f';
     const v = rgb.match(/\d+/g);
     if (!v) return '#001f3f';
-    return "#" + ((1<<24)+(parseInt(v[0])<<16)+(parseInt(v[1])<<8)+parseInt(v[2])).toString(16).slice(1);
+    return "#" + ((1 << 24) + (parseInt(v[0]) << 16) + (parseInt(v[1]) << 8) + parseInt(v[2])).toString(16).slice(1);
 }
 
 function getStyle(id, prop) {
@@ -164,63 +271,61 @@ function getFontValue(id) {
 
 function applyFont(elementId, font) {
     const el = document.getElementById(elementId);
-    if (!el || !font) {
-        console.log("❌ Element or font not found:", elementId, font);
-        return false;
-    }
-    console.log("🎯 Applying font to", elementId, ":", font);
-    el.style.cssText = '';
-    el.removeAttribute('style');
-    el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
-    el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
+    if (!el || !font) return false;
+    el.style.fontFamily = "'" + font + "', 'Hind Siliguri', sans-serif";
     el.setAttribute('data-font', font);
-    void el.offsetWidth;
-    const computed = window.getComputedStyle(el).fontFamily;
-    console.log("✅ Applied! Current font:", computed);
     return true;
 }
 
 function updateFont(elementId, font) {
-    if (!font) { alert("কোনো ফন্ট সিলেক্ট করেননি!"); return; }
-    console.log("🎨 Font change: ", elementId, "→ ", font);
-    const success = applyFont(elementId, font);
-    if (!success) { console.error("❌ Failed"); return; }
+    if (!font) {
+        alert("কোনো ফন্ট সিলেক্ট করেননি!");
+        return;
+    }
+    applyFont(elementId, font);
     let collection, field;
-    if (elementId === 'branding') { collection = 'header'; field = 'brandingFont'; }
-    else if (elementId === 'motto') { collection = 'header'; field = 'mottoFont'; }
-    else if (elementId === 'zoneTitle') { collection = 'zones'; field = 'titleFont'; }
-    else if (elementId === 'reviewTitle') { collection = 'reviews'; field = 'titleFont'; }
-    else if (elementId === 'ceoName') { collection = 'ceo'; field = 'nameFont'; }
-    else if (elementId === 'ceoTitle') { collection = 'ceo'; field = 'titleFont'; }
-    else if (elementId === 'ceoDesc') { collection = 'ceo'; field = 'descFont'; }
-    else if (elementId === 'copyright') { collection = 'footer'; field = 'copyrightFont'; }
+    if (elementId === 'branding') {
+        collection = 'header';
+        field = 'brandingFont';
+    } else if (elementId === 'motto') {
+        collection = 'header';
+        field = 'mottoFont';
+    } else if (elementId === 'zoneTitle') {
+        collection = 'zones';
+        field = 'titleFont';
+    } else if (elementId === 'reviewTitle') {
+        collection = 'reviews';
+        field = 'titleFont';
+    } else if (elementId === 'ceoName') {
+        collection = 'ceo';
+        field = 'nameFont';
+    } else if (elementId === 'ceoTitle') {
+        collection = 'ceo';
+        field = 'titleFont';
+    } else if (elementId === 'ceoDesc') {
+        collection = 'ceo';
+        field = 'descFont';
+    } else if (elementId === 'copyright') {
+        collection = 'footer';
+        field = 'copyrightFont';
+    }
     if (collection && field) {
-        const updateData = { [field]: font, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-        db.collection('settings').doc(collection).update(updateData)
-            .then(() => {
-                console.log(`✅ Saved: ${collection}.${field} = ${font}`);
-                const selectId = elementId + 'FontSelect';
-                const select = document.getElementById(selectId);
-                if (select) select.value = font;
-                setTimeout(() => { alert(`✅ Font changed: ${font}\n\nPage reload দিন (F5)`); }, 500);
-            })
-            .catch(error => { console.error("❌ Save failed: ", error); });
+        db.collection('settings').doc(collection).update({ [field]: font });
     }
 }
 
 function saveSetting(collection, field, value) {
-    console.log(`💾 Saving: ${collection}.${field} = ${value}`);
-    const updateData = { [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-    db.collection('settings').doc(collection).update(updateData)
-        .then(() => { console.log(`✅ Saved ${collection}.${field}`); setTimeout(() => { loadAllSettings(); }, 500); })
-        .catch((error) => { console.error(`❌ Error:`, error); db.collection('settings').doc(collection).set(updateData); });
+    db.collection('settings').doc(collection).update({ [field]: value });
 }
 
 function updateLogo() {
     const f = document.getElementById('logoInput').files[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = e => { document.getElementById('logo').src = e.target.result; db.collection('settings').doc('header').update({ logoUrl: e.target.result }); };
+    r.onload = function(e) {
+        document.getElementById('logo').src = e.target.result;
+        db.collection('settings').doc('header').update({ logoUrl: e.target.result });
+    };
     r.readAsDataURL(f);
 }
 
@@ -228,192 +333,137 @@ function updateCeoImage() {
     const f = document.getElementById('ceoImageInput').files[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = e => { document.getElementById('ceoImg').src = e.target.result; db.collection('settings').doc('ceo').update({ imageUrl: e.target.result }); };
+    r.onload = function(e) {
+        document.getElementById('ceoImg').src = e.target.result;
+        db.collection('settings').doc('ceo').update({ imageUrl: e.target.result });
+    };
     r.readAsDataURL(f);
 }
 
-function updateText(id, v) { const e = document.getElementById(id); if (e) e.innerText = v; }
-function updateSize(id, v) { const e = document.getElementById(id); if (e) e.style.fontSize = v + 'px'; }
-function updateColor(id, p, c) { const e = document.getElementById(id); if (e) e.style[p] = c; }
+function updateText(id, v) {
+    const e = document.getElementById(id);
+    if (e) e.innerText = v;
+}
+
+function updateSize(id, v) {
+    const e = document.getElementById(id);
+    if (e) e.style.fontSize = v + 'px';
+}
+
+function updateColor(id, p, c) {
+    const e = document.getElementById(id);
+    if (e) e.style[p] = c;
+}
+
 function updateFbUrl(url) {
     document.getElementById('fbBtn').href = url;
     db.collection('settings').doc('header').update({ fbUrl: url });
 }
 
 function loadAllSettings() {
-    console.log("🔄 Loading settings...");
     Promise.all([
         db.collection('settings').doc('header').get(),
         db.collection('settings').doc('zones').get(),
         db.collection('settings').doc('reviews').get(),
         db.collection('settings').doc('ceo').get(),
         db.collection('settings').doc('footer').get()
-    ]).then(docs => {
+    ]).then(function(docs) {
         const [h, z, r, c, f] = docs;
         if (h.exists) {
             const d = h.data();
-            console.log("📄 Header: ", d);
             if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
             if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
             if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
-            if (d.brandingFont) { setTimeout(() => { applyFont('branding', d.brandingFont); }, 100); }
+            if (d.brandingFont) applyFont('branding', d.brandingFont);
             if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
             if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
-            if (d.mottoFont) { setTimeout(() => { applyFont('motto', d.mottoFont); }, 200); }
+            if (d.mottoFont) applyFont('motto', d.mottoFont);
             if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
         if (z.exists) {
             const d = z.data();
-            console.log("📄 Zones: ", d);
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
-            if (d.titleFont) { setTimeout(() => { applyFont('zoneTitle', d.titleFont); }, 300); }
+            if (d.titleFont) applyFont('zoneTitle', d.titleFont);
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
         if (r.exists) {
             const d = r.data();
-            console.log("📄 Reviews: ", d);
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
-            if (d.titleFont) { setTimeout(() => { applyFont('reviewTitle', d.titleFont); }, 400); }
+            if (d.titleFont) applyFont('reviewTitle', d.titleFont);
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
         if (c.exists) {
             const d = c.data();
-            console.log("📄 CEO: ", d);
             if (d.imageUrl) document.getElementById('ceoImg').src = d.imageUrl;
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
             if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
-            if (d.nameFont) { setTimeout(() => { applyFont('ceoName', d.nameFont); }, 500); }
+            if (d.nameFont) applyFont('ceoName', d.nameFont);
             if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
             if (d.titleFont) applyFont('ceoTitle', d.titleFont);
             if (d.descFont) applyFont('ceoDesc', d.descFont);
         }
         if (f.exists) {
             const d = f.data();
-            console.log("📄 Footer: ", d);
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
-            if (d.copyrightFont) { setTimeout(() => { applyFont('copyright', d.copyrightFont); }, 600); }
+            if (d.copyrightFont) applyFont('copyright', d.copyrightFont);
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
-        console.log("✅ All settings loaded!");
-        setTimeout(updateFontSelects, 1000);
     });
-}
-
-function updateFontSelects() {
-    const setSelectValue = (selectId, value) => {
-        const select = document.getElementById(selectId);
-        if (select && value) { select.value = value; console.log("✅ Set", selectId, "to", value); }
-    };
-    setSelectValue('brandingFontSelect', getFontValue('branding'));
-    setSelectValue('mottoFontSelect', getFontValue('motto'));
-    setSelectValue('zoneTitleFontSelect', getFontValue('zoneTitle'));
-    setSelectValue('reviewTitleFontSelect', getFontValue('reviewTitle'));
-    setSelectValue('ceoNameFontSelect', getFontValue('ceoName'));
-    setSelectValue('ceoTitleFontSelect', getFontValue('ceoTitle'));
-    setSelectValue('ceoDescFontSelect', getFontValue('ceoDesc'));
-    setSelectValue('copyrightFontSelect', getFontValue('copyright'));
 }
 
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
     const canEdit = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    body.innerHTML = `
-     <div class="control-section">
-         <h3>🔷 হেডার</h3>
-         <div class="control-group"> <label>লোগো:</label> <input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"> </div>
-         <div class="control-group"> <label>ব্র্যান্ডিং:</label> <input type="text" value="${getText('branding')}" oninput="updateText('branding',this.value);saveSetting('header','brandingText',this.value)"> </div>
-         <div class="control-group"> <label>ব্র্যান্ডিং ফন্ট:</label> <select id="brandingFontSelect" onchange="updateFont('branding',this.value)">${generateFontOptions(getFontValue('branding'))}</select> </div>
-         <div class="control-group"> <label>ব্র্যান্ডিং সাইজ:</label> <input type="number" value="${parseInt(getStyle('branding','fontSize'))||32}" min="10" max="100" onchange="updateSize('branding',this.value);saveSetting('header','brandingSize',this.value)"> </div>
-         <div class="control-group"> <label>ব্র্যান্ডিং কালার:</label> <input type="color" value="${rgbToHex(getStyle('branding','color'))||'#ffffff'}" onchange="updateColor('branding','color',this.value);saveSetting('header','brandingColor',this.value)"> </div>
-         <hr> <div class="control-group"> <label>মotto:</label> <input type="text" value="${getText('motto')}" oninput="updateText('motto',this.value);saveSetting('header','mottoText',this.value)"> </div>
-         <div class="control-group"> <label>মotto ফন্ট:</label> <select id="mottoFontSelect" onchange="updateFont('motto',this.value)">${generateFontOptions(getFontValue('motto'))}</select> </div>
-         <div class="control-group"> <label>মotto সাইজ:</label> <input type="number" value="${parseInt(getStyle('motto','fontSize'))||18}" min="10" max="60" onchange="updateSize('motto',this.value);saveSetting('header','mottoSize',this.value)"> </div>
-         <div class="control-group"> <label>মotto কালার:</label> <input type="color" value="${rgbToHex(getStyle('motto','color'))||'#ffd700'}" onchange="updateColor('motto','color',this.value);saveSetting('header','mottoColor',this.value)"> </div>
-         <hr> <div class="control-group"> <label>হেডার ব্যাকগ্রাউন্ড:</label> <input type="color" value="${rgbToHex(getStyle('headerSection','background'))||'#001f3f'}" onchange="updateColor('headerSection','background',this.value);saveSetting('header','headerBg',this.value)"> </div>
-     </div>
-     <div class="control-section">
-         <h3>📘 ফেসবুক</h3>
-         <div class="control-group"> <label>URL:</label> <input type="url" value="${document.getElementById('fbBtn').href||'#'}" onchange="updateFbUrl(this.value)"> </div>
-         <div class="control-group"> <label>টেক্সট:</label> <input type="text" value="${getText('fbText')}" oninput="updateText('fbText',this.value);saveSetting('header','fbTextText',this.value)"> </div>
-     </div>
-     <div class="control-section">
-         <h3>📍 জোন কার্ড</h3>
-         <div class="control-group"> <label>শিরোনাম:</label> <input type="text" value="${getText('zoneTitle')}" oninput="updateText('zoneTitle',this.value);saveSetting('zones','titleText',this.value)"> </div>
-         <div class="control-group"> <label>শিরোনাম ফন্ট:</label> <select id="zoneTitleFontSelect" onchange="updateFont('zoneTitle',this.value)">${generateFontOptions(getFontValue('zoneTitle'))}</select> </div>
-         <div class="control-group"> <label>শিরোনাম সাইজ:</label> <input type="number" value="${parseInt(getStyle('zoneTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('zoneTitle',this.value);saveSetting('zones','titleSize',this.value)"> </div>
-         <div class="control-group"> <label>শিরোনাম কালার:</label> <input type="color" value="${rgbToHex(getStyle('zoneTitle','color'))||'#001f3f'}" onchange="updateColor('zoneTitle','color',this.value);saveSetting('zones','titleColor',this.value)"> </div>
-        ${canEdit ? `<hr> <div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"> <label>⚠️ টিউটর নোট:</label> <input type="text" id="tutorNote" placeholder="বার্তা লিখুন..." onchange="saveSetting('zones','tutorNote',this.value)"> </div> <div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"> <label>নোট সাইজ:</label> <input type="number" value="16" min="10" max="40" onchange="saveSetting('zones','tutorNoteSize',this.value)"> </div>` : ''}
-         <div id="zoneCardsSettings"> </div>
-     </div>
-     <div class="control-section">
-         <h3>💬 রিভিউ</h3>
-         <div class="control-group"> <label>শিরোনাম:</label> <input type="text" value="${getText('reviewTitle')}" oninput="updateText('reviewTitle',this.value);saveSetting('reviews','titleText',this.value)"> </div>
-         <div class="control-group"> <label>শিরোনাম ফন্ট:</label> <select id="reviewTitleFontSelect" onchange="updateFont('reviewTitle',this.value)">${generateFontOptions(getFontValue('reviewTitle'))}</select> </div>
-         <div class="control-group"> <label>শিরোনাম সাইজ:</label> <input type="number" value="${parseInt(getStyle('reviewTitle','fontSize'))||32}" min="10" max="80" onchange="updateSize('reviewTitle',this.value);saveSetting('reviews','titleSize',this.value)"> </div>
-         <div class="control-group"> <label>শিরোনাম কালার:</label> <input type="color" value="${rgbToHex(getStyle('reviewTitle','color'))||'#001f3f'}" onchange="updateColor('reviewTitle','color',this.value);saveSetting('reviews','titleColor',this.value)"> </div>
-     </div>
-     <div class="control-section">
-         <h3>👔 CEO</h3>
-         <div class="control-group"> <label>ইমেজ:</label> <input type="file" id="ceoImageInput" accept="image/*" onchange="updateCeoImage()"> </div>
-         <div class="control-group"> <label>নাম:</label> <input type="text" value="${getText('ceoName')}" oninput="updateText('ceoName',this.value);saveSetting('ceo','nameText',this.value)"> </div>
-         <div class="control-group"> <label>নাম ফন্ট:</label> <select id="ceoNameFontSelect" onchange="updateFont('ceoName',this.value)">${generateFontOptions(getFontValue('ceoName'))}</select> </div>
-         <div class="control-group"> <label>নাম সাইজ:</label> <input type="number" value="${parseInt(getStyle('ceoName','fontSize'))||24}" min="10" max="60" onchange="updateSize('ceoName',this.value);saveSetting('ceo','nameSize',this.value)"> </div>
-         <div class="control-group"> <label>নাম কালার:</label> <input type="color" value="${rgbToHex(getStyle('ceoName','color'))||'#001f3f'}" onchange="updateColor('ceoName','color',this.value);saveSetting('ceo','nameColor',this.value)"> </div>
-         <div class="control-group"> <label>পদবী:</label> <input type="text" value="${getText('ceoTitle')}" oninput="updateText('ceoTitle',this.value);saveSetting('ceo','titleText',this.value)"> </div>
-         <div class="control-group"> <label>পদবী ফন্ট:</label> <select id="ceoTitleFontSelect" onchange="updateFont('ceoTitle',this.value)">${generateFontOptions(getFontValue('ceoTitle'))}</select> </div>
-         <div class="control-group"> <label>বিবরণ:</label> <textarea rows="3" oninput="updateText('ceoDesc',this.value);saveSetting('ceo','descText',this.value)">${getText('ceoDesc')}</textarea> </div>
-         <div class="control-group"> <label>বিবরণ ফন্ট:</label> <select id="ceoDescFontSelect" onchange="updateFont('ceoDesc',this.value)">${generateFontOptions(getFontValue('ceoDesc'))}</select> </div>
-     </div>
-     <div class="control-section">
-         <h3>🔻 ফুটার</h3>
-         <div class="control-group"> <label>কপিরাইট:</label> <input type="text" value="${getText('copyright')}" oninput="updateText('copyright',this.value);saveSetting('footer','copyrightText',this.value)"> </div>
-         <div class="control-group"> <label>কপিরাইট ফন্ট:</label> <select id="copyrightFontSelect" onchange="updateFont('copyright',this.value)">${generateFontOptions(getFontValue('copyright'))}</select> </div>
-         <div class="control-group"> <label>কপিরাইট সাইজ:</label> <input type="number" value="${parseInt(getStyle('copyright','fontSize'))||14}" min="10" max="40" onchange="updateSize('copyright',this.value);saveSetting('footer','copyrightSize',this.value)"> </div>
-         <div class="control-group"> <label>কপিরাইট কালার:</label> <input type="color" value="${rgbToHex(getStyle('copyright','color'))||'#ffffff'}" onchange="updateColor('copyright','color',this.value);saveSetting('footer','copyrightColor',this.value)"> </div>
-         <div class="control-group"> <label>ব্যাকগ্রাউন্ড:</label> <input type="color" value="${rgbToHex(getStyle('footerSection','background'))||'#001f3f'}" onchange="updateColor('footerSection','background',this.value);saveSetting('footer','bgColor',this.value)"> </div>
-     </div>
-`;
+    body.innerHTML = '<div class="control-section"><h3>🔷 হেডার</h3><div class="control-group"><label>লোগো:</label><input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"></div><div class="control-group"><label>ব্র্যান্ডিং:</label><input type="text" value="' + getText('branding') + '" oninput="updateText(\'branding\',this.value);saveSetting(\'header\',\'brandingText\',this.value)"></div><div class="control-group"><label>ব্র্যান্ডিং ফন্ট:</label><select id="brandingFontSelect" onchange="updateFont(\'branding\',this.value)">' + generateFontOptions(getFontValue('branding')) + '</select></div><div class="control-group"><label>ব্র্যান্ডিং সাইজ:</label><input type="number" value="' + (parseInt(getStyle('branding', 'fontSize')) || 32) + '" min="10" max="100" onchange="updateSize(\'branding\',this.value);saveSetting(\'header\',\'brandingSize\',this.value)"></div><div class="control-group"><label>ব্র্যান্ডিং কালার:</label><input type="color" value="' + rgbToHex(getStyle('branding', 'color')) + '" onchange="updateColor(\'branding\',\'color\',this.value);saveSetting(\'header\',\'brandingColor\',this.value)"></div><hr><div class="control-group"><label>মotto:</label><input type="text" value="' + getText('motto') + '" oninput="updateText(\'motto\',this.value);saveSetting(\'header\',\'mottoText\',this.value)"></div><div class="control-group"><label>মotto ফন্ট:</label><select id="mottoFontSelect" onchange="updateFont(\'motto\',this.value)">' + generateFontOptions(getFontValue('motto')) + '</select></div><div class="control-group"><label>মotto সাইজ:</label><input type="number" value="' + (parseInt(getStyle('motto', 'fontSize')) || 18) + '" min="10" max="60" onchange="updateSize(\'motto\',this.value);saveSetting(\'header\',\'mottoSize\',this.value)"></div><div class="control-group"><label>মotto কালার:</label><input type="color" value="' + rgbToHex(getStyle('motto', 'color')) + '" onchange="updateColor(\'motto\',\'color\',this.value);saveSetting(\'header\',\'mottoColor\',this.value)"></div><hr><div class="control-group"><label>হেডার ব্যাকগ্রাউন্ড:</label><input type="color" value="' + rgbToHex(getStyle('headerSection', 'background')) + '" onchange="updateColor(\'headerSection\',\'background\',this.value);saveSetting(\'header\',\'headerBg\',this.value)"></div></div><div class="control-section"><h3>📘 ফেসবুক</h3><div class="control-group"><label>URL:</label><input type="url" value="' + (document.getElementById('fbBtn').href || '#') + '" onchange="updateFbUrl(this.value)"></div><div class="control-group"><label>টেক্সট:</label><input type="text" value="' + getText('fbText') + '" oninput="updateText(\'fbText\',this.value);saveSetting(\'header\',\'fbTextText\',this.value)"></div></div><div class="control-section"><h3>📍 জোন কার্ড</h3><div class="control-group"><label>শিরোনাম:</label><input type="text" value="' + getText('zoneTitle') + '" oninput="updateText(\'zoneTitle\',this.value);saveSetting(\'zones\',\'titleText\',this.value)"></div><div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="zoneTitleFontSelect" onchange="updateFont(\'zoneTitle\',this.value)">' + generateFontOptions(getFontValue('zoneTitle')) + '</select></div><div class="control-group"><label>শিরোনাম সাইজ:</label><input type="number" value="' + (parseInt(getStyle('zoneTitle', 'fontSize')) || 32) + '" min="10" max="80" onchange="updateSize(\'zoneTitle\',this.value);saveSetting(\'zones\',\'titleSize\',this.value)"></div><div class="control-group"><label>শিরোনাম কালার:</label><input type="color" value="' + rgbToHex(getStyle('zoneTitle', 'color')) + '" onchange="updateColor(\'zoneTitle\',\'color\',this.value);saveSetting(\'zones\',\'titleColor\',this.value)"></div>' + (canEdit ? '<hr><div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"><label>⚠️ টিউটর নোট:</label><input type="text" id="tutorNote" placeholder="বার্তা লিখুন..." onchange="saveSetting(\'zones\',\'tutorNote\',this.value)"></div><div class="control-group" style="background:#fff3cd;padding:10px;border-radius:5px;"><label>নোট সাইজ:</label><input type="number" value="16" min="10" max="40" onchange="saveSetting(\'zones\',\'tutorNoteSize\',this.value)"></div>' : '') + '<div id="zoneCardsSettings"></div></div><div class="control-section"><h3>💬 রিভিউ</h3><div class="control-group"><label>শিরোনাম:</label><input type="text" value="' + getText('reviewTitle') + '" oninput="updateText(\'reviewTitle\',this.value);saveSetting(\'reviews\',\'titleText\',this.value)"></div><div class="control-group"><label>শিরোনাম ফন্ট:</label><select id="reviewTitleFontSelect" onchange="updateFont(\'reviewTitle\',this.value)">' + generateFontOptions(getFontValue('reviewTitle')) + '</select></div><div class="control-group"><label>শিরোনাম সাইজ:</label><input type="number" value="' + (parseInt(getStyle('reviewTitle', 'fontSize')) || 32) + '" min="10" max="80" onchange="updateSize(\'reviewTitle\',this.value);saveSetting(\'reviews\',\'titleSize\',this.value)"></div><div class="control-group"><label>শিরোনাম কালার:</label><input type="color" value="' + rgbToHex(getStyle('reviewTitle', 'color')) + '" onchange="updateColor(\'reviewTitle\',\'color\',this.value);saveSetting(\'reviews\',\'titleColor\',this.value)"></div></div><div class="control-section"><h3>👔 CEO</h3><div class="control-group"><label>ইমেজ:</label><input type="file" id="ceoImageInput" accept="image/*" onchange="updateCeoImage()"></div><div class="control-group"><label>নাম:</label><input type="text" value="' + getText('ceoName') + '" oninput="updateText(\'ceoName\',this.value);saveSetting(\'ceo\',\'nameText\',this.value)"></div><div class="control-group"><label>নাম ফন্ট:</label><select id="ceoNameFontSelect" onchange="updateFont(\'ceoName\',this.value)">' + generateFontOptions(getFontValue('ceoName')) + '</select></div><div class="control-group"><label>নাম সাইজ:</label><input type="number" value="' + (parseInt(getStyle('ceoName', 'fontSize')) || 24) + '" min="10" max="60" onchange="updateSize(\'ceoName\',this.value);saveSetting(\'ceo\',\'nameSize\',this.value)"></div><div class="control-group"><label>নাম কালার:</label><input type="color" value="' + rgbToHex(getStyle('ceoName', 'color')) + '" onchange="updateColor(\'ceoName\',\'color\',this.value);saveSetting(\'ceo\',\'nameColor\',this.value)"></div><div class="control-group"><label>পদবী:</label><input type="text" value="' + getText('ceoTitle') + '" oninput="updateText(\'ceoTitle\',this.value);saveSetting(\'ceo\',\'titleText\',this.value)"></div><div class="control-group"><label>পদবী ফন্ট:</label><select id="ceoTitleFontSelect" onchange="updateFont(\'ceoTitle\',this.value)">' + generateFontOptions(getFontValue('ceoTitle')) + '</select></div><div class="control-group"><label>বিবরণ:</label><textarea rows="3" oninput="updateText(\'ceoDesc\',this.value);saveSetting(\'ceo\',\'descText\',this.value)">' + getText('ceoDesc') + '</textarea></div><div class="control-group"><label>বিবরণ ফন্ট:</label><select id="ceoDescFontSelect" onchange="updateFont(\'ceoDesc\',this.value)">' + generateFontOptions(getFontValue('ceoDesc')) + '</select></div></div><div class="control-section"><h3>🔻 ফুটার</h3><div class="control-group"><label>কপিরাইট:</label><input type="text" value="' + getText('copyright') + '" oninput="updateText(\'copyright\',this.value);saveSetting(\'footer\',\'copyrightText\',this.value)"></div><div class="control-group"><label>কপিরাইট ফন্ট:</label><select id="copyrightFontSelect" onchange="updateFont(\'copyright\',this.value)">' + generateFontOptions(getFontValue('copyright')) + '</select></div><div class="control-group"><label>কপিরাইট সাইজ:</label><input type="number" value="' + (parseInt(getStyle('copyright', 'fontSize')) || 14) + '" min="10" max="40" onchange="updateSize(\'copyright\',this.value);saveSetting(\'footer\',\'copyrightSize\',this.value)"></div><div class="control-group"><label>কপিরাইট কালার:</label><input type="color" value="' + rgbToHex(getStyle('copyright', 'color')) + '" onchange="updateColor(\'copyright\',\'color\',this.value);saveSetting(\'footer\',\'copyrightColor\',this.value)"></div><div class="control-group"><label>ব্যাকগ্রাউন্ড:</label><input type="color" value="' + rgbToHex(getStyle('footerSection', 'background')) + '" onchange="updateColor(\'footerSection\',\'background\',this.value);saveSetting(\'footer\',\'bgColor\',this.value)"></div></div>';
     loadZoneCardsSettings();
 }
 
 function loadZoneCardsSettings() {
-    db.collection('zones').get().then(s => {
+    db.collection('zones').get().then(function(s) {
         const c = document.getElementById('zoneCardsSettings');
         if (!c) return;
         c.innerHTML = '';
-        s.forEach(doc => {
+        s.forEach(function(doc) {
             const z = doc.data();
-            c.innerHTML += `<div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px;"><strong>জোন #${z.id}</strong><br>শিরোনাম: <input type="text" value="${z.title}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'title',this.value)"><br>এলাকা: <input type="text" value="${z.areas?z.areas.join(', '):''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'areas',this.value)"><br>মেল গ্রুপ: <input type="url" value="${z.maleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>ফিমেল গ্রুপ: <input type="url" value="${z.femaleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)"></div>`;
+            c.innerHTML += '<div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px;"><strong>জোন #' + z.id + '</strong><br>শিরোনাম: <input type="text" value="' + z.title + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'title\',this.value)"><br>এলাকা: <input type="text" value="' + (z.areas ? z.areas.join(', ') : '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'areas\',this.value)"><br>মেল গ্রুপ: <input type="url" value="' + (z.maleLink || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'maleLink\',this.value)"><br>ফিমেল গ্রুপ: <input type="url" value="' + (z.femaleLink || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'femaleLink\',this.value)"></div>';
         });
     });
 }
 
 function updateZone(id, f, v) {
-    if (f === 'areas') v = v.split(',').map(a => a.trim()).filter(a => a);
+    if (f === 'areas') v = v.split(',').map(function(a) {
+        return a.trim();
+    }).filter(function(a) {
+        return a;
+    });
     db.collection('zones').doc(id.toString()).update({ [f]: v });
 }
 
 function loadZones() {
-    db.collection('zones').get().then(s => {
+    db.collection('zones').get().then(function(s) {
         const c = document.getElementById('zoneContainer');
         if (!c) return;
         c.innerHTML = '';
         if (s.empty) {
-            defaultZones.forEach(z => db.collection('zones').doc(z.id.toString()).set(z));
+            defaultZones.forEach(function(z) {
+                db.collection('zones').doc(z.id.toString()).set(z);
+            });
             renderZones(defaultZones);
         } else {
             const zones = [];
-            s.forEach(doc => zones.push(doc.data()));
+            s.forEach(function(doc) {
+                zones.push(doc.data());
+            });
             renderZones(zones);
         }
     });
@@ -424,20 +474,32 @@ function renderZones(zones) {
     if (!c) return;
     c.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    zones.forEach(z => {
+    const canSeeNote = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    
+    zones.forEach(function(z) {
         const card = document.createElement('div');
         card.className = 'zone-card';
-        let areas = z.areas ? z.areas.map(a => `<span class="area-tag">${a}</span>`).join('') : '';
+        let areas = z.areas ? z.areas.map(function(a) {
+            return '<span class="area-tag">' + a + '</span>';
+        }).join('') : '';
         let btns = '';
+        
         if (canSee) {
-            if (z.maleLink) btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
-            if (z.femaleLink) btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
+            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
+                btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>';
+            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
+                btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>';
+            } else if (!currentUserGender && (currentUserRole === 'tutor' || currentUserRole === 'guardian')) {
+                btns = '<div style="text-align:center;padding:15px;background:#f0f0f0;border-radius:8px;margin:10px 0;"><p style="margin:0 0 10px 0;color:#666;">Please select your gender to view WhatsApp groups</p><button onclick="showGenderSelection()" style="background:#0074D9;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Select Gender</button></div>';
+            }
         }
-        card.innerHTML = `<h3>${z.title}</h3> <div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">'+btns+'</div>' : ''}`;
+        
+        card.innerHTML = '<h3>' + z.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div style="margin-top:10px;">' + btns + '</div>' : '');
         c.appendChild(card);
     });
-    if (canSee) {
-        db.collection('settings').doc('zones').get().then(doc => {
+    
+    if (canSeeNote) {
+        db.collection('settings').doc('zones').get().then(function(doc) {
             if (doc.exists && doc.data().tutorNote) {
                 const zt = document.getElementById('zoneTitle');
                 if (zt) {
@@ -445,7 +507,7 @@ function renderZones(zones) {
                     if (old) old.remove();
                     const note = document.createElement('p');
                     note.className = 'tutor-note';
-                    note.style.cssText = `background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:${doc.data().tutorNoteSize||16}px;`;
+                    note.style.cssText = 'background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:' + (doc.data().tutorNoteSize || 16) + 'px;';
                     note.innerText = '📢 ' + doc.data().tutorNote;
                     zt.parentNode.insertBefore(note, zt.nextSibling);
                 }
@@ -455,40 +517,64 @@ function renderZones(zones) {
 }
 
 function loadReviews() {
-    db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(s => {
+    db.collection('reviews').orderBy('createdAt', 'desc').limit(50).get().then(function(s) {
         const c = document.getElementById('reviewList');
         if (!c) return;
         c.innerHTML = '';
-        if (s.empty) { c.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">কোনো রিভিউ নেই</p>'; return; }
-        s.forEach(doc => {
+        if (s.empty) {
+            c.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">কোনো রিভিউ নেই</p>';
+            return;
+        }
+        s.forEach(function(doc) {
             const r = doc.data();
             const date = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
             const card = document.createElement('div');
             card.className = 'review-card';
-            const del = currentUserRole === 'admin' ? `<button onclick="deleteReview('${doc.id}')" style="float:right;background:#ff4136;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🗑️</button>` : '';
-            card.innerHTML = `${del}<h4>${r.userName||'Anonymous'} ${r.userRole?'('+r.userRole+')':''}</h4><small style="color:#999;">${date}</small><p>${r.text}</p>`;
+            const del = currentUserRole === 'admin' ? '<button onclick="deleteReview(\'' + doc.id + '\')" style="float:right;background:#ff4136;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🗑️</button>' : '';
+            card.innerHTML = del + '<h4>' + (r.userName || 'Anonymous') + ' ' + (r.userRole ? '(' + r.userRole + ')' : '') + '</h4><small style="color:#999;">' + date + '</small><p>' + r.text + '</p>';
             c.appendChild(card);
         });
     });
 }
 
 function deleteReview(id) {
-    if (currentUserRole !== 'admin') { alert("শুধুমাত্র এডমিন রিভিউ ডিলিট করতে পারবেন"); return; }
+    if (currentUserRole !== 'admin') {
+        alert("শুধুমাত্র এডমিন রিভিউ ডিলিট করতে পারবেন");
+        return;
+    }
     if (confirm("ডিলিট করবেন?")) {
-        db.collection('reviews').doc(id).delete().then(() => { loadReviews(); alert("ডিলিট হয়েছে"); });
+        db.collection('reviews').doc(id).delete().then(function() {
+            loadReviews();
+            alert("ডিলিট হয়েছে");
+        });
     }
 }
 
 function submitReview() {
-    if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') { alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন"); return; }
+    if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') {
+        alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন");
+        return;
+    }
     const t = document.getElementById('reviewText').value;
-    if (!t.trim()) { alert("রিভিউ লিখুন"); return; }
-    db.collection('reviews').add({ text: t, userName: currentUser.displayName || currentUser.email || 'Anonymous', userRole: currentUserRole, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => {
+    if (!t.trim()) {
+        alert("রিভিউ লিখুন");
+        return;
+    }
+    db.collection('reviews').add({
+        text: t,
+        userName: currentUser.displayName || currentUser.email || 'Anonymous',
+        userRole: currentUserRole,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
         document.getElementById('reviewText').value = '';
         loadReviews();
         alert("রিভিউ জমা হয়েছে");
     });
 }
 
-window.onclick = e => { if (e.target === document.getElementById('loginModal')) closeModal(); };
+window.onclick = function(e) {
+    if (e.target === document.getElementById('loginModal')) closeModal();
+    if (e.target === document.getElementById('genderModal')) document.getElementById('genderModal').style.display = 'none';
+};
+
 console.log("✅ app.js loaded successfully");
