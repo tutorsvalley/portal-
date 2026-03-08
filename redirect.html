@@ -1,195 +1,48 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hind Siliguri', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .redirect-box {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #eee;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        h1 {
-            color: #333;
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-        }
-        .btn-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .primary-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: transform 0.2s;
-        }
-        .primary-btn:active {
-            transform: scale(0.95);
-        }
-        .secondary-btn {
-            background: #f0f0f0;
-            color: #333;
-            padding: 12px 30px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 0.9em;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .info-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 8px;
-            text-align: left;
-            font-size: 0.85em;
-        }
-        .info-box strong {
-            color: #856404;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .info-box ol {
-            margin: 10px 0 0 20px;
-            color: #856404;
-        }
-        .info-box li {
-            margin: 5px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="redirect-box">
-        <div class="spinner"></div>
-        <h1>ওপেন হচ্ছে...</h1>
-        <p>আপনার ব্রাউজারে ওপেন করা হচ্ছে</p>
-        
-        <div class="btn-container">
-            <button onclick="openInBrowser()" class="primary-btn">
-                🌐 ব্রাউজারে ওপেন করুন
-            </button>
-            <a href="#" id="directLink" class="secondary-btn">
-                লিংক কপি করুন
-            </a>
-        </div>
-        
-        <div class="info-box">
-            <strong>⚠️ যদি auto open না হয়:</strong>
-            <ol>
-                <li>উপরের "ব্রাউজারে ওপেন করুন" বাটনে ক্লিক করুন</li>
-                <li>অথবা মেনু (⋮ বা ⊕) থেকে "Open in Browser" সিলেক্ট করুন</li>
-            </ol>
-        </div>
-    </div>
-
     <script>
-        // Get the actual site URL from query parameter
+        // URL থেকে মূল লিংকটি নেওয়া
         const urlParams = new URLSearchParams(window.location.search);
         let targetUrl = urlParams.get('url');
-        
-        // If no URL parameter, use default
+
+        // যদি লিংক না পাওয়া যায়, তবে ডিফল্ট সাইটে পাঠানো
         if (!targetUrl) {
-            targetUrl = 'https://tutorsvalley.github.io/portal-/';
+            targetUrl = "https://tutorsvalley.github.io/portal-/";
         } else {
+            // ডিকোড করা (কারণ লিংকটি এনকোড করা ছিল)
             targetUrl = decodeURIComponent(targetUrl);
         }
-        
-        // Set direct link
-        document.getElementById('directLink').href = targetUrl;
-        document.getElementById('directLink').setAttribute('target', '_blank');
-        
-        // ✅ IMMEDIATE REDIRECT - No waiting
+
+        // ফাংশন যা ব্রাউজার ওপেন করবে
         function openInBrowser() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            
-            // Method 1: Try to open in new window/tab
-            const newWindow = window.open(targetUrl, '_blank');
-            
-            // Method 2: Try location.href (fallback)
-            setTimeout(function() {
+            // Android এর জন্য বিশেষ কমান্ড (Chrome ওপেন করবে)
+            if (/android/i.test(navigator.userAgent)) {
+                try {
+                    const cleanUrl = targetUrl.replace(/^https?:\/\//, '');
+                    // এটি সরাসরি Chrome অ্যাপটি ওপেন করে দেয়
+                    window.location.href = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+                } catch(e) {
+                    window.location.href = targetUrl;
+                }
+            } 
+            // iPhone বা অন্য ডিভাইসের জন্য সাধারণ লিংক
+            else {
                 window.location.href = targetUrl;
-            }, 100);
-            
-            // Method 3: For iOS - try universal links
-            setTimeout(function() {
-                window.location = targetUrl;
-            }, 500);
-            
-            // Method 4: Create and click a hidden link
-            setTimeout(function() {
-                const link = document.createElement('a');
-                link.href = targetUrl;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }, 1000);
+            }
         }
-        
-        // ✅ AUTO REDIRECT IMMEDIATELY on page load
-        window.addEventListener('load', function() {
-            // Small delay to allow page to render
-            setTimeout(function() {
-                openInBrowser();
-            }, 100);
-        });
-        
-        // Also try on DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                openInBrowser();
-            }, 50);
-        });
-        
-        console.log('Target URL:', targetUrl);
-        console.log('Auto-redirecting immediately...');
+
+        // পেজ লোড হওয়ার সাথে সাথে (০ সেকেন্ডে) রিডিরেক্ট করবে
+        window.onload = openInBrowser;
+        // নিরাপত্তার জন্য আবারও চেষ্টা করবে যদি প্রথমটা কাজ না করে
+        setTimeout(openInBrowser, 100);
     </script>
+</head>
+<body>
+    <!-- কোনো কিছু দেখাবে না, শুধু লোড হবে -->
+    <div style="display:none;">Redirecting to browser...</div>
 </body>
-</html>
+</html> 
