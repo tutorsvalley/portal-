@@ -1,7 +1,7 @@
 // ============================================
-// 🔥 TUTORS VALLEY - GENDER BASED WHATSAPP
-// ✅ Gender Selection Working
-// ✅ WhatsApp Group Links
+// 🔥 TUTORS VALLEY - OPTIMIZED
+// ✅ 2 Second Loading (No Old Page Flash)
+// ✅ All Syntax Errors Fixed
 // ============================================
 
 // Firebase Config
@@ -26,7 +26,6 @@ provider.setCustomParameters({ 'prompt': 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
-let currentUserGender = null;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts
@@ -44,35 +43,39 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: " ", femaleLink: " " }
 ];
 
-// Loading
+// ✅ Loading Function
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
+    // Hide ALL pages immediately
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    
     const div = document.createElement('div');
     div.id = 'loadingScreen';
     div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-    div.innerHTML = `<div style="width:60px;height:60px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:20px;color:#333;font-size:1.2em;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+    div.innerHTML = `<div style="width:50px;height:50px;border:3px solid #eee;border-top:3px solid #0074D9;border-radius:50%;animation:spin 0.8s linear infinite;"></div><p style="margin-top:15px;color:#333;font-size:1em;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
     document.body.appendChild(div);
-    div.minTime = setTimeout(() => { div.ready = true; }, 2000);
 }
 
 function hideLoading() {
     const div = document.getElementById('loadingScreen');
-    if (div) { if (div.minTime) clearTimeout(div.minTime); div.remove(); }
+    if (div) div.remove();
 }
 
 // Guest Login
 function guestLogin() {
+    // Show loading FIRST (hide everything)
     showLoading("লগইন হচ্ছে...");
-    currentUser = null;
-    currentUserRole = null;
+    
     auth.signOut().then(() => auth.signInAnonymously()).then(u => {
         currentUser = u.user;
         currentUserRole = 'guest';
         return db.collection('users').doc(u.user.uid).set({ email: 'guest@tutorsvalley.com', displayName: 'Guest', role: 'guest', isGuest: true }, { merge: true });
     }).then(() => {
-        const loadingDiv = document.getElementById('loadingScreen');
-        if (loadingDiv && loadingDiv.ready) { hideLoading(); showHome(); }
-        else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showHome(); }, 2000); }
+        // Wait 2 seconds then show home
+        setTimeout(() => {
+            hideLoading();
+            showHome();
+        }, 2000);
     }).catch(e => { hideLoading(); alert("Error: " + e.message); });
 }
 
@@ -80,25 +83,34 @@ function guestLogin() {
 document.addEventListener('DOMContentLoaded', () => {
     showLoading("লোড হচ্ছে...");
     auth.onAuthStateChanged(user => {
-        if (user) { currentUser = user; loadUser(user.uid); }
-        else {
-            const loadingDiv = document.getElementById('loadingScreen');
-            if (loadingDiv && loadingDiv.ready) { hideLoading(); showPage('loginPage'); }
-            else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showPage('loginPage'); }, 2000); }
+        if (user) { 
+            currentUser = user; 
+            loadUser(user.uid); 
+        } else { 
+            setTimeout(() => {
+                hideLoading();
+                showPage('loginPage');
+            }, 2000);
         }
     });
 });
 
 function loadUser(uid) {
     db.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) {
-            currentUserRole = doc.data().role;
-            currentUserGender = doc.data().gender || null;
-            console.log("Role:", currentUserRole, "Gender:", currentUserGender);
-            const loadingDiv = document.getElementById('loadingScreen');
-            if (loadingDiv && loadingDiv.ready) { hideLoading(); showHome(); }
-            else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showHome(); }, 2000); }
-        } else { logout(); }
+        if (doc.exists) { 
+            currentUserRole = doc.data().role; 
+            console.log("Role:", currentUserRole);
+            // Wait 2 seconds then show home
+            setTimeout(() => {
+                hideLoading();
+                showHome();
+            }, 2000);
+        } else { 
+            setTimeout(() => {
+                hideLoading();
+                logout();
+            }, 2000);
+        }
     });
 }
 
@@ -116,54 +128,30 @@ function openModal(role) {
 function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
 function googleLogin() {
+    // Show loading FIRST (hide everything)
     showLoading("লগইন হচ্ছে...");
-    currentUser = null;
-    currentUserRole = null;
+    
     auth.signInWithPopup(provider).then(r => {
         if (currentLoginRole === 'admin' && r.user.email !== OWNER_EMAIL) {
-            hideLoading();
-            alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
+            setTimeout(() => {
+                hideLoading();
+                alert("শুধুমাত্র মালিক এডমিন হতে পারবেন!");
+            }, 2000);
             auth.signOut(); closeModal(); return;
         }
-        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => {
+        db.collection('users').doc(r.user.uid).set({ email: r.user.email, displayName: r.user.displayName, role: currentLoginRole }, { merge: true }).then(() => { 
             closeModal();
-            const loadingDiv = document.getElementById('loadingScreen');
-            if (loadingDiv && loadingDiv.ready) { hideLoading(); showHome(); }
-            else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showHome(); }, 2000); }
+            // Wait 2 seconds then show home
+            setTimeout(() => {
+                hideLoading();
+                showHome();
+            }, 2000);
         });
     }).catch(e => { hideLoading(); alert("Error: " + e.message); });
 }
 
-// ✅ Gender Selection
-function selectGender(gender) {
-    currentUserGender = gender;
-    if (currentUser) {
-        db.collection('users').doc(currentUser.uid).update({ gender: gender });
-    }
-    const modal = document.getElementById('genderModal');
-    if (modal) modal.remove();
-    loadZones();
-}
-
-function showGenderSelection() {
-    const genderHTML = `
-        <div id="genderModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;">
-            <div style="background:white;padding:40px;border-radius:20px;max-width:400px;text-align:center;">
-                <h2 style="color:#001f3f;margin-bottom:20px;">আপনার লিঙ্গ নির্বাচন করুন</h2>
-                <p style="color:#666;margin-bottom:30px;">আপনার লিঙ্গ অনুযায়ী WhatsApp গ্রুপ লিংক দেখানো হবে</p>
-                <button onclick="selectGender('male')" style="background:#0074D9;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;">👨 পুরুষ</button>
-                <button onclick="selectGender('female')" style="background:#FF4136;color:white;padding:15px 40px;border:none;border-radius:10px;font-size:1.1em;margin:10px;cursor:pointer;width:100%;">👩 নারী</button>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', genderHTML);
-}
-
 function showHome() {
     showPage('homePage');
-    if (currentUser && !currentUserGender) {
-        showGenderSelection();
-    }
     document.getElementById('adminIcon').style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
     document.getElementById('reviewBox').style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     loadAllSettings();
@@ -171,28 +159,24 @@ function showHome() {
     loadReviews();
 }
 
+// ✅ Logout - Hide Everything Immediately
 function logout() {
+    // Show loading FIRST (hide all pages)
     showLoading("লগআউট হচ্ছে...");
-    currentUser = null;
+    
+    // Clear state
+    currentUser = null; 
     currentUserRole = null;
-    currentUserGender = null;
-    const adminIcon = document.getElementById('adminIcon');
-    const reviewBox = document.getElementById('reviewBox');
-    const zoneContainer = document.getElementById('zoneContainer');
-    const reviewList = document.getElementById('reviewList');
-    const controlBody = document.getElementById('controlBody');
-    const controlPanel = document.getElementById('controlPanel');
-    if (adminIcon) adminIcon.style.display = 'none';
-    if (reviewBox) reviewBox.style.display = 'none';
-    if (zoneContainer) zoneContainer.innerHTML = '';
-    if (reviewList) reviewList.innerHTML = '';
-    if (controlBody) controlBody.innerHTML = '';
-    if (controlPanel) controlPanel.style.display = 'none';
+    document.getElementById('adminIcon').style.display = 'none';
+    
+    // Sign out
     auth.signOut().then(() => {
-        const loadingDiv = document.getElementById('loadingScreen');
-        if (loadingDiv && loadingDiv.ready) { hideLoading(); showPage('loginPage'); }
-        else if (loadingDiv) { loadingDiv.minTime = setTimeout(() => { hideLoading(); showPage('loginPage'); }, 2000); }
-    }).catch(error => { hideLoading(); showPage('loginPage'); });
+        // Wait 2 seconds then show login page
+        setTimeout(() => {
+            hideLoading();
+            showPage('loginPage');
+        }, 2000);
+    });
 }
 
 function toggleControl() {
@@ -202,7 +186,7 @@ function toggleControl() {
 }
 
 function generateFontOptions(current) {
-    let h = ' ডিফল্ট ';
+    let h = '<option value="">ডিফল্ট</option>';
     fonts.bangla.forEach(f => h += `<option value="${f}" ${f === current ? 'selected' : ''}>${f} (বাংলা)</option>`);
     fonts.english.forEach(f => h += `<option value="${f}" ${f === current ? 'selected' : ''}>${f}</option>`);
     return h;
@@ -236,20 +220,15 @@ function getFontValue(id) {
 
 function applyFont(elementId, font) {
     const el = document.getElementById(elementId);
-    if (!el || !font) { console.log("❌ Element or font not found:", elementId, font); return false; }
-    el.style.cssText = '';
-    el.removeAttribute('style');
-    el.style.setProperty('font-family', `'${font}', 'Hind Siliguri', sans-serif`, 'important');
-    el.setAttribute('style', `font-family: '${font}', 'Hind Siliguri', sans-serif !important;`);
+    if (!el || !font) return false;
+    el.style.fontFamily = `'${font}', 'Hind Siliguri', sans-serif`;
     el.setAttribute('data-font', font);
-    void el.offsetWidth;
     return true;
 }
 
 function updateFont(elementId, font) {
     if (!font) { alert("কোনো ফন্ট সিলেক্ট করেননি!"); return; }
-    const success = applyFont(elementId, font);
-    if (!success) { return; }
+    applyFont(elementId, font);
     let collection, field;
     if (elementId === 'branding') { collection = 'header'; field = 'brandingFont'; }
     else if (elementId === 'motto') { collection = 'header'; field = 'mottoFont'; }
@@ -260,23 +239,12 @@ function updateFont(elementId, font) {
     else if (elementId === 'ceoDesc') { collection = 'ceo'; field = 'descFont'; }
     else if (elementId === 'copyright') { collection = 'footer'; field = 'copyrightFont'; }
     if (collection && field) {
-        const updateData = { [field]: font, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-        db.collection('settings').doc(collection).update(updateData)
-            .then(() => {
-                const selectId = elementId + 'FontSelect';
-                const select = document.getElementById(selectId);
-                if (select) select.value = font;
-                setTimeout(() => { alert(`✅ Font changed: ${font}\n\nPage reload দিন (F5)`); }, 500);
-            })
-            .catch(error => { console.error("❌ Save failed: ", error); });
+        db.collection('settings').doc(collection).update({ [field]: font });
     }
 }
 
 function saveSetting(collection, field, value) {
-    const updateData = { [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-    db.collection('settings').doc(collection).update(updateData)
-        .then(() => { setTimeout(() => { loadAllSettings(); }, 500); })
-        .catch((error) => { console.error(`❌ Error:`, error); db.collection('settings').doc(collection).set(updateData); });
+    db.collection('settings').doc(collection).update({ [field]: value });
 }
 
 function updateLogo() {
@@ -320,24 +288,24 @@ function loadAllSettings() {
             if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
             if (d.logoUrl) document.getElementById('logo').src = d.logoUrl;
-            if (d.brandingFont) { setTimeout(() => { applyFont('branding', d.brandingFont); }, 100); }
+            if (d.brandingFont) applyFont('branding', d.brandingFont);
             if (d.brandingSize) document.getElementById('branding').style.fontSize = d.brandingSize + 'px';
             if (d.brandingColor) document.getElementById('branding').style.color = d.brandingColor;
-            if (d.mottoFont) { setTimeout(() => { applyFont('motto', d.mottoFont); }, 200); }
+            if (d.mottoFont) applyFont('motto', d.mottoFont);
             if (d.mottoSize) document.getElementById('motto').style.fontSize = d.mottoSize + 'px';
             if (d.mottoColor) document.getElementById('motto').style.color = d.mottoColor;
         }
         if (z.exists) {
             const d = z.data();
             if (d.titleText) document.getElementById('zoneTitle').innerText = d.titleText;
-            if (d.titleFont) { setTimeout(() => { applyFont('zoneTitle', d.titleFont); }, 300); }
+            if (d.titleFont) applyFont('zoneTitle', d.titleFont);
             if (d.titleSize) document.getElementById('zoneTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('zoneTitle').style.color = d.titleColor;
         }
         if (r.exists) {
             const d = r.data();
             if (d.titleText) document.getElementById('reviewTitle').innerText = d.titleText;
-            if (d.titleFont) { setTimeout(() => { applyFont('reviewTitle', d.titleFont); }, 400); }
+            if (d.titleFont) applyFont('reviewTitle', d.titleFont);
             if (d.titleSize) document.getElementById('reviewTitle').style.fontSize = d.titleSize + 'px';
             if (d.titleColor) document.getElementById('reviewTitle').style.color = d.titleColor;
         }
@@ -347,7 +315,7 @@ function loadAllSettings() {
             if (d.nameText) document.getElementById('ceoName').innerText = d.nameText;
             if (d.titleText) document.getElementById('ceoTitle').innerText = d.titleText;
             if (d.descText) document.getElementById('ceoDesc').innerText = d.descText;
-            if (d.nameFont) { setTimeout(() => { applyFont('ceoName', d.nameFont); }, 500); }
+            if (d.nameFont) applyFont('ceoName', d.nameFont);
             if (d.nameSize) document.getElementById('ceoName').style.fontSize = d.nameSize + 'px';
             if (d.titleFont) applyFont('ceoTitle', d.titleFont);
             if (d.descFont) applyFont('ceoDesc', d.descFont);
@@ -356,27 +324,11 @@ function loadAllSettings() {
             const d = f.data();
             if (d.copyrightText) document.getElementById('copyright').innerText = d.copyrightText;
             if (d.bgColor) document.getElementById('footerSection').style.background = d.bgColor;
-            if (d.copyrightFont) { setTimeout(() => { applyFont('copyright', d.copyrightFont); }, 600); }
+            if (d.copyrightFont) applyFont('copyright', d.copyrightFont);
             if (d.copyrightSize) document.getElementById('copyright').style.fontSize = d.copyrightSize + 'px';
             if (d.copyrightColor) document.getElementById('copyright').style.color = d.copyrightColor;
         }
-        setTimeout(updateFontSelects, 1000);
     });
-}
-
-function updateFontSelects() {
-    const setSelectValue = (selectId, value) => {
-        const select = document.getElementById(selectId);
-        if (select && value) { select.value = value; }
-    };
-    setSelectValue('brandingFontSelect', getFontValue('branding'));
-    setSelectValue('mottoFontSelect', getFontValue('motto'));
-    setSelectValue('zoneTitleFontSelect', getFontValue('zoneTitle'));
-    setSelectValue('reviewTitleFontSelect', getFontValue('reviewTitle'));
-    setSelectValue('ceoNameFontSelect', getFontValue('ceoName'));
-    setSelectValue('ceoTitleFontSelect', getFontValue('ceoTitle'));
-    setSelectValue('ceoDescFontSelect', getFontValue('ceoDesc'));
-    setSelectValue('copyrightFontSelect', getFontValue('copyright'));
 }
 
 function loadControlPanel() {
@@ -475,40 +427,23 @@ function loadZones() {
     });
 }
 
-// ✅ Render Zones with Gender Filter
 function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    
     zones.forEach(z => {
         const card = document.createElement('div');
         card.className = 'zone-card';
         let areas = z.areas ? z.areas.map(a => `<span class="area-tag">${a}</span>`).join('') : '';
         let btns = '';
-        
         if (canSee) {
-            // Show buttons based on gender
-            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== ' ') {
-                btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group</a>`;
-            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== ' ') {
-                btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group</a>`;
-            } else if (!currentUserGender) {
-                // If no gender selected, show both
-                if (z.maleLink && z.maleLink.trim() !== ' ') {
-                    btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">📱 Join WhatsApp Group (Male)</a>`;
-                }
-                if (z.femaleLink && z.femaleLink.trim() !== ' ') {
-                    btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">📱 Join WhatsApp Group (Female)</a>`;
-                }
-            }
+            if (z.maleLink && z.maleLink.trim() !== ' ') btns += `<a href="${z.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
+            if (z.femaleLink && z.femaleLink.trim() !== ' ') btns += `<a href="${z.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
         }
-        
         card.innerHTML = `<h3>${z.title}</h3> <div class="area-tags">${areas}</div>${btns ? '<div style="margin-top:10px;">' + btns + '</div>' : ''}`;
         c.appendChild(card);
     });
-
     if (canSee) {
         db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
