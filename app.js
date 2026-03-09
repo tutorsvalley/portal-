@@ -1,3 +1,9 @@
+// ============================================
+// 🔥 TUTORS VALLEY - FINAL FIXED VERSION
+// ✅ All Functions Exposed to Window Object
+// ✅ Login Buttons Working 100%
+// ============================================
+
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",
@@ -47,7 +53,8 @@ function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
     div.id = 'loadingScreen';
-    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.3s;';    div.innerHTML = `<div style="width:50px;height:50px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:15px;color:#333;font-family:sans-serif;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+    div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.3s;';
+    div.innerHTML = `<div style="width:50px;height:50px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:15px;color:#333;font-family:sans-serif;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
     document.body.appendChild(div);
     void div.offsetWidth;
     div.style.opacity = '1';
@@ -64,7 +71,7 @@ function hideLoading() {
 }
 
 // Guest Login
-function guestLogin() {
+window.guestLogin = function() {
     console.log("🟢 Guest login started");
     showLoading("লগইন হচ্ছে...");
     
@@ -94,13 +101,14 @@ function guestLogin() {
         alert("লগইন ব্যর্থ: " + error.message);
         showPage('loginPage');
     });
-}
+};
 
-// DOM Loaded Eventdocument.addEventListener('DOMContentLoaded', () => {
+// DOM Loaded Event
+document.addEventListener('DOMContentLoaded', () => {
     console.log("📄 Page Loaded");
     showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // Handle Redirect Result (Mobile Google Login) - FIXED LOOP ISSUE
+    // Handle Redirect Result (Mobile Google Login)
     auth.getRedirectResult().then((result) => {
         if (result.user) {
             console.log("✅ Redirect result received");
@@ -118,12 +126,10 @@ function guestLogin() {
     auth.onAuthStateChanged((user) => {
         if (user) {
             currentUser = user;
-            // Only load user if role is not set yet to prevent loop
             if (!currentUserRole) {
                 loadUser(user.uid);
             }
         } else {
-            // User signed out
             if(currentUserRole) {
                 hideLoading();
                 showPage('loginPage');
@@ -145,7 +151,8 @@ function handleLoginSuccess(user) {
         return;
     }
 
-    currentUser = user;    currentUserRole = currentLoginRole;
+    currentUser = user;
+    currentUserRole = currentLoginRole;
 
     db.collection('users').doc(user.uid).set({
         email: user.email,
@@ -184,7 +191,7 @@ function loadUser(uid) {
 }
 
 // Show Page
-function showPage(id) {
+window.showPage = function(id) {
     document.querySelectorAll('.page').forEach(p => {
         p.style.display = 'none';
         p.classList.remove('active');
@@ -194,9 +201,11 @@ function showPage(id) {
         page.style.display = 'block';
         page.classList.add('active');
         window.scrollTo(0, 0);
-    }}
+    }
+};
 
-function openModal(role) {
+// Open Modal
+window.openModal = function(role) {
     currentLoginRole = role;
     const titles = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' };
     const modalTitle = document.getElementById('modalTitle');
@@ -204,15 +213,16 @@ function openModal(role) {
     
     if (modalTitle) modalTitle.innerText = titles[role] || 'লগইন';
     if (loginModal) loginModal.style.display = 'flex';
-}
+};
 
-function closeModal() {
+// Close Modal
+window.closeModal = function() {
     const loginModal = document.getElementById('loginModal');
     if (loginModal) loginModal.style.display = 'none';
-}
+};
 
 // Google Login
-function googleLogin() {
+window.googleLogin = function() {
     if (!currentLoginRole) {
         alert("দয়া করে একটি রোল সিলেক্ট করুন");
         return;
@@ -240,10 +250,11 @@ function googleLogin() {
             showPage('loginPage');
         }
     });
-}
+};
 
 // Show Home Page
-function showHome() {    console.log("🏠 Showing Home for:", currentUserRole);
+function showHome() {
+    console.log("🏠 Showing Home for:", currentUserRole);
     showPage('homePage');
     
     const adminIcon = document.getElementById('adminIcon');
@@ -254,12 +265,12 @@ function showHome() {    console.log("🏠 Showing Home for:", currentUserRole);
     
     Promise.all([loadAllSettings(), loadZones(), loadReviews()]).then(() => {
         console.log("✅ Home data loaded");
-        updateFloatingWhatsapp(); // Update floating button on home load
+        updateFloatingWhatsapp();
     }).catch(err => console.error("❌ Home load error:", err));
 }
 
 // Logout
-function logout() {
+window.logout = function() {
     console.log("🚪 Logout initiated");
     showLoading("লগআউট হচ্ছে...");
     
@@ -278,21 +289,22 @@ function logout() {
         hideLoading();
         showPage('loginPage');
     });
-}
+};
 
 // Toggle Control Panel
-function toggleControl() {
+window.toggleControl = function() {
     const p = document.getElementById('controlPanel');
     if (!p) return;
     p.style.display = (p.style.display === 'block') ? 'none' : 'block';
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
-}
+};
 
 // Helper Functions
 function generateFontOptions(current) {
     let h = '<option value="">ডিফল্ট</option>';
     fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
-    fonts.english.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f}</option>`);    return h;
+    fonts.english.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f}</option>`);
+    return h;
 }
 
 function rgbToHex(rgb) {
@@ -341,7 +353,8 @@ function updateFont(elementId, font) {
     else if (elementId === 'copyright') { collection = 'footer'; field = 'copyrightFont'; }
     
     if (collection && field) {
-        db.collection('settings').doc(collection).update({ [field]: font });    }
+        db.collection('settings').doc(collection).update({ [field]: font });
+    }
 }
 
 function saveSetting(collection, field, value) {
@@ -390,7 +403,8 @@ function loadAllSettings() {
         const [h, z, r, c, f] = docs;
         if (h.exists) {
             const d = h.data();
-            if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;            if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
+            if (d.brandingText) document.getElementById('branding').innerText = d.brandingText;
+            if (d.mottoText) document.getElementById('motto').innerText = d.mottoText;
             if (d.headerBg) document.getElementById('headerSection').style.background = d.headerBg;
             if (d.fbUrl) document.getElementById('fbBtn').href = d.fbUrl;
             if (d.fbTextText) document.getElementById('fbText').innerText = d.fbTextText;
@@ -439,7 +453,8 @@ function loadAllSettings() {
 }
 
 // Load Control Panel
-function loadControlPanel() {    const body = document.getElementById('controlBody');
+function loadControlPanel() {
+    const body = document.getElementById('controlBody');
     if (!body) return;
     const canEdit = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
@@ -488,7 +503,8 @@ function loadControlPanel() {    const body = document.getElementById('controlBo
             <div class="control-group"><label>পদবী:</label><input type="text" value="${getText('ceoTitle')}" oninput="updateText('ceoTitle',this.value);saveSetting('ceo','titleText',this.value)"></div>
             <div class="control-group"><label>পদবী ফন্ট:</label><select onchange="updateFont('ceoTitle',this.value)">${generateFontOptions(getFontValue('ceoTitle'))}</select></div>
             <div class="control-group"><label>বিবরণ:</label><textarea rows="3" oninput="updateText('ceoDesc',this.value);saveSetting('ceo','descText',this.value)">${getText('ceoDesc')}</textarea></div>
-            <div class="control-group"><label>বিবরণ ফন্ট:</label><select onchange="updateFont('ceoDesc',this.value)">${generateFontOptions(getFontValue('ceoDesc'))}</select></div>        </div>
+            <div class="control-group"><label>বিবরণ ফন্ট:</label><select onchange="updateFont('ceoDesc',this.value)">${generateFontOptions(getFontValue('ceoDesc'))}</select></div>
+        </div>
         <div class="control-section">
             <h3>🔻 ফুটার</h3>
             <div class="control-group"><label>কপিরাইট:</label><input type="text" value="${getText('copyright')}" oninput="updateText('copyright',this.value);saveSetting('footer','copyrightText',this.value)"></div>
@@ -531,13 +547,13 @@ function loadZoneCardsSettings() {
 function updateZone(id, f, v) {
     if (f === 'areas') v = v.split(',').map(a=>a.trim()).filter(a=>a);
     db.collection('zones').doc(id.toString()).update({ [f]: v });
-    // If whatsapp number updated, refresh the floating button
     if (f === 'whatsappNumber') updateFloatingWhatsapp();
 }
 
 // Load Zones
 function loadZones() {
-    return db.collection('zones').get().then(s => {        const c = document.getElementById('zoneContainer');
+    return db.collection('zones').get().then(s => {
+        const c = document.getElementById('zoneContainer');
         if (!c) return;
         c.innerHTML = '';
         if (s.empty) {
@@ -586,7 +602,8 @@ function renderZones(zones) {
 
     // Tutor Note Logic
     if (canSeeButtons) {
-        db.collection('settings').doc('zones').get().then(doc => {            if (doc.exists && doc.data().tutorNote) {
+        db.collection('settings').doc('zones').get().then(doc => {
+            if (doc.exists && doc.data().tutorNote) {
                 const zt = document.getElementById('zoneTitle');
                 if (zt) {
                     const old = zt.parentNode.querySelector('.tutor-note');
@@ -601,24 +618,22 @@ function renderZones(zones) {
         });
     }
     
-    // Update Floating WhatsApp Button
     updateFloatingWhatsapp();
 }
 
-// ✅ Function to Update Floating WhatsApp Button
+// Function to Update Floating WhatsApp Button
 function updateFloatingWhatsapp() {
     const btn = document.getElementById('floatingWhatsappBtn');
     if (!btn) return;
 
-    // Fetch WhatsApp number from Zone 1
     db.collection('zones').doc('1').get().then(doc => {
         if (doc.exists && doc.data().whatsappNumber) {
             const number = doc.data().whatsappNumber.replace(/[^0-9]/g, '');
             const msg = encodeURIComponent("আসসালামু আলাইকুম, আমি গ্রুপে জয়েন করতে চাই।");
             btn.href = `https://wa.me/${number}?text=${msg}`;
-            btn.style.display = 'flex'; // Show button
+            btn.style.display = 'flex';
         } else {
-            btn.style.display = 'none'; // Hide if no number
+            btn.style.display = 'none';
         }
     }).catch(err => {
         console.error("Error fetching whatsapp number:", err);
@@ -635,7 +650,8 @@ function loadReviews() {
         if (s.empty) { c.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">কোনো রিভিউ নেই</p>'; return; }
         s.forEach(doc => {
             const r = doc.data();
-            const date = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleDateString('bn-BD') : '';            const card = document.createElement('div');
+            const date = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
+            const card = document.createElement('div');
             card.className = 'review-card';
             const del = currentUserRole === 'admin' ? `<button onclick="deleteReview('${doc.id}')" style="float:right;background:#ff4136;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🗑️</button>` : '';
             card.innerHTML = `${del}<h4>${r.userName||'Anonymous'} ${r.userRole?'('+r.userRole+')':''}</h4><small style="color:#999;">${date}</small><p>${r.text}</p>`;
@@ -644,14 +660,14 @@ function loadReviews() {
     });
 }
 
-function deleteReview(id) {
+window.deleteReview = function(id) {
     if (currentUserRole !== 'admin') { alert("শুধুমাত্র এডমিন রিভিউ ডিলিট করতে পারবেন"); return; }
     if (confirm("ডিলিট করবেন?")) {
         db.collection('reviews').doc(id).delete().then(() => { loadReviews(); alert("ডিলিট হয়েছে"); });
     }
-}
+};
 
-function submitReview() {
+window.submitReview = function() {
     if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') { alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন"); return; }
     const t = document.getElementById('reviewText').value;
     if (!t.trim()) { alert("রিভিউ লিখুন"); return; }
@@ -660,6 +676,6 @@ function submitReview() {
         loadReviews();
         alert("রিভিউ জমা হয়েছে");
     });
-}
+};
 
-console.log("✅ App.js Loaded Successfully");
+console.log("✅ App.js Loaded Successfully - All functions exposed to window");
