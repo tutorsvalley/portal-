@@ -1,8 +1,9 @@
 // ============================================
-// 🔥 TUTORS VALLEY - WITH GENDER SELECTION
-// ✅ Gender Dropdown Below Zone Title
-// ✅ Button Shows Based on Gender
-// ✅ 2 Second Loading After Selection
+// 🔥 TUTORS VALLEY - FULL FIXED VERSION
+// ✅ Gender Reset on Reload
+// ✅ Admin Sees Both Buttons
+// ✅ Tutor Has Gender Selection
+// ✅ Guardian Only Sees Zones (No Buttons)
 // ============================================
 
 // Firebase Config
@@ -35,7 +36,7 @@ provider.setCustomParameters({ prompt: 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
-let currentUserGender = null; // ✅ Add gender variable
+let currentUserGender = null; // ✅ Reset on every page reload
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
 // Fonts List
@@ -53,7 +54,9 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "" }
 ];
 
-// Loading Functions
+// ============================================
+// ✅ LOADING SCREEN FUNCTIONS
+// ============================================
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
@@ -61,7 +64,7 @@ function showLoading(msg = "লোড হচ্ছে...") {
     div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
     div.innerHTML = '<div style="width:50px;height:50px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:15px;color:#333;font-family:sans-serif;">' + msg + '</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
     document.body.appendChild(div);
-    div.autoHide = setTimeout(function() { hideLoading(); }, 6000);
+    div.autoHide = setTimeout(() => hideLoading(), 6000);
 }
 
 function hideLoading() {
@@ -72,16 +75,18 @@ function hideLoading() {
     }
 }
 
-// Guest Login
+// ============================================
+// ✅ AUTH & LOGIN FUNCTIONS
+// ============================================
 function guestLogin() {
     console.log("🟢 Guest login started");
     showLoading("লগইন হচ্ছে...");
     currentUser = null;
     currentUserRole = null;
 
-    auth.signOut().then(function() {
+    auth.signOut().then(() => {
         return auth.signInAnonymously();
-    }).then(function(userCredential) {
+    }).then((userCredential) => {
         currentUser = userCredential.user;
         currentUserRole = 'guest';
         return db.collection('users').doc(currentUser.uid).set({
@@ -91,11 +96,11 @@ function guestLogin() {
             isGuest: true,
             lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-    }).then(function() {
+    }).then(() => {
         console.log("✅ Guest logged in");
         hideLoading();
         showHome();
-    }).catch(function(error) {
+    }).catch((error) => {
         console.error("❌ Guest login error:", error);
         hideLoading();
         alert("লগইন ব্যর্থ: " + error.message);
@@ -103,7 +108,6 @@ function guestLogin() {
     });
 }
 
-// Google Login
 function googleLogin() {
     if (!currentLoginRole) {
         alert("দয়া করে একটি রোল সিলেক্ট করুন");
@@ -114,11 +118,17 @@ function googleLogin() {
     currentUser = null;
     currentUserRole = null;
 
-    auth.signInWithPopup(provider).then(function(result) {
-        if (result && result.user) {
-            handleLoginSuccess(result.user);
+    auth.signOut().then(() => {
+        const isMobile = /mobile|android|iphone|ipad/i.test(navigator.userAgent);
+        if (isMobile) {
+            sessionStorage.setItem('loginRole', currentLoginRole);
+            return auth.signInWithRedirect(provider);
+        } else {
+            return auth.signInWithPopup(provider);
         }
-    }).catch(function(error) {
+    }).then((result) => {
+        if (result && result.user) handleLoginSuccess(result.user);
+    }).catch((error) => {
         if (error.code !== 'auth/popup-closed-by-user') {
             console.error("❌ Google login error:", error);
             if (!/mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
@@ -130,7 +140,6 @@ function googleLogin() {
     });
 }
 
-// Handle Login Success
 function handleLoginSuccess(user) {
     console.log("🎉 Login success:", user.email);
     if (currentLoginRole === 'admin' && user.email !== OWNER_EMAIL) {
@@ -151,12 +160,12 @@ function handleLoginSuccess(user) {
         role: currentLoginRole,
         provider: 'google',
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(function() {
+    }, { merge: true }).then(() => {
         console.log("✅ User data saved");
         closeModal();
         hideLoading();
         showHome();
-    }).catch(function(error) {
+    }).catch((error) => {
         console.error("❌ Save error:", error);
         hideLoading();
         alert("ডাটা সেভ ব্যর্থ: " + error.message);
@@ -164,23 +173,23 @@ function handleLoginSuccess(user) {
 }
 
 // DOM Loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     console.log("📄 Page Loaded");
     showLoading("অ্যাপ লোড হচ্ছে...");
 
-    auth.getRedirectResult().then(function(result) {
+    auth.getRedirectResult().then((result) => {
         if (result.user) {
             const savedRole = sessionStorage.getItem('loginRole') || 'tutor';
             currentLoginRole = savedRole;
             sessionStorage.removeItem('loginRole');
             handleLoginSuccess(result.user);
         }
-    }).catch(function(error) {
+    }).catch((error) => {
         console.error("❌ Redirect error:", error);
         hideLoading();
     });
 
-    auth.onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged((user) => {
         if (user) {
             if (!currentUserRole) {
                 loadUser(user.uid);
@@ -198,27 +207,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadUser(uid) {
-    db.collection('users').doc(uid).get().then(function(doc) {
+    db.collection('users').doc(uid).get().then((doc) => {
         hideLoading();
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            // Load gender from Firestore if exists
-            currentUserGender = doc.data().gender || null;
-            console.log("✅ Role loaded:", currentUserRole, "Gender:", currentUserGender);
+            // ✅ DO NOT load gender from Firestore - reset on every reload
+            currentUserGender = null;
+            console.log("✅ Role loaded:", currentUserRole, "Gender reset to null");
             showHome();
         } else {
             logout();
         }
-    }).catch(function(error) {
+    }).catch((error) => {
         console.error("❌ Load user error:", error);
         hideLoading();
         logout();
     });
 }
 
-// Page Navigation
+// ============================================
+// ✅ PAGE NAVIGATION & UI
+// ============================================
 function showPage(id) {
-    document.querySelectorAll('.page').forEach(function(p) {
+    document.querySelectorAll('.page').forEach(p => {
         p.style.display = 'none';
         p.classList.remove('active');
     });
@@ -261,7 +272,7 @@ function handleGenderSelect(gender) {
     showLoading("লোড হচ্ছে...");
     currentUserGender = gender;
     
-    // Save to Firestore
+    // Save to Firestore (optional, but won't load on reload)
     if (currentUser) {
         db.collection('users').doc(currentUser.uid).update({
             gender: gender,
@@ -272,7 +283,6 @@ function handleGenderSelect(gender) {
     // 2 second loading then show zones
     setTimeout(function() {
         hideLoading();
-        // Update dropdown to show selection
         const container = document.getElementById('genderSelectionContainer');
         if (container) {
             container.innerHTML = `<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ${gender === 'male' ? 'পুরুষ' : 'নারী'}</div>`;
@@ -284,22 +294,28 @@ function handleGenderSelect(gender) {
 function showHome() {
     console.log("🏠 Showing Home for:", currentUserRole);
     showPage('homePage');
+    
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) adminIcon.style.display = (currentUserRole === 'admin') ? 'flex' : 'none';
 
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
 
-    // Show gender dropdown for tutor/guardian if not admin
-    if (currentUserRole === 'tutor' || currentUserRole === 'guardian') {
-        showGenderDropdown();
+    // ✅ Gender Dropdown Logic Based on Role
+    const container = document.getElementById('genderSelectionContainer');
+    if (container) {
+        if (currentUserRole === 'tutor') {
+            // ✅ Tutor: Show gender dropdown, reset on reload
+            showGenderDropdown();
+        } else {
+            // ✅ Admin & Guardian: No dropdown
+            container.innerHTML = '';
+        }
     }
 
-    Promise.all([loadAllSettings(), loadZones(), loadReviews()]).then(function() {
+    Promise.all([loadAllSettings(), loadZones(), loadReviews()]).then(() => {
         console.log("✅ Home data loaded");
-    }).catch(function(err) {
-        console.error("❌ Home load error:", err);
-    });
+    }).catch(err => console.error("❌ Home load error:", err));
 }
 
 function logout() {
@@ -315,11 +331,11 @@ function logout() {
     const controlPanel = document.getElementById('controlPanel');
     if (controlPanel) controlPanel.style.display = 'none';
 
-    auth.signOut().then(function() {
+    auth.signOut().then(() => {
         console.log("✅ Logged out");
         hideLoading();
         showPage('loginPage');
-    }).catch(function(error) {
+    }).catch((error) => {
         console.error("❌ Logout error:", error);
         hideLoading();
         showPage('loginPage');
@@ -337,15 +353,13 @@ function toggleControl() {
     }
 }
 
-// Font Functions
+// ============================================
+// ✅ SETTINGS & FONTS
+// ============================================
 function generateFontOptions(current) {
     let h = '<option value="">ডিফল্ট</option>';
-    fonts.bangla.forEach(function(f) {
-        h += '<option value="' + f + '" ' + (f === current ? 'selected' : '') + '>' + f + ' (বাংলা)</option>';
-    });
-    fonts.english.forEach(function(f) {
-        h += '<option value="' + f + '" ' + (f === current ? 'selected' : '') + '>' + f + '</option>';
-    });
+    fonts.bangla.forEach(f => h += '<option value="' + f + '" ' + (f === current ? 'selected' : '') + '>' + f + ' (বাংলা)</option>');
+    fonts.english.forEach(f => h += '<option value="' + f + '" ' + (f === current ? 'selected' : '') + '>' + f + '</option>');
     return h;
 }
 
@@ -353,7 +367,7 @@ function rgbToHex(rgb) {
     if (!rgb || rgb.startsWith('#')) return rgb || '#001f3f';
     const v = rgb.match(/\d+/g);
     if (!v) return '#001f3f';
-    return "#" + ((1 << 24) + (parseInt(v[0]) << 16) + (parseInt(v[1]) << 8) + parseInt(v[2])).toString(16).slice(1);
+    return "#" + ((1<<24)+(parseInt(v[0])<<16)+(parseInt(v[1])<<8)+parseInt(v[2])).toString(16).slice(1);
 }
 
 function getStyle(id, prop) {
@@ -408,7 +422,7 @@ function updateLogo() {
     const f = document.getElementById('logoInput').files[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = function(e) {
+    r.onload = e => {
         document.getElementById('logo').src = e.target.result;
         db.collection('settings').doc('header').update({ logoUrl: e.target.result });
     };
@@ -419,28 +433,16 @@ function updateCeoImage() {
     const f = document.getElementById('ceoImageInput').files[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = function(e) {
+    r.onload = e => {
         document.getElementById('ceoImg').src = e.target.result;
         db.collection('settings').doc('ceo').update({ imageUrl: e.target.result });
     };
     r.readAsDataURL(f);
 }
 
-function updateText(id, v) {
-    const e = document.getElementById(id);
-    if (e) e.innerText = v;
-}
-
-function updateSize(id, v) {
-    const e = document.getElementById(id);
-    if (e) e.style.fontSize = v + 'px';
-}
-
-function updateColor(id, p, c) {
-    const e = document.getElementById(id);
-    if (e) e.style[p] = c;
-}
-
+function updateText(id, v) { const e = document.getElementById(id); if (e) e.innerText = v; }
+function updateSize(id, v) { const e = document.getElementById(id); if (e) e.style.fontSize = v + 'px'; }
+function updateColor(id, p, c) { const e = document.getElementById(id); if (e) e.style[p] = c; }
 function updateFbUrl(url) {
     document.getElementById('fbBtn').href = url;
     db.collection('settings').doc('header').update({ fbUrl: url });
@@ -453,7 +455,7 @@ function loadAllSettings() {
         db.collection('settings').doc('reviews').get(),
         db.collection('settings').doc('ceo').get(),
         db.collection('settings').doc('footer').get()
-    ]).then(function(docs) {
+    ]).then(docs => {
         const [h, z, r, c, f] = docs;
         if (h.exists) {
             const d = h.data();
@@ -515,11 +517,11 @@ function loadControlPanel() {
 }
 
 function loadZoneCardsSettings() {
-    db.collection('zones').get().then(function(s) {
+    db.collection('zones').get().then(s => {
         const c = document.getElementById('zoneCardsSettings');
         if (!c) return;
         c.innerHTML = '';
-        s.forEach(function(doc) {
+        s.forEach(doc => {
             const z = doc.data();
             c.innerHTML += '<div style="border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px;"><strong>জোন #' + z.id + '</strong><br>শিরোনাম: <input type="text" value="' + z.title + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'title\',this.value)"><br>এলাকা: <input type="text" value="' + (z.areas ? z.areas.join(', ') : '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'areas\',this.value)"><br>মেল গ্রুপ: <input type="url" value="' + (z.maleLink || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'maleLink\',this.value)"><br>ফিমেল গ্রুপ: <input type="url" value="' + (z.femaleLink || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'femaleLink\',this.value)"></div>';
         });
@@ -527,66 +529,66 @@ function loadZoneCardsSettings() {
 }
 
 function updateZone(id, f, v) {
-    if (f === 'areas') v = v.split(',').map(function(a) {
-        return a.trim();
-    }).filter(function(a) {
-        return a;
-    });
+    if (f === 'areas') v = v.split(',').map(a => a.trim()).filter(a => a);
     db.collection('zones').doc(id.toString()).update({ [f]: v });
 }
 
 function loadZones() {
-    return db.collection('zones').get().then(function(s) {
+    return db.collection('zones').get().then(s => {
         const c = document.getElementById('zoneContainer');
         if (!c) return;
         c.innerHTML = '';
         if (s.empty) {
-            defaultZones.forEach(function(z) {
-                db.collection('zones').doc(z.id.toString()).set(z);
-            });
+            defaultZones.forEach(z => db.collection('zones').doc(z.id.toString()).set(z));
             renderZones(defaultZones);
         } else {
             const zones = [];
-            s.forEach(function(doc) {
-                zones.push(doc.data());
-            });
+            s.forEach(doc => zones.push(doc.data()));
             renderZones(zones);
         }
     });
 }
 
-// ✅ UPDATED: Render zones with gender-based buttons
+// ✅ UPDATED: Role-based zone rendering
 function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
-    const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     
-    zones.forEach(function(z) {
+    zones.forEach(z => {
         const card = document.createElement('div');
         card.className = 'zone-card';
-        let areas = z.areas ? z.areas.map(function(a) {
-            return '<span class="area-tag">' + a + '</span>';
-        }).join('') : '';
+        let areas = z.areas ? z.areas.map(a => '<span class="area-tag">' + a + '</span>').join('') : '';
         let btns = '';
         
-        if (canSee) {
-            // ✅ Show buttons based on gender selection
+        // ✅ Admin: Always sees BOTH male & female buttons
+        if (currentUserRole === 'admin') {
+            if (z.maleLink && z.maleLink.trim() !== '') {
+                btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn" style="margin-right:5px;">📱 Join Our WhatsApp Group (Male)</a>';
+            }
+            if (z.femaleLink && z.femaleLink.trim() !== '') {
+                btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join Our WhatsApp Group (Female)</a>';
+            }
+        }
+        // ✅ Tutor: Sees buttons based on gender selection
+        else if (currentUserRole === 'tutor') {
             if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
                 btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join Our WhatsApp Group</a>';
             } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
                 btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join Our WhatsApp Group</a>';
             }
-            // If no gender selected, show no buttons
+            // If no gender selected, no buttons shown
         }
+        // ✅ Guardian: NO buttons, only zone name & areas
+        // (btns remains empty)
         
         card.innerHTML = '<h3>' + z.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div style="margin-top:10px;">' + btns + '</div>' : '');
         c.appendChild(card);
     });
 
-    // Tutor Note Logic
-    if (canSee) {
-        db.collection('settings').doc('zones').get().then(function(doc) {
+    // Tutor Note Logic (Admin & Tutor only)
+    if (currentUserRole === 'admin' || currentUserRole === 'tutor') {
+        db.collection('settings').doc('zones').get().then(doc => {
             if (doc.exists && doc.data().tutorNote) {
                 const zt = document.getElementById('zoneTitle');
                 if (zt) {
@@ -604,7 +606,7 @@ function renderZones(zones) {
 }
 
 function loadReviews() {
-    return db.collection('reviews').orderBy('createdAt', 'desc').limit(50).get().then(function(s) {
+    return db.collection('reviews').orderBy('createdAt', 'desc').limit(50).get().then(s => {
         const c = document.getElementById('reviewList');
         if (!c) return;
         c.innerHTML = '';
@@ -612,7 +614,7 @@ function loadReviews() {
             c.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">কোনো রিভিউ নেই</p>';
             return;
         }
-        s.forEach(function(doc) {
+        s.forEach(doc => {
             const r = doc.data();
             const date = r.createdAt ? new Date(r.createdAt.toDate()).toLocaleDateString('bn-BD') : '';
             const card = document.createElement('div');
@@ -630,7 +632,7 @@ function deleteReview(id) {
         return;
     }
     if (confirm("ডিলিট করবেন?")) {
-        db.collection('reviews').doc(id).delete().then(function() {
+        db.collection('reviews').doc(id).delete().then(() => {
             loadReviews();
             alert("ডিলিট হয়েছে");
         });
@@ -652,14 +654,14 @@ function submitReview() {
         userName: currentUser.displayName || currentUser.email || 'Anonymous',
         userRole: currentUserRole,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function() {
+    }).then(() => {
         document.getElementById('reviewText').value = '';
         loadReviews();
         alert("রিভিউ জমা হয়েছে");
     });
 }
 
-window.onclick = function(e) {
+window.onclick = e => {
     if (e.target === document.getElementById('loginModal')) closeModal();
 };
 
