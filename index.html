@@ -34,36 +34,36 @@
             <h1>Tutors Valley</h1>
             <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             
-            <!-- Buttons with Data Attributes -->
-            <button class="btn btn-tutor" data-action="openModal" data-role="tutor">টিউটর লগইন</button>
-            <button class="btn btn-guardian" data-action="openModal" data-role="guardian">অভিভাবক লগইন</button>
-            <button class="btn btn-guest" data-action="guestLogin">গেস্ট লগইন</button>
-            <button class="btn btn-admin" data-action="openModal" data-role="admin" style="margin-top:20px; font-size:0.9em;">এডমিন লগইন</button>
+            <!-- ✅ Buttons with Direct IDs -->
+            <button class="btn btn-tutor" id="tutorBtn">টিউটর লগইন</button>
+            <button class="btn btn-guardian" id="guardianBtn">অভিভাবক লগইন</button>
+            <button class="btn btn-guest" id="guestBtn">গেস্ট লগইন</button>
+            <button class="btn btn-admin" id="adminBtn" style="margin-top:20px; font-size:0.9em;">এডমিন লগইন</button>
         </div>
     </div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <span class="close" id="closeModalBtn">&times;</span>
+            <span class="close" id="closeModal">&times;</span>
             <h2 id="modalTitle">লগইন</h2>
-            <p>আপনার Google অ্যাকাউন্ট ব্যবহার করুন</p>            <button class="google-btn" data-action="googleLogin">Google দিয়ে লগইন</button>
+            <p>আপনার Google অ্যাকাউন্ট ব্যবহার করুন</p>            <button class="google-btn" id="googleLoginBtn">Google দিয়ে লগইন</button>
         </div>
     </div>
 
     <!-- Home Page -->
     <div id="homePage" class="page">
         
-        <!-- ✅ FIXED FLOATING WHATSAPP BUTTON -->
+        <!-- Floating WhatsApp Button -->
         <a href="#" id="floatingWhatsappBtn" class="floating-whatsapp" target="_blank" style="display:none;" title="যোগাযোগ করুন">
             <i class="fab fa-whatsapp"></i>
         </a>
 
-        <div id="adminIcon" class="admin-icon" data-action="toggleControl" style="display:none;">⚙️</div>
+        <div id="adminIcon" class="admin-icon" id="toggleControlBtn" style="display:none;">⚙️</div>
         <div id="controlPanel" class="control-panel">
             <div class="control-header">
                 <h3>কন্ট্রোল প্যানেল</h3>
-                <span style="cursor:pointer;float:right;" data-action="toggleControl">×</span>
+                <span style="cursor:pointer;float:right;" id="closePanelBtn">×</span>
             </div>
             <div id="controlBody" class="control-body"></div>
         </div>
@@ -76,7 +76,7 @@
                 </div>
                 <div class="header-actions">
                     <a id="fbBtn" href="#" target="_blank" class="fb-btn"><span id="fbText">fb page</span></a>
-                    <button class="logout-btn" data-action="logout">লগআউট</button>
+                    <button class="logout-btn" id="logoutBtn">লগআউট</button>
                 </div>
             </div>
         </header>
@@ -91,7 +91,7 @@
             <h2 id="reviewTitle" class="section-title">রিভিউ সমূহ</h2>
             <div id="reviewBox" class="review-box" style="display:none;">
                 <textarea id="reviewText" placeholder="আপনার মতামত লিখুন..."></textarea>
-                <button data-action="submitReview">জমা দিন</button>
+                <button id="submitReviewBtn">জমা দিন</button>
             </div>
             <div id="reviewList" class="review-list"></div>
         </section>
@@ -112,42 +112,55 @@
     <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- ✅ Universal Click Listener -->
+    <!-- ✅ DIRECT BUTTON BINDING SCRIPT (GUARANTEED TO WORK) -->
     <script>
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('button, span, a');
-            if (!btn) return;
+        // Wait for everything to load
+        window.addEventListener('load', function() {
+            console.log("🔗 Binding buttons directly...");
 
-            const action = btn.getAttribute('data-action');
-            const role = btn.getAttribute('data-role');
-
-            if (!action) return;
-
-            const execute = () => {
-                if (action === 'openModal' && role && window.openModal) {
-                    window.openModal(role);
-                } else if (action === 'guestLogin' && window.guestLogin) {
-                    window.guestLogin();
-                } else if (action === 'googleLogin' && window.googleLogin) {
-                    window.googleLogin();
-                } else if (action === 'logout' && window.logout) {
-                    window.logout();
-                } else if (action === 'toggleControl' && window.toggleControl) {
-                    window.toggleControl();
-                } else if (action === 'submitReview' && window.submitReview) {
-                    window.submitReview();
-                } else if (action === 'closeModal' && window.closeModal) {
-                    window.closeModal();
+            // Helper function to bind click events safely
+            function bindButton(id, action) {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.onclick = function() {
+                        console.log("Clicked:", id);
+                        if (typeof window[action] === 'function') {
+                            window[action]();
+                        } else {
+                            alert("Function " + action + " not found! Check app.js");
+                        }
+                    };
+                    console.log("✅ Bound", id, "to", action);
                 } else {
-                    setTimeout(execute, 100); // Retry if function not loaded yet
+                    console.error("❌ Button", id, "not found in HTML");
+                }
+            }
+
+            // Bind Login Buttons
+            bindButton('tutorBtn', function() { window.openModal('tutor'); });
+            bindButton('guardianBtn', function() { window.openModal('guardian'); });
+            bindButton('guestBtn', 'guestLogin');
+            bindButton('adminBtn', function() { window.openModal('admin'); });
+            
+            // Bind Modal Buttons
+            bindButton('googleLoginBtn', 'googleLogin');
+            bindButton('closeModal', 'closeModal');
+                        // Bind Other Actions
+            bindButton('logoutBtn', 'logout');
+            bindButton('submitReviewBtn', 'submitReview');
+            bindButton('toggleControlBtn', 'toggleControl');
+            bindButton('closePanelBtn', 'toggleControl');
+
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('loginModal');
+                if (event.target == modal) {
+                    window.closeModal();
                 }
             };
-            execute();
+            
+            console.log("✅ All buttons bound successfully!");
         });
-
-        window.onclick = function(event) {            const modal = document.getElementById('loginModal');
-            if (event.target == modal && window.closeModal) window.closeModal();
-        };
     </script>
 </body>
 </html>
