@@ -1,6 +1,6 @@
 // ============================================
 // 🔥 TUTORS VALLEY - MOBILE LOGIN 100% FIXED
-// ✅ URL Parameter + sessionStorage Backup
+// ✅ localStorage + URL + Firestore Fallback
 // ✅ Mobile Redirect Working
 // ✅ PC Popup Working
 // ============================================
@@ -36,7 +36,6 @@ let currentLoginRole = null;
 let isProcessingLogin = false;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// ... (Fonts and DefaultZones same as before) ...
 const fonts = {
     bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'Baloo Da 2', 'Mukta', 'Tiro Bangla', 'Kalam', 'Khand', 'Yantramanav', 'Amita', 'Akaya Telivigala'],
     english: ['Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Arial', 'Georgia', 'Verdana', 'Calibri', 'Times New Roman']
@@ -59,7 +58,7 @@ function showLoading(msg = "লোড হচ্ছে...") {
     div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
     div.innerHTML = `<div style="width:50px;height:50px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:15px;color:#333;font-family:sans-serif;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
     document.body.appendChild(div);
-    div.autoHide = setTimeout(() => hideLoading(), 20000);
+    div.autoHide = setTimeout(() => hideLoading(), 30000);
 }
 
 function hideLoading() {
@@ -70,9 +69,9 @@ function hideLoading() {
     }
 }
 
-// ✅ CRITICAL: Get Login Role from Multiple Sources
+// ✅ Get Login Role from Multiple Sources (Priority Order)
 function getLoginRole() {
-    // Try URL parameter first (most reliable for redirect)
+    // 1. Try URL parameter first
     const urlParams = new URLSearchParams(window.location.search);
     const urlRole = urlParams.get('loginRole');
     if (urlRole) {
@@ -80,47 +79,47 @@ function getLoginRole() {
         return urlRole;
     }
     
-    // Try sessionStorage
-    const sessionRole = sessionStorage.getItem('loginRole');
-    if (sessionRole) {
-        console.log("🔑 Role from sessionStorage:", sessionRole);
-        return sessionRole;
-    }
-    
-    // Try localStorage as backup
+    // 2. Try localStorage (persists across redirects)
     const localRole = localStorage.getItem('loginRole');
     if (localRole) {
         console.log("🔑 Role from localStorage:", localRole);
         return localRole;
     }
     
+    // 3. Try sessionStorage
+    const sessionRole = sessionStorage.getItem('loginRole');
+    if (sessionRole) {
+        console.log("🔑 Role from sessionStorage:", sessionRole);
+        return sessionRole;
+    }
+    
     console.warn("⚠️ No role found anywhere!");
     return null;
 }
 
-// ✅ CRITICAL: Save Login Role to Multiple Sources
+// ✅ Save Login Role to Multiple Sources
 function saveLoginRole(role) {
-    sessionStorage.setItem('loginRole', role);
     localStorage.setItem('loginRole', role);
+    sessionStorage.setItem('loginRole', role);
     
-    // Also add to URL for redirect safety
+    // Add to URL
     const url = new URL(window.location);
     url.searchParams.set('loginRole', role);
     window.history.replaceState({}, '', url);
     
-    console.log("💾 Role saved:", role);
+    console.log("💾 Role saved to all sources:", role);
 }
 
-// ✅ CRITICAL: Clear Login Role from All Sources
+// ✅ Clear Login Role from All Sources
 function clearLoginRole() {
-    sessionStorage.removeItem('loginRole');
     localStorage.removeItem('loginRole');
+    sessionStorage.removeItem('loginRole');
     
     const url = new URL(window.location);
     url.searchParams.delete('loginRole');
     window.history.replaceState({}, '', url);
     
-    console.log("🗑️ Role cleared");
+    console.log("🗑️ Role cleared from all sources");
 }
 
 // Guest Login
@@ -153,33 +152,30 @@ window.guestLogin = function() {
     });
 };
 
-// DOM Loaded
+// DOM Loaded - CRITICAL ORDER
 document.addEventListener('DOMContentLoaded', () => {
     console.log("📄 Page Loaded");
     console.log("📍 Current URL:", window.location.href);
+    console.log("🔍 URL Params:", new URLSearchParams(window.location.search).toString());
     
     showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // ✅ STEP 1: Check if we're returning from a redirect
-    const urlParams = new URLSearchParams(window.location.search);
-    const isReturningFromRedirect = urlParams.has('loginRole') || urlParams.has('oauth_token');
-    console.log("🔄 Is returning from redirect:", isReturningFromRedirect);
-    
-    // ✅ STEP 2: Get Redirect Result (Mobile Google Login)
+    // ✅ STEP 1: Check Redirect Result FIRST (Must be before authStateChanged)
+    console.log("🔄 Checking redirect result...");
     auth.getRedirectResult().then((result) => {
-        console.log("✅ getRedirectResult called");
+        console.log("✅ getRedirectResult resolved");
         
         if (result.user) {
-            console.log("✅ Redirect user:", result.user.email);
+            console.log("✅ Redirect user found:", result.user.email);
             isProcessingLogin = true;
             
-            // Get role from our multi-source function
             const role = getLoginRole();
             console.log("🔑 Retrieved role:", role);
             
             if (role) {
                 currentLoginRole = role;
-                clearLoginRole(); // Clean up after retrieving
+                clearLoginRole();
+                console.log("🎯 Calling handleLoginSuccess with role:", currentLoginRole);
                 handleLoginSuccess(result.user);
             } else {
                 console.warn("⚠️ No role found, loading from DB");
@@ -192,30 +188,29 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("❌ Redirect result error:", error.code, error.message);
     });
 
-    // ✅ STEP 3: Auth State Observer
+    // ✅ STEP 2: Auth State Observer
+    console.log("🔄 Setting up auth state observer...");
     auth.onAuthStateChanged((user) => {
         console.log("🔄 Auth State Changed:", user ? user.email : 'No user');
         
         if (user) {
             currentUser = user;
             
-            // If already processing redirect, skip
             if (isProcessingLogin) {
                 console.log("⏭️ Skipping - redirect already processing");
                 return;
             }
             
-            // If role already set, skip
             if (currentUserRole) {
                 console.log("⏭️ Skipping - role already set");
                 hideLoading();
                 return;
             }
             
-            // Load user from Firestore
+            console.log("📥 Loading user data from Firestore...");
             loadUser(user.uid);
         } else {
-            console.log("❌ No user - showing login");
+            console.log("❌ No user - showing login page");
             currentUserRole = null;
             currentLoginRole = null;
             hideLoading();
@@ -265,6 +260,7 @@ function handleLoginSuccess(user) {
         
         closeModal();
         hideLoading();
+        console.log("🏠 Navigating to home page...");
         showHome();
     }).catch((error) => {
         console.error("❌ Save error:", error);
@@ -273,7 +269,7 @@ function handleLoginSuccess(user) {
     });
 }
 
-// Load User Data
+// Load User Data from Firestore
 function loadUser(uid) {
     console.log("📥 Loading user:", uid);
     db.collection('users').doc(uid).get().then((doc) => {
@@ -282,10 +278,10 @@ function loadUser(uid) {
             const data = doc.data();
             currentUserRole = data.role;
             currentLoginRole = data.role;
-            console.log("✅ Role loaded:", currentUserRole);
+            console.log("✅ Role loaded from Firestore:", currentUserRole);
             showHome();
         } else {
-            console.warn("⚠️ No user doc");
+            console.warn("⚠️ No user doc found");
             logout();
         }
     }).catch((error) => {
@@ -312,7 +308,7 @@ window.showPage = function(id) {
 // Open Modal
 window.openModal = function(role) {
     currentLoginRole = role;
-    console.log("🎯 Modal opened:", role);
+    console.log("🎯 Modal opened for role:", role);
     const titles = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' };
     const modalTitle = document.getElementById('modalTitle');
     const loginModal = document.getElementById('loginModal');
@@ -333,48 +329,50 @@ window.googleLogin = function() {
         alert("দয়া করে একটি রোল সিলেক্ট করুন");
         return;
     }
-    console.log("🔵 Google login started:", currentLoginRole);
+    console.log("🔵 Google login started for:", currentLoginRole);
     showLoading("Google লগইন হচ্ছে...");
     
     currentUser = null;
     currentUserRole = null;
     isProcessingLogin = false;
 
-    // ✅ Save role to ALL sources before login
+    // ✅ Save role to ALL sources BEFORE login
     saveLoginRole(currentLoginRole);
+    console.log("💾 Role saved before login");
 
     auth.signOut().then(() => {
         const isMobile = /mobile|android|iphone|ipad/i.test(navigator.userAgent);
-        console.log("📱 Device:", isMobile ? 'Mobile' : 'Desktop');
+        console.log("📱 Device detected:", isMobile ? 'Mobile' : 'Desktop');
         
         if (isMobile) {
-            console.log("🔄 Using signInWithRedirect");
+            console.log("🔄 Using signInWithRedirect for mobile");
             return auth.signInWithRedirect(provider);
         } else {
-            console.log("🪟 Using signInWithPopup");
+            console.log("🪟 Using signInWithPopup for desktop");
             return auth.signInWithPopup(provider);
         }
     }).then((result) => {
         if (result && result.user) {
-            console.log("✅ Popup success");
+            console.log("✅ Popup login successful");
             currentLoginRole = getLoginRole() || currentLoginRole;
             handleLoginSuccess(result.user);
         }
     }).catch((error) => {
         if (!/mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
-            console.error("❌ Popup error:", error.code);
+            console.error("❌ Popup error:", error.code, error.message);
             hideLoading();
             if (error.code !== 'auth/popup-closed-by-user') {
                 alert("লগইন ব্যর্থ: " + error.message);
             }
             showPage('loginPage');
         }
+        // Mobile errors are caught in getRedirectResult
     });
 };
 
 // Show Home
 function showHome() {
-    console.log("🏠 Showing Home:", currentUserRole);
+    console.log("🏠 Showing Home for role:", currentUserRole);
     showPage('homePage');
     
     const adminIcon = document.getElementById('adminIcon');
@@ -384,14 +382,14 @@ function showHome() {
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
     
     Promise.all([loadAllSettings(), loadZones(), loadReviews()]).then(() => {
-        console.log("✅ Home loaded");
+        console.log("✅ Home data loaded");
         updateFloatingWhatsapp();
-    }).catch(err => console.error("❌ Home error:", err));
+    }).catch(err => console.error("❌ Home load error:", err));
 }
 
 // Logout
 window.logout = function() {
-    console.log("🚪 Logout");
+    console.log("🚪 Logout initiated");
     showLoading("লগআউট হচ্ছে...");
     
     currentUser = null;
@@ -404,7 +402,7 @@ window.logout = function() {
     if (adminIcon) adminIcon.style.display = 'none';
     
     auth.signOut().then(() => {
-        console.log("✅ Logged out");
+        console.log("✅ Logged out successfully");
         hideLoading();
         showPage('loginPage');
     }).catch((error) => {
@@ -414,7 +412,7 @@ window.logout = function() {
     });
 };
 
-// Toggle Control
+// Toggle Control Panel
 window.toggleControl = function() {
     const p = document.getElementById('controlPanel');
     if (!p) return;
@@ -422,10 +420,7 @@ window.toggleControl = function() {
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
 };
 
-// ... (Rest of helper functions remain the same as previous version) ...
-// (generateFontOptions, rgbToHex, getStyle, getText, getFontValue, applyFont, updateFont, saveSetting, updateLogo, updateCeoImage, updateText, updateSize, updateColor, updateFbUrl, loadAllSettings, loadControlPanel, loadZoneCardsSettings, updateZone, loadZones, renderZones, updateFloatingWhatsapp, loadReviews, deleteReview, submitReview)
-
-// For brevity, including the remaining functions from the previous code I sent
+// Helper Functions
 function generateFontOptions(current) {
     let h = '<option value="">ডিফল্ট</option>';
     fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
@@ -484,6 +479,7 @@ function updateText(id, v) { const e = document.getElementById(id); if (e) e.inn
 function updateSize(id, v) { const e = document.getElementById(id); if (e) e.style.fontSize = v + 'px'; }
 function updateColor(id, p, c) { const e = document.getElementById(id); if (e) e.style[p] = c; }
 function updateFbUrl(url) { document.getElementById('fbBtn').href = url; db.collection('settings').doc('header').update({ fbUrl: url }); }
+
 function loadAllSettings() {
     return Promise.all([
         db.collection('settings').doc('header').get(),
@@ -543,6 +539,7 @@ function loadAllSettings() {
         }
     });
 }
+
 function loadControlPanel() {
     const body = document.getElementById('controlBody'); if (!body) return;
     const canEdit = (currentUserRole === 'admin' || currentUserRole === 'tutor');
@@ -598,6 +595,7 @@ function loadControlPanel() {
     `;
     loadZoneCardsSettings();
 }
+
 function loadZoneCardsSettings() {
     db.collection('zones').get().then(s => {
         const c = document.getElementById('zoneCardsSettings'); if (!c) return;
@@ -619,11 +617,13 @@ function loadZoneCardsSettings() {
         });
     });
 }
+
 function updateZone(id, f, v) {
     if (f === 'areas') v = v.split(',').map(a=>a.trim()).filter(a=>a);
     db.collection('zones').doc(id.toString()).update({ [f]: v });
     if (f === 'whatsappNumber') updateFloatingWhatsapp();
 }
+
 function loadZones() {
     return db.collection('zones').get().then(s => {
         const c = document.getElementById('zoneContainer'); if (!c) return;
@@ -637,6 +637,7 @@ function loadZones() {
         }
     });
 }
+
 function renderZones(zones) {
     const container = document.getElementById('zoneContainer'); if (!container) return;
     container.innerHTML = '';
@@ -668,6 +669,7 @@ function renderZones(zones) {
     }
     updateFloatingWhatsapp();
 }
+
 function updateFloatingWhatsapp() {
     const btn = document.getElementById('floatingWhatsappBtn'); if (!btn) return;
     db.collection('zones').doc('1').get().then(doc => {
@@ -679,6 +681,7 @@ function updateFloatingWhatsapp() {
         } else { btn.style.display = 'none'; }
     }).catch(err => { console.error(err); btn.style.display = 'none'; });
 }
+
 function loadReviews() {
     return db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(s => {
         const c = document.getElementById('reviewList'); if (!c) return;
@@ -694,10 +697,12 @@ function loadReviews() {
         });
     });
 }
+
 window.deleteReview = function(id) {
     if (currentUserRole !== 'admin') { alert("শুধুমাত্র এডমিন রিভিউ ডিলিট করতে পারবেন"); return; }
     if (confirm("ডিলিট করবেন?")) { db.collection('reviews').doc(id).delete().then(() => { loadReviews(); alert("ডিলিট হয়েছে"); }); }
 };
+
 window.submitReview = function() {
     if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') { alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন"); return; }
     const t = document.getElementById('reviewText').value;
@@ -707,4 +712,4 @@ window.submitReview = function() {
     });
 };
 
-console.log("✅ App.js Loaded - Mobile Login Fixed v3");
+console.log("✅ App.js Loaded - Mobile Login Fixed v4");
