@@ -174,6 +174,7 @@
         .tutor-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .guardian-btn { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
         .guest-btn { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .admin-btn { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
 
         .admin-trigger {
             margin-top: 25px;
@@ -231,6 +232,8 @@
             margin-top: 15px;
             font-family: inherit;
         }
+
+        .google-btn:hover { background: #f5f5f5; }
 
         .google-btn img { width: 20px; height: 20px; }
 
@@ -642,10 +645,9 @@
                 <button class="login-btn guest-btn" onclick="guestLogin()">
                     <span>👤</span> Continue as Guest
                 </button>
-            </div>
-
-            <div class="admin-trigger" onclick="showAdminLogin()">
-                ⚙️ Admin Login
+                <button class="login-btn admin-btn" onclick="showLoginModal('admin')">
+                    <span>⚙️</span> Admin Login
+                </button>
             </div>
         </div>
     </div>
@@ -654,24 +656,12 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">Login</h2>
+            <h2 id="modalTitle" style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">Login</h2>
             <button class="google-btn" onclick="googleLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                 Sign in with Google
             </button>
             <p id="loginStatus" style="color: red; margin-top: 10px; text-align: center;"></p>
-        </div>
-    </div>
-
-    <!-- Admin Login Modal -->
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAdminModal()">&times;</span>
-            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">Admin Login</h2>
-            <input type="email" id="adminEmail" placeholder="Admin Email">
-            <input type="password" id="adminPassword" placeholder="Password">
-            <button class="admin-login-btn" onclick="adminLogin()">Login</button>
-            <p id="adminStatus" style="color: red; margin-top: 10px; text-align: center;"></p>
         </div>
     </div>
 
@@ -883,18 +873,16 @@
             if (overlay) setTimeout(() => overlay.classList.remove('active'), 2000);
         }
 
-        // Page Navigation - FIXED
+        // Page Navigation
         function showPage(pageId) {
             console.log('Showing page:', pageId);
             
-            // Hide all pages
             const pages = document.querySelectorAll('.page');
             pages.forEach(function(page) {
                 page.classList.remove('active');
                 page.style.display = 'none';
             });
             
-            // Show target page
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.add('active');
@@ -919,9 +907,21 @@
             
             currentUserType = type;
             const modal = document.getElementById('loginModal');
+            const modalTitle = document.getElementById('modalTitle');
+            
             if (modal) {
                 modal.classList.add('active');
                 modal.style.display = 'flex';
+            }
+            
+            if (modalTitle) {
+                if (type === 'admin') {
+                    modalTitle.textContent = 'Admin Login';
+                } else if (type === 'tutor') {
+                    modalTitle.textContent = 'Tutor Login';
+                } else if (type === 'guardian') {
+                    modalTitle.textContent = 'Guardian Login';
+                }
             }
         }
 
@@ -933,35 +933,23 @@
             }
         }
 
-        function closeAdminModal() {
-            const modal = document.getElementById('adminModal');
-            if (modal) {
-                modal.classList.remove('active');
-                modal.style.display = 'none';
-            }
-        }
-
-        function showAdminLogin() {
-            if (checkEmbeddedBrowser()) {
-                alert("দয়া করে Chrome বা Safari ব্রাউজারে খুলুন।");
-                return;
-            }
-            const modal = document.getElementById('adminModal');
-            if (modal) {
-                modal.classList.add('active');
-                modal.style.display = 'flex';
-            }
-        }
-
-        // Google Login - FIXED
+        // Google Login - FIXED for Admin
         function googleLogin() {
-            console.log('Google login clicked');
+            console.log('Google login clicked, type:', currentUserType);
             showLoading();
             
             auth.signInWithPopup(provider)
                 .then(function(result) {
                     console.log('Login successful:', result.user.email);
                     currentUser = result.user;
+                    
+                    // Check if Admin Email
+                    if (currentUser.email === ADMIN_EMAIL) {
+                        isAdmin = true;
+                        console.log('✅ Admin logged in via Google');
+                    } else {
+                        isAdmin = false;
+                    }
                     
                     if (currentUserType === 'tutor') {
                         saveUserData(currentUser, 'tutor');
@@ -971,6 +959,16 @@
                         saveUserData(currentUser, 'guardian');
                         showPage('homePage');
                         setupHomePage('guardian');
+                    } else if (currentUserType === 'admin') {
+                        // Admin Login - Check Email
+                        if (currentUser.email === ADMIN_EMAIL) {
+                            showPage('homePage');
+                            setupHomePage('admin');
+                        } else {
+                            alert('❌ Only owner can login as admin!');
+                            logout();
+                            return;
+                        }
                     }
                     
                     closeModal();
@@ -986,54 +984,17 @@
                 });
         }
 
-        // Guest Login - FIXED
+        // Guest Login
         function guestLogin() {
             console.log('Guest login clicked');
             showLoading();
             setTimeout(function() {
                 currentUserType = 'guest';
+                isAdmin = false;
                 showPage('homePage');
                 setupHomePage('guest');
                 hideLoading();
             }, 1000);
-        }
-
-        // Admin Login - FIXED
-        function adminLogin() {
-            const adminEmail = document.getElementById('adminEmail');
-            const adminPassword = document.getElementById('adminPassword');
-            const adminStatus = document.getElementById('adminStatus');
-            
-            const email = adminEmail ? adminEmail.value : '';
-            const password = adminPassword ? adminPassword.value : '';
-            
-            console.log('Admin login attempt:', email);
-            showLoading();
-            
-            if (email === ADMIN_EMAIL) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .then(function(userCredential) {
-                        console.log('Admin login successful');
-                        currentUser = userCredential.user;
-                        isAdmin = true;
-                        closeAdminModal();
-                        showPage('homePage');
-                        setupHomePage('admin');
-                        hideLoading();
-                    })
-                    .catch(function(error) {
-                        console.error('Admin login error:', error);
-                        if (adminStatus) {
-                            adminStatus.textContent = 'Error: ' + error.message;
-                        }
-                        hideLoading();
-                    });
-            } else {
-                if (adminStatus) {
-                    adminStatus.textContent = "Invalid admin email";
-                }
-                hideLoading();
-            }
         }
 
         // Save User Data
@@ -1049,7 +1010,7 @@
             });
         }
 
-        // Setup Home Page - FIXED
+        // Setup Home Page
         function setupHomePage(userType) {
             console.log('Setup home page for:', userType);
             currentUserType = userType;
@@ -1367,8 +1328,13 @@
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 console.log('User signed in:', user.email);
+                // Check if admin on page load
+                if (user.email === ADMIN_EMAIL) {
+                    isAdmin = true;
+                }
             } else {
                 console.log('User signed out');
+                isAdmin = false;
             }
         });
 
@@ -1377,7 +1343,6 @@
             console.log('Tutors Valley initialized');
             checkEmbeddedBrowser();
             
-            // Ensure login page is visible
             const loginPage = document.getElementById('loginPage');
             if (loginPage) {
                 loginPage.classList.add('active');
