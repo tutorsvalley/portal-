@@ -107,18 +107,22 @@
         document.getElementById('directLink').href = targetUrl;
         document.getElementById('directLink').setAttribute('target', '_blank');
         
+        // ✅ IMMEDIATE REDIRECT - NO DELAY
         function openInBrowser() {
-            // Multiple methods to ensure it opens in external browser
-            window.open(targetUrl, '_blank');
+            // Method 1: window.open with _blank
+            const newWindow = window.open(targetUrl, '_blank');
             
+            // Method 2: location.href (fallback)
             setTimeout(function() {
                 window.location.href = targetUrl;
+            }, 50);
+            
+            // Method 3: location.replace (stronger)
+            setTimeout(function() {
+                window.location.replace(targetUrl);
             }, 100);
             
-            setTimeout(function() {
-                window.location = targetUrl;
-            }, 500);
-            
+            // Method 4: Create and click link
             setTimeout(function() {
                 const link = document.createElement('a');
                 link.href = targetUrl;
@@ -128,15 +132,33 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-            }, 1000);
+            }, 150);
+            
+            // Method 5: Top location (break out of iframe)
+            setTimeout(function() {
+                if (window.top !== window.self) {
+                    window.top.location.href = targetUrl;
+                }
+            }, 200);
         }
         
-        // Auto redirect after 1 second
+        // ✅ AUTO REDIRECT IMMEDIATELY (no delay)
+        window.addEventListener('load', function() {
+            // Try immediately
+            openInBrowser();
+        });
+        
+        // Also try on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            openInBrowser();
+        });
+        
+        // Try one more time after a tiny delay
         setTimeout(function() {
             openInBrowser();
-        }, 1000);
+        }, 50);
         
-        console.log('Target URL:', targetUrl);
+        console.log('🔄 Redirecting to:', targetUrl);
     </script>
 </body>
 </html>
