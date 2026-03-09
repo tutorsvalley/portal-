@@ -27,36 +27,46 @@ const ADMIN_EMAIL = "kabirhasanat7@gmail.com";
 function checkEmbeddedBrowser() {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     const warningDiv = document.getElementById('externalBrowserWarning');
+    
     const isFacebook = /FBAN|FBAV/i.test(userAgent);
     const isInstagram = /Instagram/i.test(userAgent);
     const isMessenger = /Messenger/i.test(userAgent);
     const isTwitter = /Twitter/i.test(userAgent);
     const isLinkedIn = /LinkedIn/i.test(userAgent);
+    const isWhatsApp = /WhatsApp/i.test(userAgent);
     
     // Check if running inside any social app webview
-    if (isFacebook || isInstagram || isMessenger || isTwitter || isLinkedIn) {
-        warningDiv.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    if (isFacebook || isInstagram || isMessenger || isTwitter || isLinkedIn || isWhatsApp) {
+        if (warningDiv) {
+            warningDiv.style.display = 'flex';
+            warningDiv.classList.add('active');
+        }
+        document.body.style.overflow = 'hidden';
         return true;
     } else {
-        warningDiv.style.display = 'none';
+        if (warningDiv) {
+            warningDiv.style.display = 'none';
+            warningDiv.classList.remove('active');
+        }
         document.body.style.overflow = 'auto';
         return false;
     }
 }
 
 function forceOpenBrowser() {
-    // Try to open the current URL in a new tab/window which often triggers external browser
     const currentUrl = window.location.href;
     window.open(currentUrl, '_blank');
     
-    // Fallback instruction
-    alert("If it didn't open automatically, please tap the menu (⋮ or ⋯) at the top corner and select 'Open in Browser' or 'Open in Chrome'.");
+    setTimeout(() => {
+        alert("If it didn't open automatically, please tap the menu (⋮ or ) at the top corner and select 'Open in Browser' or 'Open in Chrome'.");
+    }, 1000);
 }
 
-// Run detection immediately
-checkEmbeddedBrowser();
-// ----------------------------------------
+// Run detection immediately on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkEmbeddedBrowser();
+    console.log('Tutors Valley initialized');
+});
 
 // Default Zone Cards Data
 let zoneCards = [
@@ -125,60 +135,89 @@ let appSettings = {
 
 // Loading Animation
 function showLoading() {
-    document.getElementById('loadingOverlay').classList.add('active');
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+    }
     setTimeout(() => {
-        document.getElementById('loadingOverlay').classList.remove('active');
+        hideLoading();
     }, 2000);
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('active');
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
 }
 
 // Page Navigation
 function showPage(pageId) {
     showLoading();
     setTimeout(() => {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(function(page) {
+            page.classList.remove('active');
+        });
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
         hideLoading();
     }, 2000);
 }
 
 // Login Modal
 function showLoginModal(type) {
-    // Double check if still in embedded browser before allowing login
-    if(checkEmbeddedBrowser()) {
-        alert("Please open in external browser first to login properly.");
+    // Check if in embedded browser
+    if (checkEmbeddedBrowser()) {
+        alert("Please open this link in Chrome or Safari browser to login properly.");
         return;
     }
+    
     currentUserType = type;
-    document.getElementById('loginModal').classList.add('active');
-    document.getElementById('modalTitle').textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Login';
+    const modal = document.getElementById('loginModal');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    if (modal && modalTitle) {
+        modal.classList.add('active');
+        modalTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Login';
+    }
 }
 
 function closeModal() {
-    document.getElementById('loginModal').classList.remove('active');
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 function closeAdminModal() {
-    document.getElementById('adminModal').classList.remove('active');
+    const modal = document.getElementById('adminModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 // Admin Login Trigger
 function showAdminLogin() {
-    if(checkEmbeddedBrowser()) {
-        alert("Please open in external browser first to login properly.");
+    if (checkEmbeddedBrowser()) {
+        alert("Please open this link in Chrome or Safari browser to login properly.");
         return;
     }
-    document.getElementById('adminModal').classList.add('active');
+    
+    const modal = document.getElementById('adminModal');
+    if (modal) {
+        modal.classList.add('active');
+    }
 }
 
 // Google Login
 function googleLogin() {
     showLoading();
+    
     auth.signInWithPopup(provider)
-        .then((result) => {
+        .then(function(result) {
             const user = result.user;
             currentUser = user;
             
@@ -195,12 +234,12 @@ function googleLogin() {
             closeModal();
             hideLoading();
         })
-        .catch((error) => {
-            // Specific error for embedded browser
+        .catch(function(error) {
+            const loginStatus = document.getElementById('loginStatus');
             if (error.code === 'auth/popup-closed-by-user' || error.message.includes('popup')) {
                 alert("Login popup blocked. Please open this link in Chrome or Safari browser.");
-            } else {
-                document.getElementById('loginStatus').textContent = error.message;
+            } else if (loginStatus) {
+                loginStatus.textContent = error.message;
             }
             hideLoading();
         });
@@ -209,7 +248,7 @@ function googleLogin() {
 // Guest Login
 function guestLogin() {
     showLoading();
-    setTimeout(() => {
+    setTimeout(function() {
         currentUserType = 'guest';
         showPage('homePage');
         setupHomePage('guest');
@@ -219,14 +258,18 @@ function guestLogin() {
 
 // Admin Login
 function adminLogin() {
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPassword').value;
+    const adminEmail = document.getElementById('adminEmail');
+    const adminPassword = document.getElementById('adminPassword');
+    const adminStatus = document.getElementById('adminStatus');
+    
+    const email = adminEmail ? adminEmail.value : '';
+    const password = adminPassword ? adminPassword.value : '';
     
     showLoading();
     
     if (email === ADMIN_EMAIL) {
         auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
+            .then(function(userCredential) {
                 currentUser = userCredential.user;
                 isAdmin = true;
                 closeAdminModal();
@@ -234,12 +277,16 @@ function adminLogin() {
                 setupHomePage('admin');
                 hideLoading();
             })
-            .catch((error) => {
-                document.getElementById('adminStatus').textContent = error.message;
+            .catch(function(error) {
+                if (adminStatus) {
+                    adminStatus.textContent = error.message;
+                }
                 hideLoading();
             });
     } else {
-        document.getElementById('adminStatus').textContent = "Invalid admin email";
+        if (adminStatus) {
+            adminStatus.textContent = "Invalid admin email";
+        }
         hideLoading();
     }
 }
@@ -260,56 +307,65 @@ function setupHomePage(userType) {
     currentUserType = userType;
     
     // Show gear icon for admin only
-    document.getElementById('gearIcon').style.display = isAdmin ? 'block' : 'none';
+    const gearIcon = document.getElementById('gearIcon');
+    if (gearIcon) {
+        gearIcon.style.display = isAdmin ? 'block' : 'none';
+    }
     
     // Show tutor controls ONLY for tutor
     const tutorControls = document.getElementById('tutorControls');
-    if (userType === 'tutor') {
-        tutorControls.style.display = 'flex';
-        // Reset dropdown on load
-        document.getElementById('genderSelect').value = "";
-        // Hide all buttons initially
-        document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('hidden'));
-    } else {
-        tutorControls.style.display = 'none';
-        // For Guardian/Guest, show all buttons or none based on your preference
-        // Currently keeping them hidden until logic is defined, or you can show all:
-        document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('hidden'));
+    if (tutorControls) {
+        if (userType === 'tutor') {
+            tutorControls.style.display = 'flex';
+            const genderSelect = document.getElementById('genderSelect');
+            if (genderSelect) {
+                genderSelect.value = "";
+            }
+            const groupBtns = document.querySelectorAll('.group-btn');
+            groupBtns.forEach(function(btn) {
+                btn.classList.add('hidden');
+            });
+        } else {
+            tutorControls.style.display = 'none';
+            const groupBtns = document.querySelectorAll('.group-btn');
+            groupBtns.forEach(function(btn) {
+                btn.classList.remove('hidden');
+            });
+        }
     }
     
     // Show review form for tutor and guardian
-    document.getElementById('reviewForm').style.display = (userType === 'tutor' || userType === 'guardian') ? 'block' : 'none';
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.style.display = (userType === 'tutor' || userType === 'guardian') ? 'block' : 'none';
+    }
     
-    // Load settings
     loadSettings();
-    
-    // Render zone cards
     renderZoneCards();
-    
-    // Load reviews
     loadReviews();
 }
 
 // Handle Gender Select (Tutor Only Logic)
 function handleGenderSelect() {
-    const gender = document.getElementById('genderSelect').value;
+    const genderSelect = document.getElementById('genderSelect');
+    const gender = genderSelect ? genderSelect.value : '';
     
-    // Show loading animation for 2 seconds
     showLoading();
     
-    setTimeout(() => {
-        // Hide all buttons first
-        document.querySelectorAll('.group-btn').forEach(btn => {
+    setTimeout(function() {
+        const groupBtns = document.querySelectorAll('.group-btn');
+        groupBtns.forEach(function(btn) {
             btn.classList.add('hidden');
         });
         
-        // Show specific gender buttons
         if (gender === 'male') {
-            document.querySelectorAll('.male-group').forEach(btn => {
+            const maleBtns = document.querySelectorAll('.male-group');
+            maleBtns.forEach(function(btn) {
                 btn.classList.remove('hidden');
             });
         } else if (gender === 'female') {
-            document.querySelectorAll('.female-group').forEach(btn => {
+            const femaleBtns = document.querySelectorAll('.female-group');
+            femaleBtns.forEach(function(btn) {
                 btn.classList.remove('hidden');
             });
         }
@@ -321,30 +377,25 @@ function handleGenderSelect() {
 // Render Zone Cards
 function renderZoneCards() {
     const container = document.getElementById('cardsContainer');
+    if (!container) return;
+    
     container.innerHTML = '';
     
-    zoneCards.forEach(card => {
+    zoneCards.forEach(function(card) {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'zone-card';
-        cardDiv.id = `card-${card.id}`;
+        cardDiv.id = 'card-' + card.id;
         
         let areaTags = '';
-        card.areas.forEach(area => {
-            areaTags += `<span class="area-tag">${area}</span>`;
+        card.areas.forEach(function(area) {
+            areaTags += '<span class="area-tag">' + area + '</span>';
         });
         
-        cardDiv.innerHTML = `
-            <h3 class="zone-title" data-cardid="${card.id}" data-field="zone">${card.zone}</h3>
-            <div class="area-tags" data-cardid="${card.id}" data-field="areas">
-                ${areaTags}
-            </div>
-            <button class="group-btn male-group hidden" onclick="joinGroup('${card.maleGroup}')">
-                💬 Join our whatsapp group (Male)
-            </button>
-            <button class="group-btn female-group hidden" onclick="joinGroup('${card.femaleGroup}')">
-                💬 Join our whatsapp group (Female)
-            </button>
-        `;
+        cardDiv.innerHTML = 
+            '<h3 class="zone-title" data-cardid="' + card.id + '" data-field="zone">' + card.zone + '</h3>' +
+            '<div class="area-tags" data-cardid="' + card.id + '" data-field="areas">' + areaTags + '</div>' +
+            '<button class="group-btn male-group hidden" onclick="joinGroup(\'' + card.maleGroup + '\')">💬 Join our whatsapp group (Male)</button>' +
+            '<button class="group-btn female-group hidden" onclick="joinGroup(\'' + card.femaleGroup + '\')">💬 Join our whatsapp group (Female)</button>';
         
         container.appendChild(cardDiv);
     });
@@ -353,7 +404,7 @@ function renderZoneCards() {
 // Join Group
 function joinGroup(link) {
     showLoading();
-    setTimeout(() => {
+    setTimeout(function() {
         window.open(link, '_blank');
         hideLoading();
     }, 2000);
@@ -361,7 +412,9 @@ function joinGroup(link) {
 
 // Submit Review
 function submitReview() {
-    const text = document.getElementById('reviewText').value;
+    const reviewText = document.getElementById('reviewText');
+    const text = reviewText ? reviewText.value : '';
+    
     if (!text.trim()) {
         alert('Please write a review');
         return;
@@ -375,11 +428,13 @@ function submitReview() {
         userName: currentUser ? currentUser.displayName : 'Guest',
         userType: currentUserType,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        document.getElementById('reviewText').value = '';
+    }).then(function() {
+        if (reviewText) {
+            reviewText.value = '';
+        }
         loadReviews();
         hideLoading();
-    }).catch((error) => {
+    }).catch(function(error) {
         alert('Error: ' + error.message);
         hideLoading();
     });
@@ -387,19 +442,20 @@ function submitReview() {
 
 // Load Reviews
 function loadReviews() {
+    const container = document.getElementById('reviewsContainer');
+    if (!container) return;
+    
     db.collection('reviews').orderBy('createdAt', 'desc').limit(20)
-        .onSnapshot((snapshot) => {
-            const container = document.getElementById('reviewsContainer');
+        .onSnapshot(function(snapshot) {
             container.innerHTML = '';
             
-            snapshot.forEach((doc) => {
+            snapshot.forEach(function(doc) {
                 const review = doc.data();
                 const reviewDiv = document.createElement('div');
                 reviewDiv.className = 'review-card';
-                reviewDiv.innerHTML = `
-                    <div class="reviewer">${review.userName} (${review.userType})</div>
-                    <div class="review-text">${review.text}</div>
-                `;
+                reviewDiv.innerHTML = 
+                    '<div class="reviewer">' + (review.userName || 'Anonymous') + ' (' + (review.userType || 'guest') + ')</div>' +
+                    '<div class="review-text">' + (review.text || '') + '</div>';
                 container.appendChild(reviewDiv);
             });
         });
@@ -408,46 +464,68 @@ function loadReviews() {
 // Control Panel
 function openControlPanel() {
     if (!isAdmin) return;
-    document.getElementById('controlPanel').classList.add('active');
+    const controlPanel = document.getElementById('controlPanel');
+    if (controlPanel) {
+        controlPanel.classList.add('active');
+    }
     loadControlSettings();
 }
 
 function closeControlPanel() {
-    document.getElementById('controlPanel').classList.remove('active');
+    const controlPanel = document.getElementById('controlPanel');
+    if (controlPanel) {
+        controlPanel.classList.remove('active');
+    }
 }
 
 // Load Control Settings
 function loadControlSettings() {
-    document.getElementById('bannerColor').value = appSettings.bannerColor;
-    document.getElementById('watermarkOpacity').value = appSettings.watermarkOpacity;
-    document.getElementById('logoSize').value = appSettings.logoSize;
-    document.getElementById('ceoSize').value = appSettings.ceoSize;
-    document.getElementById('fbLink').value = appSettings.fbLink;
+    const bannerColor = document.getElementById('bannerColor');
+    const watermarkOpacity = document.getElementById('watermarkOpacity');
+    const logoSize = document.getElementById('logoSize');
+    const ceoSize = document.getElementById('ceoSize');
+    const fbLink = document.getElementById('fbLink');
+    
+    if (bannerColor) bannerColor.value = appSettings.bannerColor;
+    if (watermarkOpacity) watermarkOpacity.value = appSettings.watermarkOpacity;
+    if (logoSize) logoSize.value = appSettings.logoSize;
+    if (ceoSize) ceoSize.value = appSettings.ceoSize;
+    if (fbLink) fbLink.value = appSettings.fbLink;
 }
 
 // Update Banner Color
 function updateBannerColor() {
-    const color = document.getElementById('bannerColor').value;
-    document.getElementById('bannerSection').style.background = color;
-    appSettings.bannerColor = color;
+    const bannerColor = document.getElementById('bannerColor');
+    const bannerSection = document.getElementById('bannerSection');
+    
+    if (bannerColor && bannerSection) {
+        const color = bannerColor.value;
+        bannerSection.style.background = color;
+        appSettings.bannerColor = color;
+    }
 }
 
-// Upload Watermark (Storage Enabled)
+// Upload Watermark
 function uploadWatermark() {
-    const file = document.getElementById('watermarkUpload').files[0];
+    const watermarkUpload = document.getElementById('watermarkUpload');
+    const file = watermarkUpload ? watermarkUpload.files[0] : null;
+    
     if (!file) return;
     
     showLoading();
     
     const storageRef = storage.ref('watermarks/' + Date.now() + '.jpg');
-    storageRef.put(file).then((snapshot) => {
-        snapshot.ref.getDownloadURL().then((url) => {
-            document.getElementById('watermarkImage').src = url;
-            document.getElementById('watermarkImage').style.display = 'block';
+    storageRef.put(file).then(function(snapshot) {
+        snapshot.ref.getDownloadURL().then(function(url) {
+            const watermarkImage = document.getElementById('watermarkImage');
+            if (watermarkImage) {
+                watermarkImage.src = url;
+                watermarkImage.style.display = 'block';
+            }
             appSettings.watermarkUrl = url;
             hideLoading();
         });
-    }).catch((error) => {
+    }).catch(function(error) {
         alert('Error: ' + error.message);
         hideLoading();
     });
@@ -455,27 +533,37 @@ function uploadWatermark() {
 
 // Update Watermark Opacity
 function updateWatermarkOpacity() {
-    const opacity = document.getElementById('watermarkOpacity').value;
-    document.getElementById('watermarkImage').style.opacity = opacity / 100;
-    appSettings.watermarkOpacity = opacity;
+    const watermarkOpacity = document.getElementById('watermarkOpacity');
+    const watermarkImage = document.getElementById('watermarkImage');
+    
+    if (watermarkOpacity && watermarkImage) {
+        const opacity = watermarkOpacity.value;
+        watermarkImage.style.opacity = opacity / 100;
+        appSettings.watermarkOpacity = opacity;
+    }
 }
 
-// Upload Logo (Storage Enabled)
+// Upload Logo
 function uploadLogo() {
-    const file = document.getElementById('logoUpload').files[0];
+    const logoUpload = document.getElementById('logoUpload');
+    const file = logoUpload ? logoUpload.files[0] : null;
+    
     if (!file) return;
     
     showLoading();
     
     const storageRef = storage.ref('logos/' + Date.now() + '.jpg');
-    storageRef.put(file).then((snapshot) => {
-        snapshot.ref.getDownloadURL().then((url) => {
-            document.getElementById('logoImage').src = url;
-            document.getElementById('logoImage').style.display = 'block';
+    storageRef.put(file).then(function(snapshot) {
+        snapshot.ref.getDownloadURL().then(function(url) {
+            const logoImage = document.getElementById('logoImage');
+            if (logoImage) {
+                logoImage.src = url;
+                logoImage.style.display = 'block';
+            }
             appSettings.logoUrl = url;
             hideLoading();
         });
-    }).catch((error) => {
+    }).catch(function(error) {
         alert('Error: ' + error.message);
         hideLoading();
     });
@@ -483,27 +571,37 @@ function uploadLogo() {
 
 // Update Logo Size
 function updateLogoSize() {
-    const size = document.getElementById('logoSize').value;
-    document.getElementById('logoImage').style.maxWidth = size + 'px';
-    appSettings.logoSize = size;
+    const logoSize = document.getElementById('logoSize');
+    const logoImage = document.getElementById('logoImage');
+    
+    if (logoSize && logoImage) {
+        const size = logoSize.value;
+        logoImage.style.maxWidth = size + 'px';
+        appSettings.logoSize = size;
+    }
 }
 
-// Upload CEO Image (Storage Enabled)
+// Upload CEO Image
 function uploadCeoImage() {
-    const file = document.getElementById('ceoUpload').files[0];
+    const ceoUpload = document.getElementById('ceoUpload');
+    const file = ceoUpload ? ceoUpload.files[0] : null;
+    
     if (!file) return;
     
     showLoading();
     
     const storageRef = storage.ref('ceo/' + Date.now() + '.jpg');
-    storageRef.put(file).then((snapshot) => {
-        snapshot.ref.getDownloadURL().then((url) => {
-            document.getElementById('ceoImage').src = url;
-            document.getElementById('ceoImage').style.display = 'block';
+    storageRef.put(file).then(function(snapshot) {
+        snapshot.ref.getDownloadURL().then(function(url) {
+            const ceoImage = document.getElementById('ceoImage');
+            if (ceoImage) {
+                ceoImage.src = url;
+                ceoImage.style.display = 'block';
+            }
             appSettings.ceoUrl = url;
             hideLoading();
         });
-    }).catch((error) => {
+    }).catch(function(error) {
         alert('Error: ' + error.message);
         hideLoading();
     });
@@ -511,59 +609,111 @@ function uploadCeoImage() {
 
 // Update CEO Size
 function updateCeoSize() {
-    const size = document.getElementById('ceoSize').value;
-    document.getElementById('ceoImage').style.maxWidth = size + 'px';
-    appSettings.ceoSize = size;
+    const ceoSize = document.getElementById('ceoSize');
+    const ceoImage = document.getElementById('ceoImage');
+    
+    if (ceoSize && ceoImage) {
+        const size = ceoSize.value;
+        ceoImage.style.maxWidth = size + 'px';
+        appSettings.ceoSize = size;
+    }
 }
 
 // Load Text Settings
 function loadTextSettings() {
-    const section = document.getElementById('textSection').value;
+    const textSection = document.getElementById('textSection');
+    const section = textSection ? textSection.value : 'brandingText';
     const settings = appSettings.texts[section];
     
-    document.getElementById('textContent').value = settings.content;
-    document.getElementById('fontFamily').value = settings.font;
-    document.getElementById('fontSize').value = settings.size;
-    document.getElementById('fontColor').value = settings.color;
+    const textContent = document.getElementById('textContent');
+    const fontFamily = document.getElementById('fontFamily');
+    const fontSize = document.getElementById('fontSize');
+    const fontColor = document.getElementById('fontColor');
+    
+    if (textContent && settings) textContent.value = settings.content;
+    if (fontFamily && settings) fontFamily.value = settings.font;
+    if (fontSize && settings) fontSize.value = settings.size;
+    if (fontColor && settings) fontColor.value = settings.color;
 }
 
 // Update Text Content
 function updateTextContent() {
-    const section = document.getElementById('textSection').value;
-    const content = document.getElementById('textContent').value;
-    document.getElementById(section).textContent = content;
-    appSettings.texts[section].content = content;
+    const textSection = document.getElementById('textSection');
+    const textContent = document.getElementById('textContent');
+    
+    if (textSection && textContent) {
+        const section = textSection.value;
+        const content = textContent.value;
+        const element = document.getElementById(section);
+        
+        if (element) {
+            element.textContent = content;
+        }
+        appSettings.texts[section].content = content;
+    }
 }
 
 // Update Text Font
 function updateTextFont() {
-    const section = document.getElementById('textSection').value;
-    const font = document.getElementById('fontFamily').value;
-    document.getElementById(section).style.fontFamily = font;
-    appSettings.texts[section].font = font;
+    const textSection = document.getElementById('textSection');
+    const fontFamily = document.getElementById('fontFamily');
+    
+    if (textSection && fontFamily) {
+        const section = textSection.value;
+        const font = fontFamily.value;
+        const element = document.getElementById(section);
+        
+        if (element) {
+            element.style.fontFamily = font;
+        }
+        appSettings.texts[section].font = font;
+    }
 }
 
 // Update Text Size
 function updateTextSize() {
-    const section = document.getElementById('textSection').value;
-    const size = document.getElementById('fontSize').value;
-    document.getElementById(section).style.fontSize = size + 'px';
-    appSettings.texts[section].size = size;
+    const textSection = document.getElementById('textSection');
+    const fontSize = document.getElementById('fontSize');
+    
+    if (textSection && fontSize) {
+        const section = textSection.value;
+        const size = fontSize.value;
+        const element = document.getElementById(section);
+        
+        if (element) {
+            element.style.fontSize = size + 'px';
+        }
+        appSettings.texts[section].size = size;
+    }
 }
 
 // Update Text Color
 function updateTextColor() {
-    const section = document.getElementById('textSection').value;
-    const color = document.getElementById('fontColor').value;
-    document.getElementById(section).style.color = color;
-    appSettings.texts[section].color = color;
+    const textSection = document.getElementById('textSection');
+    const fontColor = document.getElementById('fontColor');
+    
+    if (textSection && fontColor) {
+        const section = textSection.value;
+        const color = fontColor.value;
+        const element = document.getElementById(section);
+        
+        if (element) {
+            element.style.color = color;
+        }
+        appSettings.texts[section].color = color;
+    }
 }
 
 // Update FB Link
 function updateFbLink() {
-    const link = document.getElementById('fbLink').value;
-    document.getElementById('fbButton').href = link;
-    appSettings.fbLink = link;
+    const fbLink = document.getElementById('fbLink');
+    const fbButton = document.getElementById('fbButton');
+    
+    if (fbLink && fbButton) {
+        const link = fbLink.value;
+        fbButton.href = link;
+        appSettings.fbLink = link;
+    }
 }
 
 // Add New Card
@@ -596,11 +746,11 @@ function saveAllSettings() {
         texts: appSettings.texts,
         zoneCards: zoneCards,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
+    }).then(function() {
         alert('Settings saved successfully!');
         closeControlPanel();
         hideLoading();
-    }).catch((error) => {
+    }).catch(function(error) {
         alert('Error: ' + error.message);
         hideLoading();
     });
@@ -608,56 +758,80 @@ function saveAllSettings() {
 
 // Load Settings
 function loadSettings() {
-    db.collection('settings').doc('main').get().then((doc) => {
+    db.collection('settings').doc('main').get().then(function(doc) {
         if (doc.exists) {
             const data = doc.data();
             
             if (data.bannerColor) {
-                document.getElementById('bannerSection').style.background = data.bannerColor;
+                const bannerSection = document.getElementById('bannerSection');
+                if (bannerSection) {
+                    bannerSection.style.background = data.bannerColor;
+                }
                 appSettings.bannerColor = data.bannerColor;
             }
             
             if (data.watermarkUrl) {
-                document.getElementById('watermarkImage').src = data.watermarkUrl;
-                document.getElementById('watermarkImage').style.display = 'block';
+                const watermarkImage = document.getElementById('watermarkImage');
+                if (watermarkImage) {
+                    watermarkImage.src = data.watermarkUrl;
+                    watermarkImage.style.display = 'block';
+                }
                 appSettings.watermarkUrl = data.watermarkUrl;
             }
             
             if (data.watermarkOpacity) {
-                document.getElementById('watermarkImage').style.opacity = data.watermarkOpacity / 100;
+                const watermarkImage = document.getElementById('watermarkImage');
+                if (watermarkImage) {
+                    watermarkImage.style.opacity = data.watermarkOpacity / 100;
+                }
                 appSettings.watermarkOpacity = data.watermarkOpacity;
             }
             
             if (data.logoUrl) {
-                document.getElementById('logoImage').src = data.logoUrl;
-                document.getElementById('logoImage').style.display = 'block';
+                const logoImage = document.getElementById('logoImage');
+                if (logoImage) {
+                    logoImage.src = data.logoUrl;
+                    logoImage.style.display = 'block';
+                }
                 appSettings.logoUrl = data.logoUrl;
             }
             
             if (data.logoSize) {
-                document.getElementById('logoImage').style.maxWidth = data.logoSize + 'px';
+                const logoImage = document.getElementById('logoImage');
+                if (logoImage) {
+                    logoImage.style.maxWidth = data.logoSize + 'px';
+                }
                 appSettings.logoSize = data.logoSize;
             }
             
             if (data.ceoUrl) {
-                document.getElementById('ceoImage').src = data.ceoUrl;
-                document.getElementById('ceoImage').style.display = 'block';
+                const ceoImage = document.getElementById('ceoImage');
+                if (ceoImage) {
+                    ceoImage.src = data.ceoUrl;
+                    ceoImage.style.display = 'block';
+                }
                 appSettings.ceoUrl = data.ceoUrl;
             }
             
             if (data.ceoSize) {
-                document.getElementById('ceoImage').style.maxWidth = data.ceoSize + 'px';
+                const ceoImage = document.getElementById('ceoImage');
+                if (ceoImage) {
+                    ceoImage.style.maxWidth = data.ceoSize + 'px';
+                }
                 appSettings.ceoSize = data.ceoSize;
             }
             
             if (data.fbLink) {
-                document.getElementById('fbButton').href = data.fbLink;
+                const fbButton = document.getElementById('fbButton');
+                if (fbButton) {
+                    fbButton.href = data.fbLink;
+                }
                 appSettings.fbLink = data.fbLink;
             }
             
             if (data.texts) {
                 appSettings.texts = data.texts;
-                Object.keys(data.texts).forEach(key => {
+                Object.keys(data.texts).forEach(function(key) {
                     const el = document.getElementById(key);
                     if (el) {
                         el.textContent = data.texts[key].content;
@@ -673,7 +847,7 @@ function loadSettings() {
                 renderZoneCards();
             }
         }
-    }).catch((error) => {
+    }).catch(function(error) {
         console.log('Error loading settings:', error);
     });
 }
@@ -690,13 +864,13 @@ function saveSettings() {
 function logout() {
     showLoading();
     
-    auth.signOut().then(() => {
+    auth.signOut().then(function() {
         currentUser = null;
         currentUserType = null;
         isAdmin = false;
         showPage('loginPage');
         hideLoading();
-    }).catch((error) => {
+    }).catch(function(error) {
         alert('Error: ' + error.message);
         hideLoading();
     });
@@ -708,17 +882,10 @@ function goBack() {
 }
 
 // Auth State Observer
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(function(user) {
     if (user) {
         console.log('User signed in:', user.email);
     } else {
         console.log('User signed out');
     }
-});
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Tutors Valley initialized');
-    // Re-check on load just in case
-    checkEmbeddedBrowser();
 });
