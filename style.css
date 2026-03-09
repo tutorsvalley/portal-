@@ -18,6 +18,7 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 50%, #ffffff 100%);
     min-height: 100vh;
     color: var(--text-color);
+    overflow-x: hidden;
 }
 
 /* External Browser Warning Styles */
@@ -29,12 +30,16 @@ body {
     height: 100%;
     background: #1a1a1a;
     z-index: 99999;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     text-align: center;
     padding: 20px;
     color: white;
+}
+
+.external-warning.active {
+    display: flex;
 }
 
 .warning-content {
@@ -79,6 +84,10 @@ body {
 
 .open-browser-btn:active {
     transform: scale(0.98);
+}
+
+.open-browser-btn:hover {
+    background: #45a049;
 }
 
 .manual-instruction {
@@ -186,6 +195,10 @@ body {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+.login-btn:active {
+    transform: translateY(-1px);
+}
+
 .tutor-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -206,6 +219,7 @@ body {
     cursor: pointer;
     opacity: 0.3;
     transition: opacity 0.3s;
+    font-size: 24px;
 }
 
 .admin-trigger:hover {
@@ -291,6 +305,10 @@ body {
     margin-top: 15px;
 }
 
+.admin-login-btn:hover {
+    background: #00152b;
+}
+
 #adminEmail, #adminPassword {
     width: 100%;
     padding: 12px;
@@ -298,6 +316,11 @@ body {
     border-radius: 8px;
     font-size: 16px;
     margin-top: 10px;
+}
+
+#adminEmail:focus, #adminPassword:focus {
+    border-color: var(--secondary-color);
+    outline: none;
 }
 
 /* Main Header */
@@ -449,6 +472,11 @@ body {
     min-width: 200px;
 }
 
+.tutor-controls select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
 /* Zones Section */
 .zones-section {
     padding: 40px 20px;
@@ -525,6 +553,10 @@ body {
     background: #20ba5a;
 }
 
+.group-btn:active {
+    transform: scale(0.98);
+}
+
 .group-btn.hidden {
     display: none;
 }
@@ -552,6 +584,11 @@ body {
     resize: vertical;
     min-height: 100px;
     margin-bottom: 10px;
+}
+
+.review-form textarea:focus {
+    border-color: var(--secondary-color);
+    outline: none;
 }
 
 .review-form button {
@@ -691,6 +728,14 @@ body {
     font-size: 14px;
 }
 
+.control-section input[type="text"]:focus,
+.control-section input[type="email"]:focus,
+.control-section input[type="password"]:focus,
+.control-section select:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+}
+
 .control-section input[type="color"] {
     width: 60px;
     height: 40px;
@@ -779,6 +824,10 @@ body {
     cursor: pointer;
 }
 
+.join-container button:hover {
+    background: #00152b;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-header {
@@ -811,5 +860,28 @@ body {
     
     .tutor-controls {
         flex-direction: column;
+    }
+    
+    .warning-content {
+        padding: 20px;
+    }
+    
+    .warning-content h2 {
+        font-size: 22px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .login-btn, .logout-btn, .control-panel, .gear-icon {
+        display: none;
     }
 }
