@@ -3,7 +3,6 @@
 // ✅ Clean Syntax - No Errors
 // ============================================
 
-// Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",
     authDomain: "tutors-valley-6ddb0.firebaseapp.com",
@@ -13,7 +12,6 @@ const firebaseConfig = {
     appId: "1:377815974425:web:3d1254d14640f43516a088"
 };
 
-// Initialize Firebase
 try {
     firebase.initializeApp(firebaseConfig);
     console.log("✅ Firebase Initialized");
@@ -32,7 +30,6 @@ let currentLoginRole = null;
 let loginProcessing = false;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Loading
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
@@ -47,7 +44,6 @@ function hideLoading() {
     if (div) div.remove();
 }
 
-// Save/Get Role
 function saveRoleForLogin(role) {
     localStorage.setItem('tv_login_role', role);
     console.log("💾 Role saved:", role);
@@ -64,7 +60,6 @@ function clearLoginRole() {
     console.log("🗑️ Role cleared");
 }
 
-// Guest Login
 window.guestLogin = function() {
     console.log("🟢 Guest login started");
     showLoading("লগইন হচ্ছে...");
@@ -88,12 +83,10 @@ window.guestLogin = function() {
     });
 };
 
-// DOM Loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log("📄 Page Loaded");
     showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // Check Redirect Result FIRST
     auth.getRedirectResult().then((result) => {
         console.log("✅ Redirect result:", result.user ? result.user.email : 'no user');
         
@@ -113,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("❌ Redirect error:", error.code, error.message);
     });
     
-    // Auth State Observer
     auth.onAuthStateChanged((user) => {
         console.log("🔄 Auth State:", user ? user.email : 'No user');
         
@@ -134,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Complete Google Login
 function completeGoogleLogin(user) {
     console.log("🎉 Completing login for:", user.email, "Role:", currentLoginRole);
     
@@ -170,7 +161,6 @@ function completeGoogleLogin(user) {
     });
 }
 
-// Load User from Firestore
 function loadUser(uid) {
     console.log("📥 Loading user:", uid);
     db.collection('users').doc(uid).get().then((doc) => {
@@ -190,14 +180,12 @@ function loadUser(uid) {
     });
 }
 
-// Show Page
 window.showPage = function(id) {
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
     document.getElementById(id).style.display = 'block';
     window.scrollTo(0, 0);
 };
 
-// Open Modal
 window.openModal = function(role) {
     currentLoginRole = role;
     console.log("🎯 Modal opened:", role);
@@ -209,12 +197,10 @@ window.openModal = function(role) {
     document.getElementById('loginModal').style.display = 'flex';
 };
 
-// Close Modal
 window.closeModal = function() {
     document.getElementById('loginModal').style.display = 'none';
 };
 
-// Google Login
 window.googleLogin = function() {
     if (!currentLoginRole) {
         alert("দয়া করে একটি রোল সিলেক্ট করুন");
@@ -250,7 +236,6 @@ window.googleLogin = function() {
     }
 };
 
-// Show Home
 function showHome() {
     console.log("🏠 Showing Home:", currentUserRole);
     showPage('homePage');
@@ -263,7 +248,6 @@ function showHome() {
     });
 }
 
-// Logout
 window.logout = function() {
     console.log("🚪 Logout");
     showLoading("লগআউট হচ্ছে...");
@@ -280,7 +264,6 @@ window.logout = function() {
     });
 };
 
-// Toggle Control
 window.toggleControl = function() {
     const p = document.getElementById('controlPanel');
     if (!p) return;
@@ -288,7 +271,6 @@ window.toggleControl = function() {
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
 };
 
-// Helper Functions
 function generateFontOptions(current) {
     let h = '<option value="">ডিফল্ট</option>';
     const fonts = {
