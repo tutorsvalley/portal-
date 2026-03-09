@@ -60,7 +60,7 @@
             <i class="fab fa-whatsapp"></i>
         </a>
 
-        <div id="adminIcon" class="admin-icon" id="toggleControlBtn" style="display:none;">⚙️</div>
+        <div id="adminIcon" class="admin-icon" style="display:none;">⚙️</div>
         <div id="controlPanel" class="control-panel">
             <div class="control-header">
                 <h3>কন্ট্রোল প্যানেল</h3>
@@ -114,9 +114,9 @@
     <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- ✅ DIRECT BUTTON BINDING SCRIPT (GUARANTEED TO WORK) -->
+    <!-- ✅ DIRECT BUTTON BINDING SCRIPT (FIXED) -->
     <script>
-        // Wait for everything to load
+        // Wait for everything to load including app.js
         window.addEventListener('load', function() {
             console.log("🔗 Binding buttons directly...");
 
@@ -126,10 +126,15 @@
                 if (btn) {
                     btn.onclick = function() {
                         console.log("Clicked:", id);
-                        if (typeof window[action] === 'function') {
-                            window[action]();
-                        } else {
-                            alert("Function " + action + " not found! Check app.js");
+                        // Check if action is a string (function name) or a function itself
+                        if (typeof action === 'string') {
+                            if (typeof window[action] === 'function') {
+                                window[action]();
+                            } else {
+                                alert("Function " + action + " not found! Check app.js");
+                            }
+                        } else if (typeof action === 'function') {
+                            action();
                         }
                     };
                     console.log("✅ Bound", id, "to", action);
@@ -139,10 +144,10 @@
             }
 
             // Bind Login Buttons
-            bindButton('tutorBtn', function() { window.openModal('tutor'); });
-            bindButton('guardianBtn', function() { window.openModal('guardian'); });
+            bindButton('tutorBtn', function() { if(window.openModal) window.openModal('tutor'); });
+            bindButton('guardianBtn', function() { if(window.openModal) window.openModal('guardian'); });
             bindButton('guestBtn', 'guestLogin');
-            bindButton('adminBtn', function() { window.openModal('admin'); });
+            bindButton('adminBtn', function() { if(window.openModal) window.openModal('admin'); });
             
             // Bind Modal Buttons
             bindButton('googleLoginBtn', 'googleLogin');
@@ -151,13 +156,21 @@
             // Bind Other Actions
             bindButton('logoutBtn', 'logout');
             bindButton('submitReviewBtn', 'submitReview');
-            bindButton('toggleControlBtn', 'toggleControl');
-            bindButton('closePanelBtn', 'toggleControl');
+            
+            // Bind Control Panel
+            const adminIcon = document.getElementById('adminIcon');
+            if(adminIcon) {
+                adminIcon.onclick = function() { if(window.toggleControl) window.toggleControl(); };
+            }
+            const closePanelBtn = document.getElementById('closePanelBtn');
+            if(closePanelBtn) {
+                closePanelBtn.onclick = function() { if(window.toggleControl) window.toggleControl(); };
+            }
 
             // Close modal when clicking outside
             window.onclick = function(event) {
                 const modal = document.getElementById('loginModal');
-                if (event.target == modal) {
+                if (event.target == modal && window.closeModal) {
                     window.closeModal();
                 }
             };
