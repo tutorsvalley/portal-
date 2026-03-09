@@ -1,7 +1,6 @@
 // ============================================
-// 🔥 TUTORS VALLEY - MOBILE GOOGLE LOGIN v5
-// ✅ Simplified & Tested
-// ✅ Firebase 8.10.1 Compatible
+// 🔥 TUTORS VALLEY - MOBILE LOGIN FIXED
+// ✅ Clean Syntax - No Errors
 // ============================================
 
 // Firebase Config
@@ -33,28 +32,13 @@ let currentLoginRole = null;
 let loginProcessing = false;
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// ... (fonts and defaultZones same as before) ...
-const fonts = {
-    bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'Baloo Da 2', 'Mukta', 'Tiro Bangla', 'Kalam', 'Khand', 'Yantramanav', 'Amita', 'Akaya Telivigala'],
-    english: ['Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Arial', 'Georgia', 'Verdana', 'Calibri', 'Times New Roman']
-};
-
-const defaultZones = [
-    { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "", whatsappNumber: "" },
-    { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "", whatsappNumber: "" },
-    { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"], maleLink: "", femaleLink: "", whatsappNumber: "" },
-    { id: 4, title: "পশ্চিম ঢাকা", areas: ["সাভার", "আশুলিয়া", "গাজীপুর"], maleLink: "", femaleLink: "", whatsappNumber: "" },
-    { id: 5, title: "কেন্দ্রীয় ঢাকা", areas: ["পল্টন", "মতিঝিল", "শাহবাগ"], maleLink: "", femaleLink: "", whatsappNumber: "" },
-    { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", whatsappNumber: "" }
-];
-
 // Loading
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
     div.id = 'loadingScreen';
     div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-    div.innerHTML = `<div style="width:50px;height:50px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:15px;color:#333;">${msg}</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+    div.innerHTML = '<div style="width:50px;height:50px;border:4px solid #eee;border-top:4px solid #0074D9;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:15px;color:#333;">' + msg + '</p><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
     document.body.appendChild(div);
 }
 
@@ -63,20 +47,18 @@ function hideLoading() {
     if (div) div.remove();
 }
 
-// ✅ Save Role Before Login
+// Save/Get Role
 function saveRoleForLogin(role) {
     localStorage.setItem('tv_login_role', role);
     console.log("💾 Role saved:", role);
 }
 
-// ✅ Get Role After Login
 function getRoleAfterLogin() {
     const role = localStorage.getItem('tv_login_role');
     console.log("🔑 Role retrieved:", role);
     return role;
 }
 
-// ✅ Clear Role
 function clearLoginRole() {
     localStorage.removeItem('tv_login_role');
     console.log("🗑️ Role cleared");
@@ -106,12 +88,12 @@ window.guestLogin = function() {
     });
 };
 
-// ✅ DOM Loaded
+// DOM Loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log("📄 Page Loaded");
     showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // ✅ Check Redirect Result FIRST
+    // Check Redirect Result FIRST
     auth.getRedirectResult().then((result) => {
         console.log("✅ Redirect result:", result.user ? result.user.email : 'no user');
         
@@ -131,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("❌ Redirect error:", error.code, error.message);
     });
     
-    // ✅ Auth State Observer
+    // Auth State Observer
     auth.onAuthStateChanged((user) => {
         console.log("🔄 Auth State:", user ? user.email : 'No user');
         
@@ -152,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ✅ Complete Google Login
+// Complete Google Login
 function completeGoogleLogin(user) {
     console.log("🎉 Completing login for:", user.email, "Role:", currentLoginRole);
     
@@ -188,7 +170,7 @@ function completeGoogleLogin(user) {
     });
 }
 
-// ✅ Load User from Firestore
+// Load User from Firestore
 function loadUser(uid) {
     console.log("📥 Loading user:", uid);
     db.collection('users').doc(uid).get().then((doc) => {
@@ -232,7 +214,7 @@ window.closeModal = function() {
     document.getElementById('loginModal').style.display = 'none';
 };
 
-// ✅ Google Login - MOBILE vs DESKTOP
+// Google Login
 window.googleLogin = function() {
     if (!currentLoginRole) {
         alert("দয়া করে একটি রোল সিলেক্ট করুন");
@@ -243,7 +225,6 @@ window.googleLogin = function() {
     showLoading("Google লগইন হচ্ছে...");
     loginProcessing = false;
     
-    // ✅ Save role BEFORE login
     saveRoleForLogin(currentLoginRole);
     
     const isMobile = /mobile|android|iphone|ipad/i.test(navigator.userAgent);
@@ -307,35 +288,48 @@ window.toggleControl = function() {
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
 };
 
-// ... (Rest of helper functions - same as before) ...
-// generateFontOptions, rgbToHex, getStyle, getText, getFontValue, applyFont, updateFont, saveSetting, updateLogo, updateCeoImage, updateText, updateSize, updateColor, updateFbUrl, loadAllSettings, loadControlPanel, loadZoneCardsSettings, updateZone, loadZones, renderZones, updateFloatingWhatsapp, loadReviews, deleteReview, submitReview
-
-// For brevity, including key helper functions
+// Helper Functions
 function generateFontOptions(current) {
     let h = '<option value="">ডিফল্ট</option>';
-    fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
-    fonts.english.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f}</option>`);
+    const fonts = {
+        bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'Baloo Da 2', 'Mukta'],
+        english: ['Poppins', 'Roboto', 'Open Sans', 'Lato']
+    };
+    fonts.bangla.forEach(f => h += '<option value="' + f + '" ' + (f===current?'selected':'') + '>' + f + ' (বাংলা)</option>');
+    fonts.english.forEach(f => h += '<option value="' + f + '" ' + (f===current?'selected':'') + '>' + f + '</option>');
     return h;
 }
+
 function rgbToHex(rgb) {
     if (!rgb || rgb.startsWith('#')) return rgb || '#001f3f';
     const v = rgb.match(/\d+/g);
     if (!v) return '#001f3f';
     return "#" + ((1<<24)+(parseInt(v[0])<<16)+(parseInt(v[1])<<8)+parseInt(v[2])).toString(16).slice(1);
 }
-function getStyle(id, prop) { const el = document.getElementById(id); return el ? (el.style[prop] || '') : ''; }
-function getText(id) { const el = document.getElementById(id); return el ? el.innerText : ''; }
+
+function getStyle(id, prop) {
+    const el = document.getElementById(id);
+    return el ? (el.style[prop] || '') : '';
+}
+
+function getText(id) {
+    const el = document.getElementById(id);
+    return el ? el.innerText : '';
+}
+
 function getFontValue(id) {
     const el = document.getElementById(id);
     if (!el) return '';
     return (el.style.fontFamily || '').replace(/'/g, '').split(',')[0].trim();
 }
+
 function applyFont(id, font) {
     const el = document.getElementById(id);
     if (el && font) {
-        el.style.fontFamily = `'${font}', 'Hind Siliguri', sans-serif`;
+        el.style.fontFamily = "'" + font + "', 'Hind Siliguri', sans-serif";
     }
 }
+
 function updateFont(id, font) {
     if (!font) return;
     applyFont(id, font);
@@ -349,23 +343,52 @@ function updateFont(id, font) {
     else if (id === 'copyright') { col = 'footer'; fld = 'copyrightFont'; }
     if (col && fld) db.collection('settings').doc(col).update({ [fld]: font });
 }
-function saveSetting(col, fld, val) { db.collection('settings').doc(col).update({ [fld]: val }); }
+
+function saveSetting(col, fld, val) {
+    db.collection('settings').doc(col).update({ [fld]: val });
+}
+
 function updateLogo() {
-    const f = document.getElementById('logoInput').files[0]; if (!f) return;
+    const f = document.getElementById('logoInput').files[0];
+    if (!f) return;
     const r = new FileReader();
-    r.onload = e => { document.getElementById('logo').src = e.target.result; db.collection('settings').doc('header').update({ logoUrl: e.target.result }); };
+    r.onload = e => {
+        document.getElementById('logo').src = e.target.result;
+        db.collection('settings').doc('header').update({ logoUrl: e.target.result });
+    };
     r.readAsDataURL(f);
 }
+
 function updateCeoImage() {
-    const f = document.getElementById('ceoImageInput').files[0]; if (!f) return;
+    const f = document.getElementById('ceoImageInput').files[0];
+    if (!f) return;
     const r = new FileReader();
-    r.onload = e => { document.getElementById('ceoImg').src = e.target.result; db.collection('settings').doc('ceo').update({ imageUrl: e.target.result }); };
+    r.onload = e => {
+        document.getElementById('ceoImg').src = e.target.result;
+        db.collection('settings').doc('ceo').update({ imageUrl: e.target.result });
+    };
     r.readAsDataURL(f);
 }
-function updateText(id, v) { const e = document.getElementById(id); if (e) e.innerText = v; }
-function updateSize(id, v) { const e = document.getElementById(id); if (e) e.style.fontSize = v + 'px'; }
-function updateColor(id, p, c) { const e = document.getElementById(id); if (e) e.style[p] = c; }
-function updateFbUrl(url) { document.getElementById('fbBtn').href = url; db.collection('settings').doc('header').update({ fbUrl: url }); }
+
+function updateText(id, v) {
+    const e = document.getElementById(id);
+    if (e) e.innerText = v;
+}
+
+function updateSize(id, v) {
+    const e = document.getElementById(id);
+    if (e) e.style.fontSize = v + 'px';
+}
+
+function updateColor(id, p, c) {
+    const e = document.getElementById(id);
+    if (e) e.style[p] = c;
+}
+
+function updateFbUrl(url) {
+    document.getElementById('fbBtn').href = url;
+    db.collection('settings').doc('header').update({ fbUrl: url });
+}
 
 function loadAllSettings() {
     return Promise.all([
@@ -412,98 +435,111 @@ function loadAllSettings() {
 }
 
 function loadControlPanel() {
-    const body = document.getElementById('controlBody'); if (!body) return;
+    const body = document.getElementById('controlBody');
+    if (!body) return;
     const canEdit = (currentUserRole === 'admin' || currentUserRole === 'tutor');
-    body.innerHTML = `
-        <div class="control-section"><h3>🔷 হেডার</h3>
-            <div class="control-group"><label>লোগো:</label><input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"></div>
-            <div class="control-group"><label>ব্র্যান্ডিং:</label><input type="text" value="${getText('branding')}" oninput="updateText('branding',this.value);saveSetting('header','brandingText',this.value)"></div>
-            <div class="control-group"><label>ব্র্যান্ডিং ফন্ট:</label><select onchange="updateFont('branding',this.value)">${generateFontOptions(getFontValue('branding'))}</select></div>
-            <hr><div class="control-group"><label>মotto:</label><input type="text" value="${getText('motto')}" oninput="updateText('motto',this.value);saveSetting('header','mottoText',this.value)"></div>
-            <div class="control-group"><label>মotto ফন্ট:</label><select onchange="updateFont('motto',this.value)">${generateFontOptions(getFontValue('motto'))}</select></div>
-        </div>
-        <div class="control-section"><h3>📍 জোন</h3>
-            <div id="zoneCardsSettings"></div>
-        </div>
-    `;
+    body.innerHTML = '<div class="control-section"><h3>🔷 হেডার</h3>' +
+        '<div class="control-group"><label>লোগো:</label><input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"></div>' +
+        '<div class="control-group"><label>ব্র্যান্ডিং:</label><input type="text" value="' + getText('branding') + '" oninput="updateText(\'branding\',this.value);saveSetting(\'header\',\'brandingText\',this.value)"></div>' +
+        '<div class="control-group"><label>ব্র্যান্ডিং ফন্ট:</label><select onchange="updateFont(\'branding\',this.value)">' + generateFontOptions(getFontValue('branding')) + '</select></div>' +
+        '<hr><div class="control-group"><label>মotto:</label><input type="text" value="' + getText('motto') + '" oninput="updateText(\'motto\',this.value);saveSetting(\'header\',\'mottoText\',this.value)"></div>' +
+        '<div class="control-group"><label>মotto ফন্ট:</label><select onchange="updateFont(\'motto\',this.value)">' + generateFontOptions(getFontValue('motto')) + '</select></div>' +
+        '</div><div class="control-section"><h3>📍 জোন</h3><div id="zoneCardsSettings"></div></div>';
     loadZoneCardsSettings();
 }
 
 function loadZoneCardsSettings() {
     db.collection('zones').get().then(s => {
-        const c = document.getElementById('zoneCardsSettings'); if (!c) return;
+        const c = document.getElementById('zoneCardsSettings');
+        if (!c) return;
         c.innerHTML = '';
         s.forEach(doc => {
             const z = doc.data();
-            c.innerHTML += `<div style="border:1px solid #ddd;padding:10px;margin:10px 0;"><strong>জোন #${z.id}</strong><br>
-                শিরোনাম: <input type="text" value="${z.title}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'title',this.value)"><br>
-                এলাকা: <input type="text" value="${z.areas?z.areas.join(', '):''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'areas',this.value)"><br>
-                হোয়াটসঅ্যাপ: <input type="text" value="${z.whatsappNumber||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'whatsappNumber',this.value)"><br>
-                মেল: <input type="url" value="${z.maleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'maleLink',this.value)"><br>
-                ফিমেল: <input type="url" value="${z.femaleLink||''}" style="width:100%;margin:5px 0;" onchange="updateZone(${z.id},'femaleLink',this.value)">
-            </div>`;
+            c.innerHTML += '<div style="border:1px solid #ddd;padding:10px;margin:10px 0;"><strong>জোন #' + z.id + '</strong><br>' +
+                'শিরোনাম: <input type="text" value="' + z.title + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'title\',this.value)"><br>' +
+                'এলাকা: <input type="text" value="' + (z.areas ? z.areas.join(', ') : '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'areas\',this.value)"><br>' +
+                'হোয়াটসঅ্যাপ: <input type="text" value="' + (z.whatsappNumber || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'whatsappNumber\',this.value)"><br>' +
+                'মেল: <input type="url" value="' + (z.maleLink || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'maleLink\',this.value)"><br>' +
+                'ফিমেল: <input type="url" value="' + (z.femaleLink || '') + '" style="width:100%;margin:5px 0;" onchange="updateZone(' + z.id + ',\'femaleLink\',this.value)"></div>';
         });
     });
 }
 
 function updateZone(id, f, v) {
-    if (f === 'areas') v = v.split(',').map(a=>a.trim()).filter(a=>a);
+    if (f === 'areas') v = v.split(',').map(a => a.trim()).filter(a => a);
     db.collection('zones').doc(id.toString()).update({ [f]: v });
     if (f === 'whatsappNumber') updateFloatingWhatsapp();
 }
 
 function loadZones() {
     return db.collection('zones').get().then(s => {
-        const c = document.getElementById('zoneContainer'); if (!c) return;
+        const c = document.getElementById('zoneContainer');
+        if (!c) return;
         c.innerHTML = '';
         if (s.empty) {
+            const defaultZones = [
+                { id: 1, title: "উত্তর ঢাকা", areas: ["উত্তরা", "মিরপুর", "পল্লবী"], maleLink: "", femaleLink: "", whatsappNumber: "" },
+                { id: 2, title: "দক্ষিণ ঢাকা", areas: ["ধানমন্ডি", "মোহাম্মদপুর", "আদাবর"], maleLink: "", femaleLink: "", whatsappNumber: "" },
+                { id: 3, title: "পূর্ব ঢাকা", areas: ["বনানী", "গুলশান", "বারিধারা"], maleLink: "", femaleLink: "", whatsappNumber: "" }
+            ];
             defaultZones.forEach(z => db.collection('zones').doc(z.id.toString()).set(z));
             renderZones(defaultZones);
         } else {
-            const zones = []; s.forEach(doc => zones.push(doc.data()));
+            const zones = [];
+            s.forEach(doc => zones.push(doc.data()));
             renderZones(zones);
         }
     });
 }
 
 function renderZones(zones) {
-    const container = document.getElementById('zoneContainer'); if (!container) return;
+    const container = document.getElementById('zoneContainer');
+    if (!container) return;
     container.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     zones.forEach(zone => {
-        const card = document.createElement('div'); card.className = 'zone-card';
-        let areas = zone.areas ? zone.areas.map(a => `<span class="area-tag">${a}</span>`).join('') : '';
+        const card = document.createElement('div');
+        card.className = 'zone-card';
+        let areas = zone.areas ? zone.areas.map(a => '<span class="area-tag">' + a + '</span>').join('') : '';
         let btns = '';
         if (canSee) {
-            if (zone.maleLink) btns += `<a href="${zone.maleLink}" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>`;
-            if (zone.femaleLink) btns += `<a href="${zone.femaleLink}" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>`;
+            if (zone.maleLink) btns += '<a href="' + zone.maleLink + '" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>';
+            if (zone.femaleLink) btns += '<a href="' + zone.femaleLink + '" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>';
         }
-        card.innerHTML = `<h3>${zone.title}</h3><div class="area-tags">${areas}</div>${btns ? '<div class="button-container">'+btns+'</div>' : ''}`;
+        card.innerHTML = '<h3>' + zone.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div class="button-container">' + btns + '</div>' : '');
         container.appendChild(card);
     });
     updateFloatingWhatsapp();
 }
 
 function updateFloatingWhatsapp() {
-    const btn = document.getElementById('floatingWhatsappBtn'); if (!btn) return;
+    const btn = document.getElementById('floatingWhatsappBtn');
+    if (!btn) return;
     db.collection('zones').doc('1').get().then(doc => {
         if (doc.exists && doc.data().whatsappNumber) {
             const num = doc.data().whatsappNumber.replace(/[^0-9]/g, '');
-            btn.href = `https://wa.me/${num}?text=${encodeURIComponent("আসসালামু আলাইকুম")}`;
+            btn.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent("আসসালামু আলাইকুম");
             btn.style.display = 'flex';
-        } else { btn.style.display = 'none'; }
+        } else {
+            btn.style.display = 'none';
+        }
     });
 }
 
 function loadReviews() {
     return db.collection('reviews').orderBy('createdAt','desc').limit(50).get().then(s => {
-        const c = document.getElementById('reviewList'); if (!c) return;
+        const c = document.getElementById('reviewList');
+        if (!c) return;
         c.innerHTML = '';
-        if (s.empty) { c.innerHTML = '<p style="text-align:center;color:#999;">কোনো রিভিউ নেই</p>'; return; }
+        if (s.empty) {
+            c.innerHTML = '<p style="text-align:center;color:#999;">কোনো রিভিউ নেই</p>';
+            return;
+        }
         s.forEach(doc => {
             const r = doc.data();
-            const card = document.createElement('div'); card.className = 'review-card';
-            card.innerHTML = `<h4>${r.userName||'Anonymous'}</h4><p>${r.text}</p>`;
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = '<h4>' + (r.userName || 'Anonymous') + '</h4><p>' + r.text + '</p>';
             c.appendChild(card);
         });
     });
@@ -512,17 +548,31 @@ function loadReviews() {
 window.deleteReview = function(id) {
     if (currentUserRole !== 'admin') return;
     if (confirm("ডিলিট করবেন?")) {
-        db.collection('reviews').doc(id).delete().then(() => { loadReviews(); });
+        db.collection('reviews').doc(id).delete().then(() => {
+            loadReviews();
+        });
     }
 };
 
 window.submitReview = function() {
-    if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') { alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন"); return; }
+    if (currentUserRole !== 'tutor' && currentUserRole !== 'guardian') {
+        alert("শুধুমাত্র টিউটর এবং অভিভাবক রিভিউ দিতে পারবেন");
+        return;
+    }
     const t = document.getElementById('reviewText').value;
-    if (!t.trim()) { alert("রিভিউ লিখুন"); return; }
-    db.collection('reviews').add({ text: t, userName: currentUser.displayName || 'Anonymous', userRole: currentUserRole }).then(() => {
-        document.getElementById('reviewText').value = ''; loadReviews(); alert("রিভিউ জমা হয়েছে");
+    if (!t.trim()) {
+        alert("রিভিউ লিখুন");
+        return;
+    }
+    db.collection('reviews').add({
+        text: t,
+        userName: currentUser.displayName || 'Anonymous',
+        userRole: currentUserRole
+    }).then(() => {
+        document.getElementById('reviewText').value = '';
+        loadReviews();
+        alert("রিভিউ জমা হয়েছে");
     });
 };
 
-console.log("✅ App.js Loaded - Mobile Login v5");
+console.log("✅ App.js Loaded - Mobile Login Fixed");
