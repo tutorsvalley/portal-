@@ -6,7 +6,6 @@
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
@@ -35,7 +34,7 @@
             <h1>Tutors Valley</h1>
             <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             
-            <!-- ✅ Buttons with Data Attributes (Safe Method) -->
+            <!-- ✅ Buttons with Data Attributes -->
             <button class="btn btn-tutor" data-action="openModal" data-role="tutor">টিউটর লগইন</button>
             <button class="btn btn-guardian" data-action="openModal" data-role="guardian">অভিভাবক লগইন</button>
             <button class="btn btn-guest" data-action="guestLogin">গেস্ট লগইন</button>
@@ -47,13 +46,18 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeModalBtn">&times;</span>
-            <h2 id="modalTitle">লগইন</h2>            <p>আপনার Google অ্যাকাউন্ট ব্যবহার করুন</p>
-            <button class="google-btn" data-action="googleLogin">Google দিয়ে লগইন</button>
+            <h2 id="modalTitle">লগইন</h2>
+            <p>আপনার Google অ্যাকাউন্ট ব্যবহার করুন</p>            <button class="google-btn" data-action="googleLogin">Google দিয়ে লগইন</button>
         </div>
     </div>
 
     <!-- Home Page -->
     <div id="homePage" class="page">
+        <!-- Fixed WhatsApp Button (Floating) -->
+        <a href="#" id="floatingWhatsappBtn" class="floating-whatsapp" target="_blank" style="display:none;">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+
         <div id="adminIcon" class="admin-icon" data-action="toggleControl" style="display:none;">⚙️</div>
         <div id="controlPanel" class="control-panel">
             <div class="control-header">
@@ -92,11 +96,11 @@
         </section>
 
         <section class="section ceo-section">
-            <div class="ceo-card">
-                <img id="ceoImg" src="" alt="CEO" class="ceo-img">
+            <div class="ceo-card">                <img id="ceoImg" src="" alt="CEO" class="ceo-img">
                 <h3 id="ceoName">CEO Name</h3>
                 <p id="ceoTitle" style="color:#0074D9;font-weight:bold;">Founder & CEO</p>
-                <p id="ceoDesc">CEO description here...</p>            </div>
+                <p id="ceoDesc">CEO description here...</p>
+            </div>
         </section>
 
         <footer id="footerSection" class="footer">
@@ -107,13 +111,9 @@
     <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- ✅ UNIVERSAL EVENT DELEGATION (Fail-Safe Method) -->
+    <!-- ✅ Universal Click Listener (Fixes Login Buttons) -->
     <script>
-        // এই স্ক্রিপ্টটি নিশ্চিত করে যে বাটন ক্লিক করলে সঠিক ফাংশন কল হবে,
-        // এমনকি যদি app.js একটু দেরিতে লোড হয়।
-        
         document.addEventListener('click', function(e) {
-            // ক্লিক করা বাটন বা তার প্যারেন্ট খুঁজে বের করা
             const btn = e.target.closest('button, span, a');
             if (!btn) return;
 
@@ -122,9 +122,6 @@
 
             if (!action) return;
 
-            console.log("🖱️ Click detected:", action, role);
-
-            // ফাংশন কল করার অপেক্ষা করা (যদি app.js লোড না হয়ে থাকে)
             const execute = () => {
                 if (action === 'openModal' && role && window.openModal) {
                     window.openModal(role);
@@ -141,23 +138,15 @@
                 } else if (action === 'closeModal' && window.closeModal) {
                     window.closeModal();
                 } else {
-                    // যদি ফাংশন না পাওয়া যায়, ১০০মিলিসেকেন্ড পর আবার চেষ্টা করবে
-                    setTimeout(execute, 100);
+                    setTimeout(execute, 100); // Retry if function not loaded yet
                 }
             };
             execute();
         });
 
-        // মোডালের বাইরে ক্লিক করলে বন্ধ করার জন্য
         window.onclick = function(event) {
-            const modal = document.getElementById('loginModal');
-            if (event.target == modal) {
-                if(window.closeModal) window.closeModal();
-                else setTimeout(() => window.closeModal(), 100);
-            }
+            const modal = document.getElementById('loginModal');            if (event.target == modal && window.closeModal) window.closeModal();
         };
-
-        console.log("✅ Universal Click Listener Active");
     </script>
 </body>
 </html>
