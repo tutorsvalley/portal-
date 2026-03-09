@@ -30,6 +30,38 @@
                 const currentUrl = encodeURIComponent(window.location.href.split('?')[0]);
                 const redirectUrl = 'redirect.html?url=' + currentUrl + '&redirected=true';
                 window.location.replace(redirectUrl);
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- ✅ Immediate In-App Browser Redirect -->
+    <script>
+        (function() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isFacebook = /FBAN|FBAV/i.test(ua);
+            const isInstagram = /Instagram/i.test(ua);
+            const isWhatsApp = /WhatsApp/i.test(ua);
+            const isMessenger = /Messenger/i.test(ua);
+            const isInApp = isFacebook || isInstagram || isWhatsApp || isMessenger;
+            
+            if (isInApp) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('redirected')) return;
+                const currentUrl = encodeURIComponent(window.location.href.split('?')[0]);
+                const redirectUrl = 'redirect.html?url=' + currentUrl + '&redirected=true';
+                window.location.replace(redirectUrl);
                 return;
             }
         })();
@@ -41,12 +73,14 @@
         <div class="login-box">
             <h1>Tutors Valley</h1>
             <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+            
+            <!-- ✅ Added IDs for reliable binding -->
             <button class="btn btn-tutor" id="btnTutor">টিউটর লগইন</button>
             <button class="btn btn-guardian" id="btnGuardian">অভিভাবক লগইন</button>
             <button class="btn btn-guest" id="btnGuest">গেস্ট লগইন</button>
             <button class="btn btn-admin" id="btnAdmin" style="margin-top:20px; font-size:0.9em;">এডমিন লগইন</button>
-        </div>
-    </div>
+        </div>    </div>
+
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
@@ -84,7 +118,6 @@
         <section class="section">
             <h2 id="zoneTitle" class="section-title">আমাদের এলাকা সমূহ</h2>
             <div id="genderSelectionContainer" style="max-width:400px;margin:20px auto;"></div>
-            <!-- Zone Container -->
             <div id="zoneContainer" class="zone-container"></div>
         </section>
 
@@ -110,28 +143,54 @@
         </footer>
     </div>
 
+    <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- ✅ Button Binding Script -->
+    <!-- ✅ Button Binding Script (Fixes Click Issues) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("🔗 Binding buttons to functions...");
+
+            // Helper to safely attach event
             function bindClick(id, func) {
                 const el = document.getElementById(id);
-                if (el && typeof window[func] === 'function') { el.onclick = window[func]; }
-                else if (el) { el.onclick = func; }
+                if (el) {
+                    if (typeof func === 'function') {
+                        el.onclick = func;
+                        console.log(`✅ Bound ${id} directly`);
+                    } else if (typeof window[func] === 'function') {
+                        el.onclick = window[func];
+                        console.log(`✅ Bound ${id} to window.${func}`);
+                    } else {
+                        console.error(`❌ Function ${func} not found for ${id}`);
+                    }
+                } else {
+                    console.error(`❌ Element ${id} not found`);
+                }
             }
+
+            // Bind Login Buttons
             bindClick('btnTutor', function() { if(window.openModal) window.openModal('tutor'); });
             bindClick('btnGuardian', function() { if(window.openModal) window.openModal('guardian'); });
             bindClick('btnGuest', window.guestLogin);
             bindClick('btnAdmin', function() { if(window.openModal) window.openModal('admin'); });
+            
+            // Bind Modal Buttons
             bindClick('btnGoogleLogin', window.googleLogin);
-            bindClick('closeModalBtn', window.closeModal);
+            bindClick('closeModalBtn', window.closeModal);            
+            // Bind Other Actions
             bindClick('btnLogout', window.logout);
             bindClick('btnSubmitReview', window.submitReview);
+
+            // Close modal when clicking outside
             window.onclick = function(event) {
                 const modal = document.getElementById('loginModal');
-                if (event.target == modal && window.closeModal) window.closeModal();
+                if (event.target == modal && window.closeModal) {
+                    window.closeModal();
+                }
             };
+            
+            console.log("✅ All buttons bound successfully!");
         });
     </script>
 </body>
