@@ -437,7 +437,6 @@ function loadAllSettings() {
 function loadControlPanel() {
     const body = document.getElementById('controlBody');
     if (!body) return;
-    const canEdit = (currentUserRole === 'admin' || currentUserRole === 'tutor');
     body.innerHTML = '<div class="control-section"><h3>🔷 হেডার</h3>' +
         '<div class="control-group"><label>লোগো:</label><input type="file" id="logoInput" accept="image/*" onchange="updateLogo()"></div>' +
         '<div class="control-group"><label>ব্র্যান্ডিং:</label><input type="text" value="' + getText('branding') + '" oninput="updateText(\'branding\',this.value);saveSetting(\'header\',\'brandingText\',this.value)"></div>' +
