@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- ✅ Social Media Redirect -->
+    <!-- Social Media Redirect -->
     <script>
         (function() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -34,7 +34,7 @@
             <h1>Tutors Valley</h1>
             <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             
-            <!-- ✅ Buttons with Data Attributes -->
+            <!-- Buttons with Data Attributes -->
             <button class="btn btn-tutor" data-action="openModal" data-role="tutor">টিউটর লগইন</button>
             <button class="btn btn-guardian" data-action="openModal" data-role="guardian">অভিভাবক লগইন</button>
             <button class="btn btn-guest" data-action="guestLogin">গেস্ট লগইন</button>
@@ -53,8 +53,9 @@
 
     <!-- Home Page -->
     <div id="homePage" class="page">
-        <!-- Fixed WhatsApp Button (Floating) -->
-        <a href="#" id="floatingWhatsappBtn" class="floating-whatsapp" target="_blank" style="display:none;">
+        
+        <!-- ✅ FIXED FLOATING WHATSAPP BUTTON -->
+        <a href="#" id="floatingWhatsappBtn" class="floating-whatsapp" target="_blank" style="display:none;" title="যোগাযোগ করুন">
             <i class="fab fa-whatsapp"></i>
         </a>
 
@@ -95,8 +96,8 @@
             <div id="reviewList" class="review-list"></div>
         </section>
 
-        <section class="section ceo-section">
-            <div class="ceo-card">                <img id="ceoImg" src="" alt="CEO" class="ceo-img">
+        <section class="section ceo-section">            <div class="ceo-card">
+                <img id="ceoImg" src="" alt="CEO" class="ceo-img">
                 <h3 id="ceoName">CEO Name</h3>
                 <p id="ceoTitle" style="color:#0074D9;font-weight:bold;">Founder & CEO</p>
                 <p id="ceoDesc">CEO description here...</p>
@@ -111,7 +112,7 @@
     <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- ✅ Universal Click Listener (Fixes Login Buttons) -->
+    <!-- ✅ Universal Click Listener -->
     <script>
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('button, span, a');
@@ -144,8 +145,8 @@
             execute();
         });
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('loginModal');            if (event.target == modal && window.closeModal) window.closeModal();
+        window.onclick = function(event) {            const modal = document.getElementById('loginModal');
+            if (event.target == modal && window.closeModal) window.closeModal();
         };
     </script>
 </body>
