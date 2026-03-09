@@ -3,17 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>Tutors Valley - ঢাকার সেরা টিউটর খুঁজুন | Tutor & Guardian Platform</title>
+    <meta name="description" content="Tutors Valley - ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। Tutor এবং Guardian এর জন্য সেরা প্ল্যাটফর্ম। Zone এবং Area ভিত্তিক টিউটর খুঁজুন।">
+    <meta name="keywords" content="tutor, guardian, tuition, ঢাকা, টিউটর, টিউশন, শিক্ষক, ছাত্র, Tutors Valley">
+    <meta name="author" content="Tutors Valley">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tutorsvalley.github.io/">
+    <meta property="og:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
+    <meta property="og:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। Tutor এবং Guardian এর জন্য সেরা প্ল্যাটফর্ম।">
+    <meta property="og:image" content="https://tutorsvalley.github.io/logo.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://tutorsvalley.github.io/">
+    <meta property="twitter:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
+    <meta property="twitter:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর।">
+    <meta property="twitter:image" content="https://tutorsvalley.github.io/logo.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://tutorsvalley.github.io/">
+    
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Tutors Valley",
+        "description": "ঢাকার সেরা টিউটর প্ল্যাটফর্ম",
+        "url": "https://tutorsvalley.github.io/",
+        "logo": "https://tutorsvalley.github.io/logo.jpg",
+        "founder": {
+            "@type": "Person",
+            "name": "CEO"
+        },
+        "areaServed": {
+            "@type": "City",
+            "name": "Dhaka"
+        }
+    }
+    </script>
 </head>
 <body>
-    <!-- External Browser Warning (For FB/Insta/Messenger) -->
+    <!-- External Browser Warning (For FB/Insta/Messenger/WhatsApp) -->
     <div id="externalBrowserWarning" class="external-warning" style="display:none;">
         <div class="warning-content">
             <div class="warning-icon">⚠️</div>
             <h2>Unsupported Browser Detected</h2>
-            <p>It looks like you are opening this link inside Facebook, Instagram, or Messenger.</p>
+            <p>It looks like you are opening this link inside Facebook, Instagram, Messenger, or WhatsApp.</p>
             <p style="color: #ff9800; font-weight: bold;">Google Login does not work here.</p>
             <p>Please click the button below or select <b>"Open in System Browser"</b> from the menu.</p>
             <button class="open-browser-btn" onclick="forceOpenBrowser()">
@@ -102,7 +154,7 @@
             </div>
 
             <div class="header-right">
-                <a id="fbButton" class="fb-btn" href="#" target="_blank">
+                <a id="fbButton" class="fb-btn" href="#" target="_blank" rel="noopener noreferrer">
                     <span>📘</span> <span id="fbButtonText">Facebook</span>
                 </a>
                 <button class="logout-btn" onclick="logout()">
@@ -262,7 +314,7 @@
         <div class="join-container">
             <h2>Join Our WhatsApp Group</h2>
             <p>Click the button below to join</p>
-            <a id="whatsappLink" class="whatsapp-btn" href="#" target="_blank">
+            <a id="whatsappLink" class="whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer">
                 <span>💬</span> Join WhatsApp Group
             </a>
             <button onclick="goBack()">Go Back</button>
@@ -274,6 +326,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    
+    <!-- Main Script -->
     <script src="script.js"></script>
 </body>
 </html>
