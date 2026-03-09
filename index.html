@@ -6,26 +6,11 @@
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK 8.10.1 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
-    <!-- Social Media Redirect -->
-    <script>
-        (function() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            if (/FBAN|FBAV|Instagram|WhatsApp|Messenger/i.test(ua)) {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (!urlParams.get('redirected')) {
-                    const currentUrl = encodeURIComponent(window.location.href.split('?')[0]);
-                    window.location.replace('redirect.html?url=' + currentUrl + '&redirected=true');
-                }
-            }
-        })();
-    </script>
 </head>
 <body>
     <!-- Login Page -->
@@ -34,7 +19,6 @@
             <h1>Tutors Valley</h1>
             <p>ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             
-            <!-- ✅ Buttons with Direct IDs -->
             <button class="btn btn-tutor" id="tutorBtn">টিউটর লগইন</button>
             <button class="btn btn-guardian" id="guardianBtn">অভিভাবক লগইন</button>
             <button class="btn btn-guest" id="guestBtn">গেস্ট লগইন</button>
@@ -54,9 +38,8 @@
 
     <!-- Home Page -->
     <div id="homePage" class="page">
-        
         <!-- Floating WhatsApp Button -->
-        <a href="#" id="floatingWhatsappBtn" class="floating-whatsapp" target="_blank" style="display:none;" title="যোগাযোগ করুন">
+        <a href="#" id="floatingWhatsappBtn" class="floating-whatsapp" target="_blank" style="display:none;">
             <i class="fab fa-whatsapp"></i>
         </a>
 
@@ -68,6 +51,7 @@
             </div>
             <div id="controlBody" class="control-body"></div>
         </div>
+
         <header id="headerSection" class="header">
             <div class="header-content">
                 <div class="logo-section">
@@ -84,7 +68,6 @@
 
         <section class="section">
             <h2 id="zoneTitle" class="section-title">আমাদের এলাকা সমূহ</h2>
-            <div id="genderSelectionContainer" style="max-width:400px;margin:20px auto;"></div>
             <div id="zoneContainer" class="zone-container"></div>
         </section>
 
@@ -114,68 +97,38 @@
     <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- ✅ DIRECT BUTTON BINDING SCRIPT (FIXED) -->
+    <!-- Button Binding Script -->
     <script>
-        // Wait for everything to load including app.js
         window.addEventListener('load', function() {
-            console.log("🔗 Binding buttons directly...");
-
-            // Helper function to bind click events safely
-            function bindButton(id, action) {
+            console.log("🔗 Binding buttons...");
+            
+            function bind(id, fn) {
                 const btn = document.getElementById(id);
-                if (btn) {
-                    btn.onclick = function() {
-                        console.log("Clicked:", id);
-                        // Check if action is a string (function name) or a function itself
-                        if (typeof action === 'string') {
-                            if (typeof window[action] === 'function') {
-                                window[action]();
-                            } else {
-                                alert("Function " + action + " not found! Check app.js");
-                            }
-                        } else if (typeof action === 'function') {
-                            action();
-                        }
-                    };
-                    console.log("✅ Bound", id, "to", action);
-                } else {
-                    console.error("❌ Button", id, "not found in HTML");
+                if (btn && typeof window[fn] === 'function') {
+                    btn.onclick = window[fn];
+                    console.log("✅ Bound", id);
                 }
             }
-
-            // Bind Login Buttons
-            bindButton('tutorBtn', function() { if(window.openModal) window.openModal('tutor'); });
-            bindButton('guardianBtn', function() { if(window.openModal) window.openModal('guardian'); });
-            bindButton('guestBtn', 'guestLogin');
-            bindButton('adminBtn', function() { if(window.openModal) window.openModal('admin'); });
             
-            // Bind Modal Buttons
-            bindButton('googleLoginBtn', 'googleLogin');
-            bindButton('closeModal', 'closeModal');
+            bind('tutorBtn', function() { window.openModal('tutor'); });
+            bind('guardianBtn', function() { window.openModal('guardian'); });
+            bind('guestBtn', 'guestLogin');
+            bind('adminBtn', function() { window.openModal('admin'); });
+            bind('googleLoginBtn', 'googleLogin');
+            bind('closeModal', 'closeModal');
+            bind('logoutBtn', 'logout');
+            bind('submitReviewBtn', 'submitReview');
+            bind('closePanelBtn', 'toggleControl');
             
-            // Bind Other Actions
-            bindButton('logoutBtn', 'logout');
-            bindButton('submitReviewBtn', 'submitReview');
+            document.getElementById('adminIcon').onclick = function() { window.toggleControl(); };
             
-            // Bind Control Panel
-            const adminIcon = document.getElementById('adminIcon');
-            if(adminIcon) {
-                adminIcon.onclick = function() { if(window.toggleControl) window.toggleControl(); };
-            }
-            const closePanelBtn = document.getElementById('closePanelBtn');
-            if(closePanelBtn) {
-                closePanelBtn.onclick = function() { if(window.toggleControl) window.toggleControl(); };
-            }
-
-            // Close modal when clicking outside
             window.onclick = function(event) {
-                const modal = document.getElementById('loginModal');
-                if (event.target == modal && window.closeModal) {
+                if (event.target == document.getElementById('loginModal') && window.closeModal) {
                     window.closeModal();
                 }
             };
             
-            console.log("✅ All buttons bound successfully!");
+            console.log("✅ All buttons bound!");
         });
     </script>
 </body>
