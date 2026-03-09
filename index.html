@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- ✅ In-App Browser Detection & Redirect -->
+    <!-- ✅ Immediate In-App Browser Redirect -->
     <script>
         (function() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -20,16 +20,24 @@
             const isWhatsApp = /WhatsApp/i.test(ua);
             const isMessenger = /Messenger/i.test(ua);
             const isTwitter = /Twitter/i.test(ua);
+            const isTikTok = /TikTok/i.test(ua);
             
-            const isInApp = isFacebook || isInstagram || isWhatsApp || isMessenger || isTwitter;
+            const isInApp = isFacebook || isInstagram || isWhatsApp || isMessenger || isTwitter || isTikTok;
             
-            if (isInApp && !sessionStorage.getItem('browserRedirected')) {
-                sessionStorage.setItem('browserRedirected', 'true');
+            if (isInApp) {
+                // Prevent redirect loop
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('redirected')) return;
                 
-                const currentUrl = encodeURIComponent(window.location.href);
-                const redirectUrl = 'redirect.html?url=' + currentUrl;
+                // Get current URL
+                const currentUrl = encodeURIComponent(window.location.href.split('?')[0]);
                 
+                // Force redirect to external browser
+                const redirectUrl = 'redirect.html?url=' + currentUrl + '&redirected=true';
+                
+                // Immediate redirect
                 window.location.replace(redirectUrl);
+                return;
             }
         })();
     </script>
