@@ -1,8 +1,8 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FIXED GOOGLE LOGIN LOOP
-// ✅ Admin/Tutor/Guardian Login Fixed
+// 🔥 TUTORS VALLEY - MOBILE GOOGLE LOGIN FIXED
+// ✅ Mobile Redirect Login Working
+// ✅ PC Popup Login Working
 // ✅ Guest Login Working
-// ✅ WhatsApp Button Fixed
 // ============================================
 
 // Firebase Config
@@ -32,10 +32,10 @@ provider.setCustomParameters({ prompt: 'select_account' });
 
 let currentUser = null;
 let currentUserRole = null;
-let currentLoginRole = null; // This holds the role selected before login
+let currentLoginRole = null;
+let isRedirectProcessing = false; // Flag to prevent double processing
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// ... (Fonts and DefaultZones remain same) ...
 const fonts = {
     bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'Baloo Da 2', 'Mukta', 'Tiro Bangla', 'Kalam', 'Khand', 'Yantramanav', 'Amita', 'Akaya Telivigala'],
     english: ['Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Arial', 'Georgia', 'Verdana', 'Calibri', 'Times New Roman']
@@ -50,7 +50,7 @@ const defaultZones = [
     { id: 6, title: "আশেপাশের এলাকা", areas: ["নারায়ণগঞ্জ", "টঙ্গী", "কেরানীগঞ্জ"], maleLink: "", femaleLink: "", whatsappNumber: "" }
 ];
 
-// Loading Functions
+// Loading
 function showLoading(msg = "লোড হচ্ছে...") {
     hideLoading();
     const div = document.createElement('div');
@@ -60,7 +60,7 @@ function showLoading(msg = "লোড হচ্ছে...") {
     document.body.appendChild(div);
     void div.offsetWidth;
     div.style.opacity = '1';
-    div.autoHide = setTimeout(() => hideLoading(), 10000); // Increased timeout
+    div.autoHide = setTimeout(() => hideLoading(), 15000);
 }
 
 function hideLoading() {
@@ -105,55 +105,69 @@ window.guestLogin = function() {
     });
 };
 
-// DOM Loaded Event
+// DOM Loaded - CRITICAL FOR MOBILE LOGIN
 document.addEventListener('DOMContentLoaded', () => {
     console.log("📄 Page Loaded");
     showLoading("অ্যাপ লোড হচ্ছে...");
     
-    // 1. Handle Redirect Result (Crucial for Mobile Google Login)
+    // ✅ STEP 1: Check Redirect Result FIRST (Mobile Google Login)
     auth.getRedirectResult().then((result) => {
         if (result.user) {
-            console.log("✅ Redirect result received");
-            // Retrieve role from sessionStorage
+            console.log("✅ Redirect result received - User:", result.user.email);
+            isRedirectProcessing = true;
+            
+            // Get role from sessionStorage
             const savedRole = sessionStorage.getItem('loginRole');
+            console.log("🔑 Retrieved role from sessionStorage:", savedRole);
+            
             if (savedRole) {
                 currentLoginRole = savedRole;
-                sessionStorage.removeItem('loginRole'); // Clean up
-                console.log("🔑 Role retrieved:", currentLoginRole);
+                sessionStorage.removeItem('loginRole');
                 handleLoginSuccess(result.user);
             } else {
-                console.warn("⚠️ No role found in sessionStorage!");
-                // Fallback: try to get role from user doc if exists
-                loadUser(result.user.uid); 
+                console.warn("⚠️ No role in sessionStorage, loading from DB");
+                loadUser(result.user.uid);
             }
         }
     }).catch((error) => {
-        console.error("❌ Redirect error:", error);
-        hideLoading();
+        console.error("❌ Redirect error:", error.code, error.message);
+        // Don't hide loading here, let authStateChanged handle it
     });
 
-    // 2. Auth State Observer
+    // ✅ STEP 2: Auth State Observer
     auth.onAuthStateChanged((user) => {
+        console.log("🔄 Auth State Changed:", user ? user.email : 'No user');
+        
         if (user) {
             currentUser = user;
-            // Only proceed if we don't have a role yet AND we didn't just come from redirect
-            if (!currentUserRole) {
-                // Check if this is a fresh login or just state restore
-                // If we are already handling redirect result, this might fire twice, so be careful
-                // But loadUser is safe because it checks Firestore
-                loadUser(user.uid);
+            
+            // If we just processed a redirect, skip this to avoid double processing
+            if (isRedirectProcessing) {
+                console.log("⏭️ Skipping - redirect already processed");
+                return;
             }
+            
+            // If we already have a role, skip loading
+            if (currentUserRole) {
+                console.log("⏭️ Skipping - role already set");
+                hideLoading();
+                return;
+            }
+            
+            // Load user data from Firestore
+            loadUser(user.uid);
         } else {
             // User signed out
-            if(currentUserRole) {
-                hideLoading();
-                showPage('loginPage');
-            }
+            console.log("❌ No user - showing login page");
+            currentUserRole = null;
+            currentLoginRole = null;
+            hideLoading();
+            showPage('loginPage');
         }
     });
 });
 
-// Handle Login Success (Called after Popup or Redirect)
+// Handle Login Success (After Popup or Redirect)
 function handleLoginSuccess(user) {
     console.log("🎉 Login success:", user.email, "Role:", currentLoginRole);
     
@@ -175,9 +189,9 @@ function handleLoginSuccess(user) {
     }
 
     currentUser = user;
-    currentUserRole = currentLoginRole; // Set the global role
+    currentUserRole = currentLoginRole;
 
-    // Save/Update user data in Firestore
+    // Save user data in Firestore
     db.collection('users').doc(user.uid).set({
         email: user.email,
         displayName: user.displayName,
@@ -188,7 +202,7 @@ function handleLoginSuccess(user) {
         console.log("✅ User data saved");
         closeModal();
         hideLoading();
-        showHome(); // Go to home page
+        showHome();
     }).catch((error) => {
         console.error("❌ Save error:", error);
         hideLoading();
@@ -198,12 +212,13 @@ function handleLoginSuccess(user) {
 
 // Load User Data from Firestore
 function loadUser(uid) {
+    console.log("📥 Loading user data:", uid);
     db.collection('users').doc(uid).get().then((doc) => {
         hideLoading();
         if (doc.exists) {
             const data = doc.data();
             currentUserRole = data.role;
-            currentLoginRole = data.role; // Sync both
+            currentLoginRole = data.role;
             console.log("✅ Role loaded from DB:", currentUserRole);
             showHome();
         } else {
@@ -233,7 +248,8 @@ window.showPage = function(id) {
 
 // Open Modal
 window.openModal = function(role) {
-    currentLoginRole = role; // Set the role immediately when button clicked
+    currentLoginRole = role;
+    console.log("🎯 Modal opened for role:", role);
     const titles = { 'tutor': 'টিউটর লগইন', 'guardian': 'অভিভাবক লগইন', 'admin': 'এডমিন লগইন' };
     const modalTitle = document.getElementById('modalTitle');
     const loginModal = document.getElementById('loginModal');
@@ -248,7 +264,7 @@ window.closeModal = function() {
     if (loginModal) loginModal.style.display = 'none';
 };
 
-// Google Login
+// Google Login - MOBILE vs DESKTOP
 window.googleLogin = function() {
     if (!currentLoginRole) {
         alert("দয়া করে একটি রোল সিলেক্ট করুন");
@@ -260,38 +276,39 @@ window.googleLogin = function() {
     currentUser = null;
     currentUserRole = null;
 
-    // Save role to sessionStorage BEFORE signing in (Critical for Redirect)
+    // ✅ CRITICAL: Save role to sessionStorage BEFORE signing in
     sessionStorage.setItem('loginRole', currentLoginRole);
     console.log("💾 Role saved to sessionStorage:", currentLoginRole);
 
     auth.signOut().then(() => {
         const isMobile = /mobile|android|iphone|ipad/i.test(navigator.userAgent);
+        console.log("📱 Device:", isMobile ? 'Mobile' : 'Desktop');
+        
         if (isMobile) {
-            console.log("📱 Mobile detected: Using Redirect");
+            console.log("🔄 Using signInWithRedirect for mobile");
             return auth.signInWithRedirect(provider);
         } else {
-            console.log("💻 Desktop detected: Using Popup");
+            console.log("🪟 Using signInWithPopup for desktop");
             return auth.signInWithPopup(provider);
         }
     }).then((result) => {
-        // For Popup, result is available immediately
+        // For Desktop Popup
         if (result && result.user) {
-            // Retrieve role again just in case
+            console.log("✅ Popup login successful");
             currentLoginRole = sessionStorage.getItem('loginRole') || currentLoginRole;
             handleLoginSuccess(result.user);
         }
     }).catch((error) => {
-        // For Popup errors
+        // For Desktop Popup errors
         if (!/mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
-            console.error("❌ Popup error:", error);
+            console.error("❌ Popup error:", error.code, error.message);
             hideLoading();
-            // Don't show alert for simple close
             if (error.code !== 'auth/popup-closed-by-user') {
                 alert("লগইন ব্যর্থ: " + error.message);
             }
             showPage('loginPage');
         }
-        // For Mobile Redirect, errors are caught in getRedirectResult
+        // Mobile Redirect errors are caught in getRedirectResult
     });
 };
 
@@ -321,6 +338,7 @@ window.logout = function() {
     currentUserRole = null;
     currentLoginRole = null;
     sessionStorage.removeItem('loginRole');
+    isRedirectProcessing = false;
     
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) adminIcon.style.display = 'none';
@@ -344,9 +362,7 @@ window.toggleControl = function() {
     if (p.style.display === 'block') setTimeout(loadControlPanel, 100);
 };
 
-// ... (Rest of the helper functions like generateFontOptions, rgbToHex, etc. remain SAME as before) ...
-// I will include the critical ones below to ensure no missing code, but you can keep your existing helper functions.
-
+// Helper Functions
 function generateFontOptions(current) {
     let h = '<option value="">ডিফল্ট</option>';
     fonts.bangla.forEach(f => h += `<option value="${f}" ${f===current?'selected':''}>${f} (বাংলা)</option>`);
@@ -638,4 +654,4 @@ window.submitReview = function() {
     });
 };
 
-console.log("✅ App.js Loaded Successfully - All functions exposed to window");
+console.log("✅ App.js Loaded - Mobile Google Login Fixed");
