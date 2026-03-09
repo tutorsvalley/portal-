@@ -2,163 +2,91 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Hind Siliguri', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .redirect-box {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        /* সবকিছু লুকিয়ে রাখা হয়েছে যাতে কোনো পেজ দেখা না যায় */
+        body { margin: 0; padding: 0; background: #fff; overflow: hidden; }
+        .hidden { display: none !important; }
+        
+        /* শুধুমাত্র যদি অটোমেটিক না খোলে তখন এই মেসেজ দেখাবে */
+        #fallback-msg {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 9999;
             text-align: center;
-            max-width: 400px;
-            width: 100%;
+            font-family: sans-serif;
+            padding-top: 20%;
         }
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #eee;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        h1 { color: #333; font-size: 1.5em; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 20px; font-size: 0.95em; }
-        .btn-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .primary-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        #fallback-msg h2 { color: #333; margin-bottom: 10px; }
+        #fallback-msg p { color: #666; margin-bottom: 20px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #007bff;
             color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
         }
-        .secondary-btn {
-            background: #f0f0f0;
-            color: #333;
-            padding: 12px 30px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 0.9em;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .info-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 8px;
-            text-align: left;
-            font-size: 0.85em;
-        }
-        .info-box strong { color: #856404; display: block; margin-bottom: 5px; }
-        .info-box ol { margin: 10px 0 0 20px; color: #856404; }
-        .info-box li { margin: 5px 0; }
     </style>
 </head>
 <body>
-    <div class="redirect-box">
-        <div class="spinner"></div>
-        <h1>ওপেন হচ্ছে...</h1>
-        <p>আপনার ব্রাউজারে ওপেন করা হচ্ছে</p>
-        <div class="btn-container">
-            <button onclick="openInBrowser()" class="primary-btn">🌐 ব্রাউজারে ওপেন করুন</button>
-            <a href="#" id="directLink" class="secondary-btn">লিংক কপি করুন</a>
-        </div>
-        <div class="info-box">
-            <strong>⚠️ যদি auto open না হয়:</strong>
-            <ol>
-                <li>উপরের "ব্রাউজারে ওপেন করুন" বাটনে ক্লিক করুন</li>
-                <li>অথবা মেনু (⋮ বা ⊕) থেকে "Open in Browser" সিলেক্ট করুন</li>
-            </ol>
-        </div>
+
+    <!-- এই মেসেজটি শুধু তখনই দেখাবে যদি অটোমেটিক ওপেন না হয় -->
+    <div id="fallback-msg">
+        <h2>ব্রাউজারে যাচ্ছে না?</h2>
+        <p>দয়া করে নিচের বাটনে ক্লিক করুন অথবা মেনু থেকে 'Open in Browser' চাপুন।</p>
+        <a href="#" id="manual-link" class="btn">ব্রাউজারে খুলুন</a>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let targetUrl = urlParams.get('url');
-        
+        // URL প্যারামিটার থেকে টার্গেট লিংক নেওয়া
+        const params = new URLSearchParams(window.location.search);
+        let targetUrl = params.get('url');
+
         if (!targetUrl) {
-            targetUrl = 'https://tutorsvalley.github.io/portal-/';
+            targetUrl = "https://tutorsvalley.github.io/portal-/";
         } else {
             targetUrl = decodeURIComponent(targetUrl);
         }
-        
-        document.getElementById('directLink').href = targetUrl;
-        document.getElementById('directLink').setAttribute('target', '_blank');
-        
-        // ✅ IMMEDIATE REDIRECT - NO DELAY
-        function openInBrowser() {
-            // Method 1: window.open with _blank
-            const newWindow = window.open(targetUrl, '_blank');
-            
-            // Method 2: location.href (fallback)
-            setTimeout(function() {
-                window.location.href = targetUrl;
-            }, 50);
-            
-            // Method 3: location.replace (stronger)
-            setTimeout(function() {
-                window.location.replace(targetUrl);
-            }, 100);
-            
-            // Method 4: Create and click link
-            setTimeout(function() {
-                const link = document.createElement('a');
-                link.href = targetUrl;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }, 150);
-            
-            // Method 5: Top location (break out of iframe)
-            setTimeout(function() {
-                if (window.top !== window.self) {
-                    window.top.location.href = targetUrl;
+
+        // ম্যানুয়াল লিংক সেট করা
+        document.getElementById('manual-link').href = targetUrl;
+
+        // ব্রাউজার ওপেন করার ফাংশন
+        function forceOpenBrowser() {
+            // Android এর জন্য Intent ব্যবহার করে Chrome ওপেন করার চেষ্টা (সবচেয়ে শক্তিশালী পদ্ধতি)
+            if (/android/i.test(navigator.userAgent)) {
+                try {
+                    const cleanUrl = targetUrl.replace(/^https?:\/\//, '');
+                    // এটি সরাসরি Chrome অ্যাপটি ওপেন করে দেয়
+                    window.location.href = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+                } catch(e) {
+                    window.location.href = targetUrl;
                 }
-            }, 200);
+            } 
+            // iPhone বা অন্য ডিভাইসের জন্য
+            else {
+                window.location.href = targetUrl;
+            }
         }
-        
-        // ✅ AUTO REDIRECT IMMEDIATELY (no delay)
-        window.addEventListener('load', function() {
-            // Try immediately
-            openInBrowser();
-        });
-        
-        // Also try on DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', function() {
-            openInBrowser();
-        });
-        
-        // Try one more time after a tiny delay
+
+        // পেজ লোড হওয়ার সাথে সাথে (০ মিলিসেকেন্ডে) চেষ্টা করবে
+        window.onload = function() {
+            forceOpenBrowser();
+        };
+
+        // নিরাপত্তার জন্য আবারও চেষ্টা করবে (১০০ মিলিসেকেন্ড পর)
         setTimeout(function() {
-            openInBrowser();
-        }, 50);
-        
-        console.log('🔄 Redirecting to:', targetUrl);
+            forceOpenBrowser();
+            // যদি এখনো ওপেন না হয়, তাহলে মেসেজ দেখাবে
+            document.getElementById('fallback-msg').style.display = 'block';
+        }, 100);
+
     </script>
 </body>
 </html>
