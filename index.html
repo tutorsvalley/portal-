@@ -6,55 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <!-- SEO Meta Tags -->
-    <title>Tutors Valley - ঢাকার সেরা টিউটর খুঁজুন | Tutor & Guardian Platform</title>
-    <meta name="description" content="Tutors Valley - ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। Tutor এবং Guardian এর জন্য সেরা প্ল্যাটফর্ম। Zone এবং Area ভিত্তিক টিউটর খুঁজুন।">
-    <meta name="keywords" content="tutor, guardian, tuition, ঢাকা, টিউটর, টিউশন, শিক্ষক, ছাত্র, Tutors Valley">
-    <meta name="author" content="Tutors Valley">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tutorsvalley.github.io/">
-    <meta property="og:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
-    <meta property="og:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর। Tutor এবং Guardian এর জন্য সেরা প্ল্যাটফর্ম।">
-    <meta property="og:image" content="https://tutorsvalley.github.io/logo.jpg">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://tutorsvalley.github.io/">
-    <meta property="twitter:title" content="Tutors Valley - ঢাকার সেরা টিউটর">
-    <meta property="twitter:description" content="ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর।">
-    <meta property="twitter:image" content="https://tutorsvalley.github.io/logo.jpg">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="logo.jpg">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://tutorsvalley.github.io/">
+    <title>Tutors Valley - ঢাকার সেরা টিউটর খুঁজুন</title>
+    <meta name="description" content="Tutors Valley - ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর">
+    <meta name="keywords" content="tutor, guardian, tuition, ঢাকা, টিউটর, টিউশন">
+    <meta name="theme-color" content="#001f3f">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "EducationalOrganization",
-        "name": "Tutors Valley",
-        "description": "ঢাকার সেরা টিউটর প্ল্যাটফর্ম",
-        "url": "https://tutorsvalley.github.io/",
-        "logo": "https://tutorsvalley.github.io/logo.jpg",
-        "founder": {
-            "@type": "Person",
-            "name": "CEO"
-        },
-        "areaServed": {
-            "@type": "City",
-            "name": "Dhaka"
-        }
-    }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -66,21 +24,55 @@
         :root {
             --primary-color: #001f3f;
             --secondary-color: #0074D9;
-            --accent-color: #FF851B;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --card-bg: #f8f9fa;
+            --accent-color: #FFD700;
+            --bg-light: #f8f9fa;
+            --text-dark: #1a1a2e;
+            --text-light: #ffffff;
+            --card-bg: #ffffff;
+            --tag-bg: #e8e8e8;
         }
 
         body {
             font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
-            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 50%, #ffffff 100%);
+            background: var(--bg-light);
             min-height: 100vh;
-            color: var(--text-color);
-            overflow-x: hidden;
+            color: var(--text-dark);
         }
 
-        /* External Browser Warning Styles */
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10000;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* External Browser Warning */
         .external-warning {
             position: fixed;
             top: 0;
@@ -102,91 +94,28 @@
         }
 
         .warning-content {
-            max-width: 500px;
+            max-width: 400px;
             background: #2d2d2d;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+            border-radius: 15px;
         }
 
         .warning-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        .warning-content h2 {
-            font-size: 28px;
+            font-size: 50px;
             margin-bottom: 15px;
-            color: #ff5252;
-        }
-
-        .warning-content p {
-            font-size: 16px;
-            margin-bottom: 15px;
-            line-height: 1.6;
-            color: #ccc;
         }
 
         .open-browser-btn {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 10px;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 20px 0;
+            margin: 15px 0;
             width: 100%;
             font-weight: bold;
-            transition: transform 0.2s;
-        }
-
-        .open-browser-btn:active {
-            transform: scale(0.98);
-        }
-
-        .open-browser-btn:hover {
-            background: #45a049;
-        }
-
-        .manual-instruction {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-            font-size: 14px;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 10000;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--secondary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         /* Pages */
@@ -200,89 +129,93 @@
         }
 
         /* Login Page */
-        .login-container {
+        .login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .login-header {
+        .login-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+            border: 3px solid var(--primary-color);
+        }
+
+        .login-title {
             text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-
-        .login-header h1 {
-            font-size: 48px;
+            font-size: 28px;
+            color: var(--primary-color);
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .login-header p {
-            font-size: 20px;
-            opacity: 0.9;
+        .login-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
         }
 
         .login-buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 400px;
+            gap: 12px;
         }
 
         .login-btn {
-            padding: 15px 30px;
+            padding: 14px 20px;
             border: none;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+            font-family: inherit;
         }
 
         .login-btn:active {
-            transform: translateY(-1px);
+            transform: scale(0.98);
         }
 
         .tutor-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
 
         .guardian-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
         }
 
         .guest-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
         }
 
         .admin-trigger {
-            margin-top: 30px;
+            margin-top: 25px;
+            text-align: center;
             cursor: pointer;
-            opacity: 0.3;
-            transition: opacity 0.3s;
+            opacity: 0.4;
             font-size: 24px;
-        }
-
-        .admin-trigger:hover {
-            opacity: 1;
         }
 
         /* Modal */
@@ -295,36 +228,30 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal.active {
-            display: flex;
             justify-content: center;
             align-items: center;
         }
 
+        .modal.active {
+            display: flex;
+        }
+
         .modal-content {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 15px;
             width: 90%;
-            max-width: 400px;
+            max-width: 350px;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .close {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
-            font-weight: bold;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
             cursor: pointer;
-            color: #aaa;
-        }
-
-        .close:hover {
-            color: #000;
+            color: #999;
         }
 
         .google-btn {
@@ -338,18 +265,24 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            font-size: 16px;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-
-        .google-btn:hover {
-            background: #f5f5f5;
+            font-size: 15px;
+            margin-top: 15px;
+            font-family: inherit;
         }
 
         .google-btn img {
             width: 20px;
             height: 20px;
+        }
+
+        #adminEmail, #adminPassword {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-top: 10px;
+            font-family: inherit;
         }
 
         .admin-login-btn {
@@ -359,236 +292,170 @@
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             margin-top: 15px;
+            font-family: inherit;
         }
 
-        .admin-login-btn:hover {
-            background: #00152b;
-        }
-
-        #adminEmail, #adminPassword {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        #adminEmail:focus, #adminPassword:focus {
-            border-color: var(--secondary-color);
-            outline: none;
-        }
-
-        /* Main Header */
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-left {
-            width: 100px;
+        /* Header Section */
+        .header-section {
+            background: var(--primary-color);
+            padding: 30px 20px 40px;
+            text-align: center;
+            position: relative;
         }
 
         .gear-icon {
-            font-size: 30px;
-            cursor: pointer;
-            transition: transform 0.5s;
-        }
-
-        .gear-icon:hover {
-            transform: rotate(90deg);
-        }
-
-        .header-center {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-        }
-
-        .banner-section {
-            text-align: center;
-            padding: 20px;
-            background: var(--primary-color);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            min-width: 300px;
-        }
-
-        .watermark {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 80%;
-            max-height: 80%;
-            opacity: 0.3;
-            pointer-events: none;
+            top: 20px;
+            left: 20px;
+            font-size: 26px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
         }
 
-        .logo {
-            position: relative;
-            z-index: 2;
-            max-width: 150px;
-            margin-bottom: 10px;
+        .header-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: block;
+            border: 4px solid white;
+            background: white;
+            padding: 5px;
         }
 
-        .branding {
-            color: white;
+        .header-title {
+            color: var(--text-light);
             font-size: 32px;
             font-weight: 700;
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 2;
+            margin-bottom: 8px;
         }
 
-        .motto {
-            color: #fff;
+        .header-motto {
+            color: var(--accent-color);
             font-size: 18px;
-            opacity: 0.9;
-            position: relative;
-            z-index: 2;
+            font-weight: 500;
+            margin-bottom: 25px;
         }
 
-        .header-right {
-            width: 100px;
+        .header-buttons {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
             gap: 10px;
+            align-items: center;
         }
 
-        .fb-btn {
-            padding: 8px 15px;
+        .fb-page-btn {
             background: #1877f2;
             color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
             text-decoration: none;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-
-        .fb-btn:hover {
-            background: #166fe5;
+            font-size: 15px;
+            display: inline-block;
         }
 
         .logout-btn {
-            padding: 8px 15px;
             background: #dc3545;
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        /* Tutor Controls - Gender Selection */
-        .tutor-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            padding: 20px;
-            background: #e3f2fd;
-            margin: 20px 0;
-            border-bottom: 2px solid #90caf9;
-        }
-
-        .tutor-controls label {
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 18px;
-        }
-
-        .tutor-controls select {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: 2px solid var(--secondary-color);
+            padding: 10px 25px;
             border-radius: 8px;
+            border: none;
+            font-size: 15px;
             cursor: pointer;
-            background: white;
-            min-width: 200px;
+            font-family: inherit;
         }
 
-        .tutor-controls select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        /* Zones Section */
-        .zones-section {
-            padding: 40px 20px;
-            max-width: 1200px;
+        /* Main Content */
+        .main-content {
+            padding: 30px 15px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
         .section-title {
             text-align: center;
-            font-size: 32px;
-            margin-bottom: 30px;
+            font-size: 26px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .info-banner {
+            background: #fff3cd;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: #856404;
+        }
+
+        .info-banner span {
+            font-size: 20px;
+        }
+
+        /* Tutor Controls */
+        .tutor-controls {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .tutor-controls label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
             color: var(--primary-color);
         }
 
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        .tutor-controls select {
+            padding: 10px 20px;
+            font-size: 15px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+            font-family: inherit;
         }
 
+        /* Zone Cards */
         .zone-card {
             background: var(--card-bg);
             border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .zone-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
         }
 
         .zone-title {
-            font-size: 24px;
+            font-size: 20px;
             color: var(--primary-color);
+            font-weight: 700;
             margin-bottom: 15px;
-            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
         }
 
         .area-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 15px;
         }
 
         .area-tag {
-            background: var(--secondary-color);
-            color: white;
-            padding: 6px 12px;
+            background: var(--tag-bg);
+            color: var(--text-dark);
+            padding: 8px 15px;
             border-radius: 20px;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .group-btn {
@@ -598,22 +465,11 @@
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.3s;
-            margin-top: 10px;
-        }
-
-        .group-btn:hover {
-            background: #20ba5a;
-        }
-
-        .group-btn:active {
-            transform: scale(0.98);
+            margin-top: 15px;
+            font-family: inherit;
+            font-weight: 600;
         }
 
         .group-btn.hidden {
@@ -622,32 +478,21 @@
 
         /* Reviews Section */
         .reviews-section {
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
             background: white;
-        }
-
-        .review-form {
-            max-width: 600px;
-            margin: 0 auto 30px;
+            padding: 30px 15px;
+            margin-top: 30px;
         }
 
         .review-form textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-family: inherit;
             resize: vertical;
             min-height: 100px;
             margin-bottom: 10px;
-        }
-
-        .review-form textarea:focus {
-            border-color: var(--secondary-color);
-            outline: none;
         }
 
         .review-form button {
@@ -656,75 +501,64 @@
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .review-form button:hover {
-            background: #0056b3;
+            font-family: inherit;
         }
 
         .reviews-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            margin-top: 20px;
         }
 
         .review-card {
-            background: var(--card-bg);
-            padding: 20px;
+            background: var(--bg-light);
+            padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
         }
 
-        .review-card .reviewer {
+        .reviewer {
             font-weight: 600;
             color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-
-        .review-card .review-text {
-            color: #555;
-            line-height: 1.6;
+            margin-bottom: 8px;
         }
 
         /* CEO Section */
         .ceo-section {
-            padding: 40px 20px;
-            max-width: 800px;
-            margin: 0 auto;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px 20px;
             text-align: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            margin-top: 30px;
             border-radius: 15px;
         }
 
         .ceo-img {
-            max-width: 150px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            margin-bottom: 20px;
-            border: 4px solid var(--secondary-color);
+            margin-bottom: 15px;
+            border: 3px solid var(--secondary-color);
         }
 
         .ceo-info h3 {
-            font-size: 28px;
+            font-size: 22px;
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .ceo-info p {
-            font-size: 16px;
-            color: #555;
-            line-height: 1.8;
+            font-size: 15px;
+            color: #666;
         }
 
         /* Footer */
         .footer {
-            padding: 30px;
+            padding: 25px;
             text-align: center;
             background: var(--primary-color);
             color: white;
             margin-top: 40px;
+            font-size: 14px;
         }
 
         /* Control Panel */
@@ -733,7 +567,8 @@
             position: fixed;
             top: 0;
             right: 0;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 100vh;
             background: white;
             box-shadow: -5px 0 20px rgba(0,0,0,0.2);
@@ -759,21 +594,22 @@
         }
 
         .control-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding-bottom: 20px;
             border-bottom: 2px solid #eee;
         }
 
         .control-section h4 {
-            font-size: 18px;
+            font-size: 17px;
             color: var(--primary-color);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .control-section label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 8px 0 5px;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .control-section input[type="text"],
@@ -785,19 +621,12 @@
             border: 2px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-        }
-
-        .control-section input[type="text"]:focus,
-        .control-section input[type="email"]:focus,
-        .control-section input[type="password"]:focus,
-        .control-section select:focus {
-            border-color: var(--secondary-color);
-            outline: none;
+            font-family: inherit;
         }
 
         .control-section input[type="color"] {
-            width: 60px;
-            height: 40px;
+            width: 50px;
+            height: 35px;
             border: none;
             cursor: pointer;
         }
@@ -809,178 +638,77 @@
 
         .control-section input[type="file"] {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 2px dashed #ddd;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 13px;
         }
 
         .save-btn {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-
-        .save-btn:hover {
-            background: #0056b3;
-        }
-
-        /* Join Page */
-        .join-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .join-container h2 {
-            font-size: 36px;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-
-        .join-container p {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 30px;
-        }
-
-        .whatsapp-btn {
-            padding: 15px 40px;
-            background: #25D366;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            transition: background 0.3s;
-        }
-
-        .whatsapp-btn:hover {
-            background: #20ba5a;
-        }
-
-        .join-container button {
-            padding: 12px 30px;
-            background: var(--primary-color);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
-        }
-
-        .join-container button:hover {
-            background: #00152b;
+            margin-top: 15px;
+            font-family: inherit;
+            font-weight: 600;
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .main-header {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px;
-            }
-
-            .header-left, .header-right {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .header-right {
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .login-header h1 {
-                font-size: 36px;
-            }
-
-            .control-panel {
-                width: 100%;
-            }
-
-            .cards-container {
-                grid-template-columns: 1fr;
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 26px;
             }
             
-            .tutor-controls {
-                flex-direction: column;
+            .header-motto {
+                font-size: 16px;
             }
             
-            .warning-content {
-                padding: 20px;
-            }
-            
-            .warning-content h2 {
+            .section-title {
                 font-size: 22px;
             }
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            .login-btn, .logout-btn, .control-panel, .gear-icon {
-                display: none;
+            
+            .zone-title {
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- External Browser Warning (For FB/Insta/Messenger/WhatsApp) -->
-    <div id="externalBrowserWarning" class="external-warning" style="display:none;">
+    <!-- External Browser Warning -->
+    <div id="externalBrowserWarning" class="external-warning">
         <div class="warning-content">
             <div class="warning-icon">⚠️</div>
-            <h2>Unsupported Browser Detected</h2>
-            <p>It looks like you are opening this link inside Facebook, Instagram, Messenger, or WhatsApp.</p>
-            <p style="color: #ff9800; font-weight: bold;">Google Login does not work here.</p>
-            <p>Please click the button below or select <b>"Open in System Browser"</b> from the menu.</p>
+            <h2>ব্রাউজার সমর্থিত নয়</h2>
+            <p>মনে হচ্ছে আপনি Facebook, Instagram বা Messenger এর ভেতরে লিংকটি খুলেছেন।</p>
+            <p style="color: #ff9800; font-weight: bold;">এখানে Google Login কাজ করে না।</p>
             <button class="open-browser-btn" onclick="forceOpenBrowser()">
-                🚀 Open in Chrome / Safari
+                🚀 Chrome / Safari তে খুলুন
             </button>
-            <div class="manual-instruction">
-                <p>Or tap the <b>⋮</b> or <b>⋯</b> menu at the top corner and select "Open in Browser".</p>
-            </div>
         </div>
     </div>
 
     <!-- Loading Animation -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
-        <p>Loading...</p>
+        <p style="margin-top: 15px; color: #666;">Loading...</p>
     </div>
 
     <!-- Login Page -->
-    <div id="loginPage" class="page active">
-        <div class="login-container">
-            <div class="login-header">
-                <h1 id="loginTitle">Tutors Valley</h1>
-                <p id="loginSubtitle">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
-            </div>
+    <div id="loginPage" class="page login-page active">
+        <div class="login-card">
+            <img src="https://via.placeholder.com/100" alt="Logo" class="login-logo" id="loginLogo">
+            <h1 class="login-title">Tutors Valley</h1>
+            <p class="login-subtitle">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             
             <div class="login-buttons">
                 <button class="login-btn tutor-btn" onclick="showLoginModal('tutor')">
-                    <span>👨‍🏫</span> Tutor Login
+                    <span>👨‍</span> Tutor Login
                 </button>
                 <button class="login-btn guardian-btn" onclick="showLoginModal('guardian')">
                     <span>👪</span> Guardian Login
@@ -991,7 +719,7 @@
             </div>
 
             <div class="admin-trigger" onclick="showAdminLogin()">
-                <span>⚙️</span>
+                ⚙️ Admin Login
             </div>
         </div>
     </div>
@@ -1000,12 +728,12 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Login</h2>
+            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">Login</h2>
             <button class="google-btn" onclick="googleLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                 Sign in with Google
             </button>
-            <p id="loginStatus"></p>
+            <p id="loginStatus" style="color: red; margin-top: 10px; text-align: center;"></p>
         </div>
     </div>
 
@@ -1013,83 +741,74 @@
     <div id="adminModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeAdminModal()">&times;</span>
-            <h2>Admin Login</h2>
+            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">Admin Login</h2>
             <input type="email" id="adminEmail" placeholder="Admin Email">
             <input type="password" id="adminPassword" placeholder="Password">
             <button class="admin-login-btn" onclick="adminLogin()">Login</button>
-            <p id="adminStatus"></p>
+            <p id="adminStatus" style="color: red; margin-top: 10px; text-align: center;"></p>
         </div>
     </div>
 
     <!-- Main Homepage -->
     <div id="homePage" class="page">
-        <!-- Header with Gear Icon -->
-        <header class="main-header">
-            <div class="header-left">
-                <div id="gearIcon" class="gear-icon" onclick="openControlPanel()" style="display:none;">
-                    ⚙️
-                </div>
-            </div>
+        <!-- Header Section -->
+        <header class="header-section">
+            <div class="gear-icon" id="gearIcon" onclick="openControlPanel()" style="display:none;">⚙️</div>
+            <img src="https://via.placeholder.com/120" alt="Logo" class="header-logo" id="logoImage">
+            <h1 class="header-title" id="brandingText">Tutors Valley</h1>
+            <p class="header-motto" id="mottoText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             
-            <div class="header-center">
-                <div class="banner-section" id="bannerSection">
-                    <img id="watermarkImage" class="watermark" src="" alt="" style="display:none;">
-                    <img id="logoImage" class="logo" src="" alt="Logo" style="display:none;">
-                    <h1 id="brandingText" class="branding">Tutors Valley</h1>
-                    <p id="mottoText" class="motto">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <a id="fbButton" class="fb-btn" href="#" target="_blank" rel="noopener noreferrer">
-                    <span>📘</span> <span id="fbButtonText">Facebook</span>
-                </a>
-                <button class="logout-btn" onclick="logout()">
-                    <span>🚪</span> Logout
-                </button>
+            <div class="header-buttons">
+                <a id="fbButton" class="fb-page-btn" href="#" target="_blank">fb page</a>
+                <button class="logout-btn" onclick="logout()">লগআউট</button>
             </div>
         </header>
 
-        <!-- Gender Select for Tutor ONLY -->
-        <div id="tutorControls" class="tutor-controls" style="display:none;">
-            <label for="genderSelect">Select Your Gender to View Groups:</label>
-            <select id="genderSelect" onchange="handleGenderSelect()">
-                <option value="">-- Select Gender --</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-            </select>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tutor Controls -->
+            <div id="tutorControls" class="tutor-controls" style="display:none;">
+                <label for="genderSelect">আপনার লিঙ্গ নির্বাচন করুন:</label>
+                <select id="genderSelect" onchange="handleGenderSelect()">
+                    <option value="">-- নির্বাচন করুন --</option>
+                    <option value="male">পুরুষ</option>
+                    <option value="female">মহিলা</option>
+                </select>
+            </div>
+
+            <!-- Section Title -->
+            <h2 class="section-title" id="zoneTitle">আমাদের এলাকা সমূহ</h2>
+
+            <!-- Info Banner -->
+            <div class="info-banner">
+                <span>📢</span>
+                <span>আপনার এরিয়া অনুযায়ী গ্রুপে জয়েন করবেন</span>
+            </div>
+
+            <!-- Zone Cards -->
+            <div id="cardsContainer"></div>
+
+            <!-- Reviews Section -->
+            <div class="reviews-section">
+                <h2 class="section-title" id="reviewsTitle">রিভিউ</h2>
+                <div id="reviewForm" class="review-form" style="display:none;">
+                    <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..."></textarea>
+                    <button onclick="submitReview()">জমা দিন</button>
+                </div>
+                <div id="reviewsContainer" class="reviews-container"></div>
+            </div>
+
+            <!-- CEO Section -->
+            <div class="ceo-section">
+                <img src="https://via.placeholder.com/100" alt="CEO" class="ceo-img" id="ceoImage">
+                <div class="ceo-info">
+                    <h3 id="ceoName">CEO Name</h3>
+                    <p id="ceoDescription">CEO Description</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Zone/Area Cards Section -->
-        <section class="zones-section">
-            <h2 id="zoneTitle" class="section-title">Our Zones & Areas</h2>
-            <div class="cards-container" id="cardsContainer">
-                <!-- Cards will be dynamically generated -->
-            </div>
-        </section>
-
-        <!-- Reviews Section -->
-        <section class="reviews-section">
-            <h2 id="reviewsTitle" class="section-title">Reviews</h2>
-            <div id="reviewForm" class="review-form" style="display:none;">
-                <textarea id="reviewText" placeholder="Write your review..."></textarea>
-                <button onclick="submitReview()">Submit Review</button>
-            </div>
-            <div id="reviewsContainer" class="reviews-container">
-                <!-- Reviews will be displayed here -->
-            </div>
-        </section>
-
-        <!-- CEO Info Section -->
-        <section class="ceo-section">
-            <img id="ceoImage" class="ceo-img" src="" alt="CEO" style="display:none;">
-            <div id="ceoInfo" class="ceo-info">
-                <h3 id="ceoName">CEO Name</h3>
-                <p id="ceoDescription">CEO Description</p>
-            </div>
-        </section>
-
-        <!-- Copyright -->
+        <!-- Footer -->
         <footer class="footer">
             <p id="copyrightText">© 2026 Tutors Valley. All rights reserved.</p>
         </footer>
@@ -1099,29 +818,19 @@
     <div id="controlPanel" class="control-panel">
         <div class="control-header">
             <h3>Control Panel</h3>
-            <span class="close" onclick="closeControlPanel()">&times;</span>
+            <span class="close" onclick="closeControlPanel()" style="color: white;">&times;</span>
         </div>
         <div class="control-content">
-            <!-- Banner Settings -->
             <div class="control-section">
                 <h4>Banner Settings</h4>
                 <label>Background Color:</label>
                 <input type="color" id="bannerColor" value="#001f3f" onchange="updateBannerColor()">
-                
-                <label>Watermark Image:</label>
-                <input type="file" id="watermarkUpload" accept="image/jpeg" onchange="uploadWatermark()">
-                
-                <label>Watermark Opacity:</label>
-                <input type="range" id="watermarkOpacity" min="0" max="100" value="30" onchange="updateWatermarkOpacity()">
-                
                 <label>Logo Image:</label>
-                <input type="file" id="logoUpload" accept="image/jpeg" onchange="uploadLogo()">
-                
+                <input type="file" id="logoUpload" accept="image/*" onchange="uploadLogo()">
                 <label>Logo Size:</label>
-                <input type="range" id="logoSize" min="50" max="300" value="150" onchange="updateLogoSize()">
+                <input type="range" id="logoSize" min="80" max="200" value="120" onchange="updateLogoSize()">
             </div>
 
-            <!-- Text Settings -->
             <div class="control-section">
                 <h4>Text Settings</h4>
                 <label>Select Section:</label>
@@ -1129,82 +838,28 @@
                     <option value="brandingText">Branding</option>
                     <option value="mottoText">Motto</option>
                     <option value="zoneTitle">Zone Title</option>
-                    <option value="reviewsTitle">Reviews Title</option>
                     <option value="ceoName">CEO Name</option>
                     <option value="ceoDescription">CEO Description</option>
-                    <option value="copyrightText">Copyright</option>
-                    <option value="fbButtonText">FB Button Text</option>
                 </select>
-                
                 <label>Text Content:</label>
                 <input type="text" id="textContent" onchange="updateTextContent()">
-                
-                <label>Font Family:</label>
-                <select id="fontFamily" onchange="updateTextFont()">
-                    <option value="'Hind Siliguri', sans-serif">Hind Siliguri (বাংলা)</option>
-                    <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali (বাংলা)</option>
-                    <option value="'Roboto', sans-serif">Roboto (English)</option>
-                    <option value="'Open Sans', sans-serif">Open Sans (English)</option>
-                    <option value="'Lato', sans-serif">Lato (English)</option>
-                    <option value="'Poppins', sans-serif">Poppins (English)</option>
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="Verdana, sans-serif">Verdana</option>
-                    <option value="Georgia, serif">Georgia</option>
-                    <option value="Times New Roman, serif">Times New Roman</option>
-                    <option value="Courier New, monospace">Courier New</option>
-                    <option value="Impact, sans-serif">Impact</option>
-                    <option value="Comic Sans MS, cursive">Comic Sans MS</option>
-                    <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
-                    <option value="Palatino Linotype, serif">Palatino Linotype</option>
-                    <option value="Garamond, serif">Garamond</option>
-                    <option value="Bookman Old Style, serif">Bookman Old Style</option>
-                    <option value="Avant Garde, sans-serif">Avant Garde</option>
-                    <option value="Optima, sans-serif">Optima</option>
-                    <option value="Futura, sans-serif">Futura</option>
-                </select>
-                
                 <label>Font Size:</label>
-                <input type="range" id="fontSize" min="12" max="72" value="24" onchange="updateTextSize()">
-                
+                <input type="range" id="fontSize" min="14" max="40" value="24" onchange="updateTextSize()">
                 <label>Font Color:</label>
                 <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()">
             </div>
 
-            <!-- Card Settings -->
-            <div class="control-section">
-                <h4>Zone Cards Settings</h4>
-                <button onclick="addNewCard()">Add New Card</button>
-                <div id="cardSettings"></div>
-            </div>
-
-            <!-- CEO Image -->
             <div class="control-section">
                 <h4>CEO Image</h4>
-                <input type="file" id="ceoUpload" accept="image/jpeg" onchange="uploadCeoImage()">
-                <label>CEO Image Size:</label>
-                <input type="range" id="ceoSize" min="50" max="300" value="150" onchange="updateCeoSize()">
+                <input type="file" id="ceoUpload" accept="image/*" onchange="uploadCeoImage()">
             </div>
 
-            <!-- Facebook Link -->
             <div class="control-section">
                 <h4>Facebook Link</h4>
                 <input type="text" id="fbLink" placeholder="Facebook Page URL" onchange="updateFbLink()">
             </div>
 
-            <!-- Save Button -->
             <button class="save-btn" onclick="saveAllSettings()">Save All Settings</button>
-        </div>
-    </div>
-
-    <!-- Join Page -->
-    <div id="joinPage" class="page">
-        <div class="join-container">
-            <h2>Join Our WhatsApp Group</h2>
-            <p>Click the button below to join</p>
-            <a id="whatsappLink" class="whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer">
-                <span>💬</span> Join WhatsApp Group
-            </a>
-            <button onclick="goBack()">Go Back</button>
         </div>
     </div>
 
@@ -1214,7 +869,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     
-    <!-- All JavaScript Code Inline (No External File Needed) -->
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -1226,34 +880,51 @@
             appId: "1:377815974425:web:3d1254d14640f43516a088"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
-
-        // Google Provider
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // Global Variables
         let currentUser = null;
         let currentUserType = null;
         let isAdmin = false;
         const ADMIN_EMAIL = "kabirhasanat7@gmail.com";
 
+        // Zone Cards Data
+        let zoneCards = [
+            { id: 1, zone: "জোন-১", areas: ["খিলগাঁও", "মালিবাগ", "মগবাজার", "শান্তিনগর", "মতিঝিল", "শাহজাহানপুর", "বাসাবো", "বনশ্রী", "কাররাইল", "মুগদা", "মাঠ", "মানিকনগর"] },
+            { id: 2, zone: "জোন-২", areas: ["মিরপুর ১", "মিরপুর ২", "মিরপুর ১০", "মিরপুর ১১"] },
+            { id: 3, zone: "জোন-৩", areas: ["উত্তরা সেক্টর ১", "উত্তরা সেক্টর ৪", "উত্তরা সেক্টর ৭"] },
+            { id: 4, zone: "জোন-৪", areas: ["ধানমন্ডি ৩", "ধানমন্ডি ৮", "ধানমন্ডি ২৭"] },
+            { id: 5, zone: "জোন-৫", areas: ["গুলশান ১", "গুলশান ২", "বনানী"] },
+            { id: 6, zone: "জোন-৬", areas: ["মোহাম্মদপুর ১", "মোহাম্মদপুর ২", "আদাবর"] }
+        ];
+
+        let appSettings = {
+            bannerColor: "#001f3f",
+            logoSize: 120,
+            fbLink: "https://facebook.com/tutorsvalley",
+            texts: {
+                brandingText: { content: "Tutors Valley", size: 32, color: "#ffffff" },
+                mottoText: { content: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর", size: 18, color: "#FFD700" },
+                zoneTitle: { content: "আমাদের এলাকা সমূহ", size: 26, color: "#001f3f" },
+                reviewsTitle: { content: "রিভিউ", size: 26, color: "#001f3f" },
+                ceoName: { content: "CEO Name", size: 22, color: "#001f3f" },
+                ceoDescription: { content: "CEO Description", size: 15, color: "#666666" }
+            }
+        };
+
         // External Browser Detection
         function checkEmbeddedBrowser() {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
             const warningDiv = document.getElementById('externalBrowserWarning');
-            
             const isFacebook = /FBAN|FBAV/i.test(userAgent);
             const isInstagram = /Instagram/i.test(userAgent);
             const isMessenger = /Messenger/i.test(userAgent);
-            const isTwitter = /Twitter/i.test(userAgent);
-            const isLinkedIn = /LinkedIn/i.test(userAgent);
             const isWhatsApp = /WhatsApp/i.test(userAgent);
             
-            if (isFacebook || isInstagram || isMessenger || isTwitter || isLinkedIn || isWhatsApp) {
+            if (isFacebook || isInstagram || isMessenger || isWhatsApp) {
                 if (warningDiv) {
                     warningDiv.style.display = 'flex';
                     warningDiv.classList.add('active');
@@ -1263,7 +934,6 @@
             } else {
                 if (warningDiv) {
                     warningDiv.style.display = 'none';
-                    warningDiv.classList.remove('active');
                 }
                 document.body.style.overflow = 'auto';
                 return false;
@@ -1271,200 +941,83 @@
         }
 
         function forceOpenBrowser() {
-            const currentUrl = window.location.href;
-            window.open(currentUrl, '_blank');
-            
-            setTimeout(() => {
-                alert("If it didn't open automatically, please tap the menu (⋮ or ) at the top corner and select 'Open in Browser' or 'Open in Chrome'.");
-            }, 1000);
+            window.open(window.location.href, '_blank');
         }
 
-        // Run detection immediately
         document.addEventListener('DOMContentLoaded', function() {
             checkEmbeddedBrowser();
             console.log('Tutors Valley initialized');
         });
 
-        // Default Zone Cards Data
-        let zoneCards = [
-            {
-                id: 1,
-                zone: "মিরপুর",
-                areas: ["মিরপুর ১", "মিরপুর ২", "মিরপুর ১০", "মিরপুর ১১"],
-                maleGroup: "https://chat.whatsapp.com/yourmalelink1",
-                femaleGroup: "https://chat.whatsapp.com/yourfemalelink1"
-            },
-            {
-                id: 2,
-                zone: "উত্তরা",
-                areas: ["উত্তরা সেক্টর ১", "উত্তরা সেক্টর ৪", "উত্তরা সেক্টর ৭"],
-                maleGroup: "https://chat.whatsapp.com/yourmalelink2",
-                femaleGroup: "https://chat.whatsapp.com/yourfemalelink2"
-            },
-            {
-                id: 3,
-                zone: "ধানমন্ডি",
-                areas: ["ধানমন্ডি ৩", "ধানমন্ডি ৮", "ধানমন্ডি ২৭"],
-                maleGroup: "https://chat.whatsapp.com/yourmalelink3",
-                femaleGroup: "https://chat.whatsapp.com/yourfemalelink3"
-            },
-            {
-                id: 4,
-                zone: "গুলশান",
-                areas: ["গুলশান ১", "গুলশান ২", "বনানী"],
-                maleGroup: "https://chat.whatsapp.com/yourmalelink4",
-                femaleGroup: "https://chat.whatsapp.com/yourfemalelink4"
-            },
-            {
-                id: 5,
-                zone: "মোহাম্মদপুর",
-                areas: ["মোহাম্মদপুর ১", "মোহাম্মদপুর ২", "আদাবর"],
-                maleGroup: "https://chat.whatsapp.com/yourmalelink5",
-                femaleGroup: "https://chat.whatsapp.com/yourfemalelink5"
-            },
-            {
-                id: 6,
-                zone: "বনশ্রী",
-                areas: ["বনশ্রী এ", "বনশ্রী বি", "রামপুরা"],
-                maleGroup: "https://chat.whatsapp.com/yourmalelink6",
-                femaleGroup: "https://chat.whatsapp.com/yourfemalelink6"
-            }
-        ];
-
-        // Default Settings
-        let appSettings = {
-            bannerColor: "#001f3f",
-            watermarkOpacity: 30,
-            logoSize: 150,
-            ceoSize: 150,
-            fbLink: "https://facebook.com/tutorsvalley",
-            texts: {
-                brandingText: { content: "Tutors Valley", font: "'Hind Siliguri', sans-serif", size: 32, color: "#ffffff" },
-                mottoText: { content: "ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর", font: "'Hind Siliguri', sans-serif", size: 18, color: "#ffffff" },
-                zoneTitle: { content: "Our Zones & Areas", font: "'Hind Siliguri', sans-serif", size: 32, color: "#001f3f" },
-                reviewsTitle: { content: "Reviews", font: "'Hind Siliguri', sans-serif", size: 32, color: "#001f3f" },
-                ceoName: { content: "CEO Name", font: "'Hind Siliguri', sans-serif", size: 28, color: "#001f3f" },
-                ceoDescription: { content: "CEO Description", font: "'Hind Siliguri', sans-serif", size: 16, color: "#555555" },
-                copyrightText: { content: "© 2026 Tutors Valley. All rights reserved.", font: "'Hind Siliguri', sans-serif", size: 14, color: "#ffffff" },
-                fbButtonText: { content: "Facebook", font: "'Hind Siliguri', sans-serif", size: 14, color: "#ffffff" }
-            }
-        };
-
-        // Loading Animation
         function showLoading() {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.classList.add('active');
-            }
-            setTimeout(() => {
-                hideLoading();
-            }, 2000);
+            document.getElementById('loadingOverlay').classList.add('active');
+            setTimeout(() => hideLoading(), 2000);
         }
 
         function hideLoading() {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.classList.remove('active');
-            }
+            document.getElementById('loadingOverlay').classList.remove('active');
         }
 
-        // Page Navigation
         function showPage(pageId) {
             showLoading();
             setTimeout(() => {
-                const pages = document.querySelectorAll('.page');
-                pages.forEach(function(page) {
-                    page.classList.remove('active');
-                });
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                }
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
                 hideLoading();
             }, 2000);
         }
 
-        // Login Modal
         function showLoginModal(type) {
             if (checkEmbeddedBrowser()) {
-                alert("Please open this link in Chrome or Safari browser to login properly.");
+                alert("দয়া করে Chrome বা Safari ব্রাউজারে খুলুন।");
                 return;
             }
-            
             currentUserType = type;
-            const modal = document.getElementById('loginModal');
-            const modalTitle = document.getElementById('modalTitle');
-            
-            if (modal && modalTitle) {
-                modal.classList.add('active');
-                modalTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Login';
-            }
+            document.getElementById('loginModal').classList.add('active');
         }
 
         function closeModal() {
-            const modal = document.getElementById('loginModal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
+            document.getElementById('loginModal').classList.remove('active');
         }
 
         function closeAdminModal() {
-            const modal = document.getElementById('adminModal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
+            document.getElementById('adminModal').classList.remove('active');
         }
 
-        // Admin Login Trigger
         function showAdminLogin() {
             if (checkEmbeddedBrowser()) {
-                alert("Please open this link in Chrome or Safari browser to login properly.");
+                alert("দয়া করে Chrome বা Safari ব্রাউজারে খুলুন।");
                 return;
             }
-            
-            const modal = document.getElementById('adminModal');
-            if (modal) {
-                modal.classList.add('active');
-            }
+            document.getElementById('adminModal').classList.add('active');
         }
 
-        // Google Login
         function googleLogin() {
             showLoading();
-            
             auth.signInWithPopup(provider)
-                .then(function(result) {
-                    const user = result.user;
-                    currentUser = user;
-                    
+                .then((result) => {
+                    currentUser = result.user;
                     if (currentUserType === 'tutor') {
-                        saveUserData(user, 'tutor');
+                        saveUserData(currentUser, 'tutor');
                         showPage('homePage');
                         setupHomePage('tutor');
                     } else if (currentUserType === 'guardian') {
-                        saveUserData(user, 'guardian');
+                        saveUserData(currentUser, 'guardian');
                         showPage('homePage');
                         setupHomePage('guardian');
                     }
-                    
                     closeModal();
                     hideLoading();
                 })
-                .catch(function(error) {
-                    const loginStatus = document.getElementById('loginStatus');
-                    if (error.code === 'auth/popup-closed-by-user' || error.message.includes('popup')) {
-                        alert("Login popup blocked. Please open this link in Chrome or Safari browser.");
-                    } else if (loginStatus) {
-                        loginStatus.textContent = error.message;
-                    }
+                .catch((error) => {
+                    document.getElementById('loginStatus').textContent = error.message;
                     hideLoading();
                 });
         }
 
-        // Guest Login
         function guestLogin() {
             showLoading();
-            setTimeout(function() {
+            setTimeout(() => {
                 currentUserType = 'guest';
                 showPage('homePage');
                 setupHomePage('guest');
@@ -1472,20 +1025,14 @@
             }, 2000);
         }
 
-        // Admin Login
         function adminLogin() {
-            const adminEmail = document.getElementById('adminEmail');
-            const adminPassword = document.getElementById('adminPassword');
-            const adminStatus = document.getElementById('adminStatus');
-            
-            const email = adminEmail ? adminEmail.value : '';
-            const password = adminPassword ? adminPassword.value : '';
-            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
             showLoading();
             
             if (email === ADMIN_EMAIL) {
                 auth.signInWithEmailAndPassword(email, password)
-                    .then(function(userCredential) {
+                    .then((userCredential) => {
                         currentUser = userCredential.user;
                         isAdmin = true;
                         closeAdminModal();
@@ -1493,21 +1040,16 @@
                         setupHomePage('admin');
                         hideLoading();
                     })
-                    .catch(function(error) {
-                        if (adminStatus) {
-                            adminStatus.textContent = error.message;
-                        }
+                    .catch((error) => {
+                        document.getElementById('adminStatus').textContent = error.message;
                         hideLoading();
                     });
             } else {
-                if (adminStatus) {
-                    adminStatus.textContent = "Invalid admin email";
-                }
+                document.getElementById('adminStatus').textContent = "Invalid admin email";
                 hideLoading();
             }
         }
 
-        // Save User Data
         function saveUserData(user, type) {
             db.collection('users').doc(user.uid).set({
                 email: user.email,
@@ -1518,39 +1060,21 @@
             }, { merge: true });
         }
 
-        // Setup Home Page
         function setupHomePage(userType) {
             currentUserType = userType;
-            
-            const gearIcon = document.getElementById('gearIcon');
-            if (gearIcon) {
-                gearIcon.style.display = isAdmin ? 'block' : 'none';
-            }
+            document.getElementById('gearIcon').style.display = isAdmin ? 'block' : 'none';
             
             const tutorControls = document.getElementById('tutorControls');
-            if (tutorControls) {
-                if (userType === 'tutor') {
-                    tutorControls.style.display = 'flex';
-                    const genderSelect = document.getElementById('genderSelect');
-                    if (genderSelect) {
-                        genderSelect.value = "";
-                    }
-                    const groupBtns = document.querySelectorAll('.group-btn');
-                    groupBtns.forEach(function(btn) {
-                        btn.classList.add('hidden');
-                    });
-                } else {
-                    tutorControls.style.display = 'none';
-                    const groupBtns = document.querySelectorAll('.group-btn');
-                    groupBtns.forEach(function(btn) {
-                        btn.classList.remove('hidden');
-                    });
-                }
-            }
-            
             const reviewForm = document.getElementById('reviewForm');
-            if (reviewForm) {
-                reviewForm.style.display = (userType === 'tutor' || userType === 'guardian') ? 'block' : 'none';
+            
+            if (userType === 'tutor') {
+                tutorControls.style.display = 'block';
+                reviewForm.style.display = 'block';
+                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('hidden'));
+            } else {
+                tutorControls.style.display = 'none';
+                reviewForm.style.display = (userType === 'guardian') ? 'block' : 'none';
+                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('hidden'));
             }
             
             loadSettings();
@@ -1558,549 +1082,262 @@
             loadReviews();
         }
 
-        // Handle Gender Select
         function handleGenderSelect() {
-            const genderSelect = document.getElementById('genderSelect');
-            const gender = genderSelect ? genderSelect.value : '';
-            
+            const gender = document.getElementById('genderSelect').value;
             showLoading();
             
-            setTimeout(function() {
-                const groupBtns = document.querySelectorAll('.group-btn');
-                groupBtns.forEach(function(btn) {
-                    btn.classList.add('hidden');
-                });
-                
+            setTimeout(() => {
+                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('hidden'));
                 if (gender === 'male') {
-                    const maleBtns = document.querySelectorAll('.male-group');
-                    maleBtns.forEach(function(btn) {
-                        btn.classList.remove('hidden');
-                    });
+                    document.querySelectorAll('.male-group').forEach(btn => btn.classList.remove('hidden'));
                 } else if (gender === 'female') {
-                    const femaleBtns = document.querySelectorAll('.female-group');
-                    femaleBtns.forEach(function(btn) {
-                        btn.classList.remove('hidden');
-                    });
+                    document.querySelectorAll('.female-group').forEach(btn => btn.classList.remove('hidden'));
                 }
-                
                 hideLoading();
             }, 2000);
         }
 
-        // Render Zone Cards
         function renderZoneCards() {
             const container = document.getElementById('cardsContainer');
             if (!container) return;
-            
             container.innerHTML = '';
             
-            zoneCards.forEach(function(card) {
+            zoneCards.forEach(card => {
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'zone-card';
-                cardDiv.id = 'card-' + card.id;
                 
                 let areaTags = '';
-                card.areas.forEach(function(area) {
-                    areaTags += '<span class="area-tag">' + area + '</span>';
+                card.areas.forEach(area => {
+                    areaTags += `<span class="area-tag">${area}</span>`;
                 });
                 
-                cardDiv.innerHTML = 
-                    '<h3 class="zone-title" data-cardid="' + card.id + '" data-field="zone">' + card.zone + '</h3>' +
-                    '<div class="area-tags" data-cardid="' + card.id + '" data-field="areas">' + areaTags + '</div>' +
-                    '<button class="group-btn male-group hidden" onclick="joinGroup(\'' + card.maleGroup + '\')">💬 Join our whatsapp group (Male)</button>' +
-                    '<button class="group-btn female-group hidden" onclick="joinGroup(\'' + card.femaleGroup + '\')">💬 Join our whatsapp group (Female)</button>';
-                
+                cardDiv.innerHTML = `
+                    <h3 class="zone-title">${card.zone}</h3>
+                    <div class="area-tags">${areaTags}</div>
+                    <button class="group-btn male-group hidden" onclick="joinGroup('https://chat.whatsapp.com/male')">💬 Join Male Group</button>
+                    <button class="group-btn female-group hidden" onclick="joinGroup('https://chat.whatsapp.com/female')">💬 Join Female Group</button>
+                `;
                 container.appendChild(cardDiv);
             });
         }
 
-        // Join Group
         function joinGroup(link) {
             showLoading();
-            setTimeout(function() {
+            setTimeout(() => {
                 window.open(link, '_blank');
                 hideLoading();
             }, 2000);
         }
 
-        // Submit Review
         function submitReview() {
-            const reviewText = document.getElementById('reviewText');
-            const text = reviewText ? reviewText.value : '';
-            
+            const text = document.getElementById('reviewText').value;
             if (!text.trim()) {
-                alert('Please write a review');
+                alert('রিভিউ লিখুন');
                 return;
             }
-            
             showLoading();
-            
             db.collection('reviews').add({
                 text: text,
                 userId: currentUser ? currentUser.uid : 'guest',
                 userName: currentUser ? currentUser.displayName : 'Guest',
                 userType: currentUserType,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(function() {
-                if (reviewText) {
-                    reviewText.value = '';
-                }
+            }).then(() => {
+                document.getElementById('reviewText').value = '';
                 loadReviews();
                 hideLoading();
-            }).catch(function(error) {
+            }).catch((error) => {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
-        // Load Reviews
         function loadReviews() {
             const container = document.getElementById('reviewsContainer');
             if (!container) return;
-            
             db.collection('reviews').orderBy('createdAt', 'desc').limit(20)
-                .onSnapshot(function(snapshot) {
+                .onSnapshot((snapshot) => {
                     container.innerHTML = '';
-                    
-                    snapshot.forEach(function(doc) {
+                    snapshot.forEach((doc) => {
                         const review = doc.data();
                         const reviewDiv = document.createElement('div');
                         reviewDiv.className = 'review-card';
-                        reviewDiv.innerHTML = 
-                            '<div class="reviewer">' + (review.userName || 'Anonymous') + ' (' + (review.userType || 'guest') + ')</div>' +
-                            '<div class="review-text">' + (review.text || '') + '</div>';
+                        reviewDiv.innerHTML = `
+                            <div class="reviewer">${review.userName || 'Anonymous'} (${review.userType || 'guest'})</div>
+                            <div class="review-text">${review.text || ''}</div>
+                        `;
                         container.appendChild(reviewDiv);
                     });
                 });
         }
 
-        // Control Panel
         function openControlPanel() {
             if (!isAdmin) return;
-            const controlPanel = document.getElementById('controlPanel');
-            if (controlPanel) {
-                controlPanel.classList.add('active');
-            }
-            loadControlSettings();
+            document.getElementById('controlPanel').classList.add('active');
         }
 
         function closeControlPanel() {
-            const controlPanel = document.getElementById('controlPanel');
-            if (controlPanel) {
-                controlPanel.classList.remove('active');
-            }
+            document.getElementById('controlPanel').classList.remove('active');
         }
 
-        // Load Control Settings
-        function loadControlSettings() {
-            const bannerColor = document.getElementById('bannerColor');
-            const watermarkOpacity = document.getElementById('watermarkOpacity');
-            const logoSize = document.getElementById('logoSize');
-            const ceoSize = document.getElementById('ceoSize');
-            const fbLink = document.getElementById('fbLink');
-            
-            if (bannerColor) bannerColor.value = appSettings.bannerColor;
-            if (watermarkOpacity) watermarkOpacity.value = appSettings.watermarkOpacity;
-            if (logoSize) logoSize.value = appSettings.logoSize;
-            if (ceoSize) ceoSize.value = appSettings.ceoSize;
-            if (fbLink) fbLink.value = appSettings.fbLink;
-        }
-
-        // Update Banner Color
         function updateBannerColor() {
-            const bannerColor = document.getElementById('bannerColor');
-            const bannerSection = document.getElementById('bannerSection');
-            
-            if (bannerColor && bannerSection) {
-                const color = bannerColor.value;
-                bannerSection.style.background = color;
-                appSettings.bannerColor = color;
-            }
+            const color = document.getElementById('bannerColor').value;
+            document.querySelector('.header-section').style.background = color;
+            appSettings.bannerColor = color;
         }
 
-        // Upload Watermark
-        function uploadWatermark() {
-            const watermarkUpload = document.getElementById('watermarkUpload');
-            const file = watermarkUpload ? watermarkUpload.files[0] : null;
-            
-            if (!file) return;
-            
-            showLoading();
-            
-            const storageRef = storage.ref('watermarks/' + Date.now() + '.jpg');
-            storageRef.put(file).then(function(snapshot) {
-                snapshot.ref.getDownloadURL().then(function(url) {
-                    const watermarkImage = document.getElementById('watermarkImage');
-                    if (watermarkImage) {
-                        watermarkImage.src = url;
-                        watermarkImage.style.display = 'block';
-                    }
-                    appSettings.watermarkUrl = url;
-                    hideLoading();
-                });
-            }).catch(function(error) {
-                alert('Error: ' + error.message);
-                hideLoading();
-            });
-        }
-
-        // Update Watermark Opacity
-        function updateWatermarkOpacity() {
-            const watermarkOpacity = document.getElementById('watermarkOpacity');
-            const watermarkImage = document.getElementById('watermarkImage');
-            
-            if (watermarkOpacity && watermarkImage) {
-                const opacity = watermarkOpacity.value;
-                watermarkImage.style.opacity = opacity / 100;
-                appSettings.watermarkOpacity = opacity;
-            }
-        }
-
-        // Upload Logo
         function uploadLogo() {
-            const logoUpload = document.getElementById('logoUpload');
-            const file = logoUpload ? logoUpload.files[0] : null;
-            
+            const file = document.getElementById('logoUpload').files[0];
             if (!file) return;
-            
             showLoading();
-            
             const storageRef = storage.ref('logos/' + Date.now() + '.jpg');
-            storageRef.put(file).then(function(snapshot) {
-                snapshot.ref.getDownloadURL().then(function(url) {
-                    const logoImage = document.getElementById('logoImage');
-                    if (logoImage) {
-                        logoImage.src = url;
-                        logoImage.style.display = 'block';
-                    }
+            storageRef.put(file).then((snapshot) => {
+                snapshot.ref.getDownloadURL().then((url) => {
+                    document.getElementById('logoImage').src = url;
                     appSettings.logoUrl = url;
                     hideLoading();
                 });
-            }).catch(function(error) {
+            }).catch((error) => {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
-        // Update Logo Size
         function updateLogoSize() {
-            const logoSize = document.getElementById('logoSize');
-            const logoImage = document.getElementById('logoImage');
-            
-            if (logoSize && logoImage) {
-                const size = logoSize.value;
-                logoImage.style.maxWidth = size + 'px';
-                appSettings.logoSize = size;
-            }
+            const size = document.getElementById('logoSize').value;
+            document.getElementById('logoImage').style.width = size + 'px';
+            document.getElementById('logoImage').style.height = size + 'px';
+            appSettings.logoSize = size;
         }
 
-        // Upload CEO Image
         function uploadCeoImage() {
-            const ceoUpload = document.getElementById('ceoUpload');
-            const file = ceoUpload ? ceoUpload.files[0] : null;
-            
+            const file = document.getElementById('ceoUpload').files[0];
             if (!file) return;
-            
             showLoading();
-            
             const storageRef = storage.ref('ceo/' + Date.now() + '.jpg');
-            storageRef.put(file).then(function(snapshot) {
-                snapshot.ref.getDownloadURL().then(function(url) {
-                    const ceoImage = document.getElementById('ceoImage');
-                    if (ceoImage) {
-                        ceoImage.src = url;
-                        ceoImage.style.display = 'block';
-                    }
+            storageRef.put(file).then((snapshot) => {
+                snapshot.ref.getDownloadURL().then((url) => {
+                    document.getElementById('ceoImage').src = url;
                     appSettings.ceoUrl = url;
                     hideLoading();
                 });
-            }).catch(function(error) {
+            }).catch((error) => {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
-        // Update CEO Size
-        function updateCeoSize() {
-            const ceoSize = document.getElementById('ceoSize');
-            const ceoImage = document.getElementById('ceoImage');
-            
-            if (ceoSize && ceoImage) {
-                const size = ceoSize.value;
-                ceoImage.style.maxWidth = size + 'px';
-                appSettings.ceoSize = size;
-            }
-        }
-
-        // Load Text Settings
         function loadTextSettings() {
-            const textSection = document.getElementById('textSection');
-            const section = textSection ? textSection.value : 'brandingText';
+            const section = document.getElementById('textSection').value;
             const settings = appSettings.texts[section];
-            
-            const textContent = document.getElementById('textContent');
-            const fontFamily = document.getElementById('fontFamily');
-            const fontSize = document.getElementById('fontSize');
-            const fontColor = document.getElementById('fontColor');
-            
-            if (textContent && settings) textContent.value = settings.content;
-            if (fontFamily && settings) fontFamily.value = settings.font;
-            if (fontSize && settings) fontSize.value = settings.size;
-            if (fontColor && settings) fontColor.value = settings.color;
+            document.getElementById('textContent').value = settings.content;
+            document.getElementById('fontSize').value = settings.size;
+            document.getElementById('fontColor').value = settings.color;
         }
 
-        // Update Text Content
         function updateTextContent() {
-            const textSection = document.getElementById('textSection');
-            const textContent = document.getElementById('textContent');
-            
-            if (textSection && textContent) {
-                const section = textSection.value;
-                const content = textContent.value;
-                const element = document.getElementById(section);
-                
-                if (element) {
-                    element.textContent = content;
-                }
-                appSettings.texts[section].content = content;
-            }
+            const section = document.getElementById('textSection').value;
+            const content = document.getElementById('textContent').value;
+            document.getElementById(section).textContent = content;
+            appSettings.texts[section].content = content;
         }
 
-        // Update Text Font
-        function updateTextFont() {
-            const textSection = document.getElementById('textSection');
-            const fontFamily = document.getElementById('fontFamily');
-            
-            if (textSection && fontFamily) {
-                const section = textSection.value;
-                const font = fontFamily.value;
-                const element = document.getElementById(section);
-                
-                if (element) {
-                    element.style.fontFamily = font;
-                }
-                appSettings.texts[section].font = font;
-            }
-        }
-
-        // Update Text Size
         function updateTextSize() {
-            const textSection = document.getElementById('textSection');
-            const fontSize = document.getElementById('fontSize');
-            
-            if (textSection && fontSize) {
-                const section = textSection.value;
-                const size = fontSize.value;
-                const element = document.getElementById(section);
-                
-                if (element) {
-                    element.style.fontSize = size + 'px';
-                }
-                appSettings.texts[section].size = size;
-            }
+            const section = document.getElementById('textSection').value;
+            const size = document.getElementById('fontSize').value;
+            document.getElementById(section).style.fontSize = size + 'px';
+            appSettings.texts[section].size = size;
         }
 
-        // Update Text Color
         function updateTextColor() {
-            const textSection = document.getElementById('textSection');
-            const fontColor = document.getElementById('fontColor');
-            
-            if (textSection && fontColor) {
-                const section = textSection.value;
-                const color = fontColor.value;
-                const element = document.getElementById(section);
-                
-                if (element) {
-                    element.style.color = color;
-                }
-                appSettings.texts[section].color = color;
-            }
+            const section = document.getElementById('textSection').value;
+            const color = document.getElementById('fontColor').value;
+            document.getElementById(section).style.color = color;
+            appSettings.texts[section].color = color;
         }
 
-        // Update FB Link
         function updateFbLink() {
-            const fbLink = document.getElementById('fbLink');
-            const fbButton = document.getElementById('fbButton');
-            
-            if (fbLink && fbButton) {
-                const link = fbLink.value;
-                fbButton.href = link;
-                appSettings.fbLink = link;
-            }
+            const link = document.getElementById('fbLink').value;
+            document.getElementById('fbButton').href = link;
+            appSettings.fbLink = link;
         }
 
-        // Add New Card
-        function addNewCard() {
-            const newId = zoneCards.length + 1;
-            zoneCards.push({
-                id: newId,
-                zone: "New Zone",
-                areas: ["Area 1", "Area 2"],
-                maleGroup: "https://chat.whatsapp.com/newmalelink",
-                femaleGroup: "https://chat.whatsapp.com/newfemalelink"
-            });
-            renderZoneCards();
-            saveSettings();
-        }
-
-        // Save All Settings
         function saveAllSettings() {
             showLoading();
-            
             db.collection('settings').doc('main').set({
                 bannerColor: appSettings.bannerColor,
-                watermarkOpacity: appSettings.watermarkOpacity,
                 logoSize: appSettings.logoSize,
-                ceoSize: appSettings.ceoSize,
                 fbLink: appSettings.fbLink,
-                watermarkUrl: appSettings.watermarkUrl,
                 logoUrl: appSettings.logoUrl,
                 ceoUrl: appSettings.ceoUrl,
                 texts: appSettings.texts,
                 zoneCards: zoneCards,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(function() {
-                alert('Settings saved successfully!');
+            }).then(() => {
+                alert('Settings saved!');
                 closeControlPanel();
                 hideLoading();
-            }).catch(function(error) {
+            }).catch((error) => {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
-        // Load Settings
         function loadSettings() {
-            db.collection('settings').doc('main').get().then(function(doc) {
+            db.collection('settings').doc('main').get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    
                     if (data.bannerColor) {
-                        const bannerSection = document.getElementById('bannerSection');
-                        if (bannerSection) {
-                            bannerSection.style.background = data.bannerColor;
-                        }
-                        appSettings.bannerColor = data.bannerColor;
+                        document.querySelector('.header-section').style.background = data.bannerColor;
                     }
-                    
-                    if (data.watermarkUrl) {
-                        const watermarkImage = document.getElementById('watermarkImage');
-                        if (watermarkImage) {
-                            watermarkImage.src = data.watermarkUrl;
-                            watermarkImage.style.display = 'block';
-                        }
-                        appSettings.watermarkUrl = data.watermarkUrl;
-                    }
-                    
-                    if (data.watermarkOpacity) {
-                        const watermarkImage = document.getElementById('watermarkImage');
-                        if (watermarkImage) {
-                            watermarkImage.style.opacity = data.watermarkOpacity / 100;
-                        }
-                        appSettings.watermarkOpacity = data.watermarkOpacity;
-                    }
-                    
                     if (data.logoUrl) {
-                        const logoImage = document.getElementById('logoImage');
-                        if (logoImage) {
-                            logoImage.src = data.logoUrl;
-                            logoImage.style.display = 'block';
-                        }
-                        appSettings.logoUrl = data.logoUrl;
+                        document.getElementById('logoImage').src = data.logoUrl;
                     }
-                    
                     if (data.logoSize) {
-                        const logoImage = document.getElementById('logoImage');
-                        if (logoImage) {
-                            logoImage.style.maxWidth = data.logoSize + 'px';
-                        }
-                        appSettings.logoSize = data.logoSize;
+                        document.getElementById('logoImage').style.width = data.logoSize + 'px';
+                        document.getElementById('logoImage').style.height = data.logoSize + 'px';
                     }
-                    
                     if (data.ceoUrl) {
-                        const ceoImage = document.getElementById('ceoImage');
-                        if (ceoImage) {
-                            ceoImage.src = data.ceoUrl;
-                            ceoImage.style.display = 'block';
-                        }
-                        appSettings.ceoUrl = data.ceoUrl;
+                        document.getElementById('ceoImage').src = data.ceoUrl;
                     }
-                    
-                    if (data.ceoSize) {
-                        const ceoImage = document.getElementById('ceoImage');
-                        if (ceoImage) {
-                            ceoImage.style.maxWidth = data.ceoSize + 'px';
-                        }
-                        appSettings.ceoSize = data.ceoSize;
-                    }
-                    
                     if (data.fbLink) {
-                        const fbButton = document.getElementById('fbButton');
-                        if (fbButton) {
-                            fbButton.href = data.fbLink;
-                        }
-                        appSettings.fbLink = data.fbLink;
+                        document.getElementById('fbButton').href = data.fbLink;
                     }
-                    
                     if (data.texts) {
                         appSettings.texts = data.texts;
-                        Object.keys(data.texts).forEach(function(key) {
+                        Object.keys(data.texts).forEach(key => {
                             const el = document.getElementById(key);
                             if (el) {
                                 el.textContent = data.texts[key].content;
-                                el.style.fontFamily = data.texts[key].font;
                                 el.style.fontSize = data.texts[key].size + 'px';
                                 el.style.color = data.texts[key].color;
                             }
                         });
                     }
-                    
                     if (data.zoneCards) {
                         zoneCards = data.zoneCards;
                         renderZoneCards();
                     }
                 }
-            }).catch(function(error) {
-                console.log('Error loading settings:', error);
             });
         }
 
-        // Save Settings
-        function saveSettings() {
-            db.collection('settings').doc('main').set({
-                zoneCards: zoneCards,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        }
-
-        // Logout
         function logout() {
             showLoading();
-            
-            auth.signOut().then(function() {
+            auth.signOut().then(() => {
                 currentUser = null;
                 currentUserType = null;
                 isAdmin = false;
                 showPage('loginPage');
                 hideLoading();
-            }).catch(function(error) {
+            }).catch((error) => {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
-        // Go Back
-        function goBack() {
-            showPage('homePage');
-        }
-
-        // Auth State Observer
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                console.log('User signed in:', user.email);
-            } else {
-                console.log('User signed out');
-            }
+        auth.onAuthStateChanged((user) => {
+            console.log(user ? 'Signed in' : 'Signed out');
         });
     </script>
 </body>
