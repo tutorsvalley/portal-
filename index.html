@@ -3,29 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- ✅ In-App Browser Redirect Detection -->
-    <script>
-        // Detect if opened from in-app browser (Facebook, Instagram, WhatsApp, Messenger)
-        function detectInAppBrowser() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            
-            const isFacebook = /FBAN|FBAV/i.test(userAgent);
-            const isInstagram = /Instagram/i.test(userAgent);
-            const isWhatsApp = /WhatsApp/i.test(userAgent);
-            const isMessenger = /Messenger/i.test(userAgent);
-            
-            if (isFacebook || isInstagram || isWhatsApp || isMessenger) {
-                // Redirect to redirect.html with current URL as parameter
-                const currentUrl = encodeURIComponent(window.location.href);
-                window.location.href = 'redirect.html?url=' + currentUrl;
-            }
-        }
-        
-        // Run detection immediately on page load
-        detectInAppBrowser();
-    </script>
-    
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -58,10 +35,7 @@
 
     <!-- Home Page -->
     <div id="homePage" class="page">
-        <!-- Admin Icon -->
         <div id="adminIcon" class="admin-icon" onclick="toggleControl()" style="display:none;">⚙️</div>
-
-        <!-- Control Panel -->
         <div id="controlPanel" class="control-panel">
             <div class="control-header">
                 <h3>কন্ট্রোল প্যানেল</h3>
@@ -69,8 +43,6 @@
             </div>
             <div id="controlBody" class="control-body"></div>
         </div>
-
-        <!-- Header -->
         <header id="headerSection" class="header">
             <div class="header-content">
                 <div class="logo-section">
@@ -86,16 +58,10 @@
                 </div>
             </div>
         </header>
-
-        <!-- Zones Section -->
         <section class="section">
             <h2 id="zoneTitle" class="section-title">আমাদের এলাকা সমূহ</h2>
-            <!-- Gender Selection Dropdown -->
-            <div id="genderSelectionContainer" style="max-width:400px;margin:20px auto;"></div>
             <div id="zoneContainer" class="zone-container"></div>
         </section>
-
-        <!-- Review Section -->
         <section class="section">
             <h2 id="reviewTitle" class="section-title">রিভিউ সমূহ</h2>
             <div id="reviewBox" class="review-box" style="display:none;">
@@ -104,8 +70,6 @@
             </div>
             <div id="reviewList" class="review-list"></div>
         </section>
-
-        <!-- CEO Section -->
         <section class="section ceo-section">
             <div class="ceo-card">
                 <img id="ceoImg" src="https://placehold.co/150x150/001f3f/ffffff?text=CEO" alt="CEO" class="ceo-img">
@@ -114,14 +78,11 @@
                 <p id="ceoDesc">CEO description here...</p>
             </div>
         </section>
-
-        <!-- Footer -->
         <footer id="footerSection" class="footer">
             <p id="copyright">© 2026 Tutors Valley. সর্বস্বত্ব সংরক্ষিত।</p>
         </footer>
     </div>
 
-    <!-- App Logic -->
     <script src="app.js"></script>
 </body>
 </html>
