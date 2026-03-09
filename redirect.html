@@ -1,48 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
-    <script>
-        // URL থেকে মূল লিংকটি নেওয়া
-        const urlParams = new URLSearchParams(window.location.search);
-        let targetUrl = urlParams.get('url');
-
-        // যদি লিংক না পাওয়া যায়, তবে ডিফল্ট সাইটে পাঠানো
-        if (!targetUrl) {
-            targetUrl = "https://tutorsvalley.github.io/portal-/";
-        } else {
-            // ডিকোড করা (কারণ লিংকটি এনকোড করা ছিল)
-            targetUrl = decodeURIComponent(targetUrl);
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Hind Siliguri', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-
-        // ফাংশন যা ব্রাউজার ওপেন করবে
-        function openInBrowser() {
-            // Android এর জন্য বিশেষ কমান্ড (Chrome ওপেন করবে)
-            if (/android/i.test(navigator.userAgent)) {
-                try {
-                    const cleanUrl = targetUrl.replace(/^https?:\/\//, '');
-                    // এটি সরাসরি Chrome অ্যাপটি ওপেন করে দেয়
-                    window.location.href = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-                } catch(e) {
-                    window.location.href = targetUrl;
-                }
-            } 
-            // iPhone বা অন্য ডিভাইসের জন্য সাধারণ লিংক
-            else {
-                window.location.href = targetUrl;
-            }
+        .redirect-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
-
-        // পেজ লোড হওয়ার সাথে সাথে (০ সেকেন্ডে) রিডিরেক্ট করবে
-        window.onload = openInBrowser;
-        // নিরাপত্তার জন্য আবারও চেষ্টা করবে যদি প্রথমটা কাজ না করে
-        setTimeout(openInBrowser, 100);
-    </script>
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #eee;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 { color: #333; font-size: 1.5em; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 20px; font-size: 0.95em; }
+        .btn-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .secondary-btn {
+            background: #f0f0f0;
+            color: #333;
+            padding: 12px 30px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-    <!-- কোনো কিছু দেখাবে না, শুধু লোড হবে -->
-    <div style="display:none;">Redirecting to browser...</div>
+    <div class="redirect-box">
+        <div class="spinner"></div>
+        <h1>ওপেন হচ্ছে...</h1>
+        <p>আপনার ব্রাউজারে ওপেন করা হচ্ছে</p>
+        <div class="btn-container">
+            <button onclick="openInBrowser()" class="primary-btn">🌐 ব্রাউজারে ওপেন করুন</button>
+            <a href="#" id="directLink" class="secondary-btn">লিংক কপি করুন</a>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetUrl = urlParams.get('url');
+        if (!targetUrl) {
+            targetUrl = 'https://tutorsvalley.github.io/portal-/';
+        } else {
+            targetUrl = decodeURIComponent(targetUrl);
+        }
+        document.getElementById('directLink').href = targetUrl;
+        document.getElementById('directLink').setAttribute('target', '_blank');
+
+        function openInBrowser() {
+            window.open(targetUrl, '_blank');
+            setTimeout(function() {
+                window.location.href = targetUrl;
+            }, 100);
+        }
+
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                openInBrowser();
+            }, 100);
+        });
+    </script>
 </body>
-</html> 
+</html>
