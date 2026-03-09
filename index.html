@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- SEO Meta Tags -->
     <title>Tutors Valley - ঢাকার সেরা টিউটর খুঁজুন</title>
     <meta name="description" content="Tutors Valley - ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর">
-    <meta name="keywords" content="tutor, guardian, tuition, ঢাকা, টিউটর, টিউশন">
     <meta name="theme-color" content="#001f3f">
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --primary-color: #001f3f;
@@ -39,7 +32,6 @@
             color: var(--text-dark);
         }
 
-        /* Loading Animation */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -54,9 +46,7 @@
             z-index: 10000;
         }
 
-        .loading-overlay.active {
-            display: flex;
-        }
+        .loading-overlay.active { display: flex; }
 
         .loading-spinner {
             width: 50px;
@@ -72,7 +62,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* External Browser Warning */
         .external-warning {
             position: fixed;
             top: 0;
@@ -89,9 +78,7 @@
             color: white;
         }
 
-        .external-warning.active {
-            display: flex;
-        }
+        .external-warning.active { display: flex; }
 
         .warning-content {
             max-width: 400px;
@@ -100,10 +87,7 @@
             border-radius: 15px;
         }
 
-        .warning-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-        }
+        .warning-icon { font-size: 50px; margin-bottom: 15px; }
 
         .open-browser-btn {
             background: #4CAF50;
@@ -118,17 +102,9 @@
             font-weight: bold;
         }
 
-        /* Pages */
-        .page {
-            display: none;
-            min-height: 100vh;
-        }
+        .page { display: none; min-height: 100vh; }
+        .page.active { display: block; }
 
-        .page.active {
-            display: block;
-        }
-
-        /* Login Page */
         .login-page {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
@@ -137,6 +113,8 @@
             justify-content: center;
             padding: 20px;
         }
+
+        .login-page.active { display: flex; }
 
         .login-card {
             background: white;
@@ -191,24 +169,11 @@
             font-family: inherit;
         }
 
-        .login-btn:active {
-            transform: scale(0.98);
-        }
+        .login-btn:active { transform: scale(0.98); }
 
-        .tutor-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .guardian-btn {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white;
-        }
-
-        .guest-btn {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: white;
-        }
+        .tutor-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .guardian-btn { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .guest-btn { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
 
         .admin-trigger {
             margin-top: 25px;
@@ -218,7 +183,6 @@
             font-size: 24px;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -232,9 +196,7 @@
             align-items: center;
         }
 
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
             background: white;
@@ -270,10 +232,7 @@
             font-family: inherit;
         }
 
-        .google-btn img {
-            width: 20px;
-            height: 20px;
-        }
+        .google-btn img { width: 20px; height: 20px; }
 
         #adminEmail, #adminPassword {
             width: 100%;
@@ -298,7 +257,6 @@
             font-family: inherit;
         }
 
-        /* Header Section */
         .header-section {
             background: var(--primary-color);
             padding: 30px 20px 40px;
@@ -368,7 +326,6 @@
             font-family: inherit;
         }
 
-        /* Main Content */
         .main-content {
             padding: 30px 15px;
             max-width: 800px;
@@ -395,11 +352,8 @@
             color: #856404;
         }
 
-        .info-banner span {
-            font-size: 20px;
-        }
+        .info-banner span { font-size: 20px; }
 
-        /* Tutor Controls */
         .tutor-controls {
             background: #e3f2fd;
             padding: 20px;
@@ -425,7 +379,6 @@
             font-family: inherit;
         }
 
-        /* Zone Cards */
         .zone-card {
             background: var(--card-bg);
             border-radius: 15px;
@@ -472,11 +425,8 @@
             font-weight: 600;
         }
 
-        .group-btn.hidden {
-            display: none;
-        }
+        .group-btn.hidden { display: none; }
 
-        /* Reviews Section */
         .reviews-section {
             background: white;
             padding: 30px 15px;
@@ -506,9 +456,7 @@
             font-family: inherit;
         }
 
-        .reviews-container {
-            margin-top: 20px;
-        }
+        .reviews-container { margin-top: 20px; }
 
         .review-card {
             background: var(--bg-light);
@@ -523,7 +471,6 @@
             margin-bottom: 8px;
         }
 
-        /* CEO Section */
         .ceo-section {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             padding: 30px 20px;
@@ -551,7 +498,6 @@
             color: #666;
         }
 
-        /* Footer */
         .footer {
             padding: 25px;
             text-align: center;
@@ -561,7 +507,6 @@
             font-size: 14px;
         }
 
-        /* Control Panel */
         .control-panel {
             display: none;
             position: fixed;
@@ -576,9 +521,7 @@
             overflow-y: auto;
         }
 
-        .control-panel.active {
-            display: block;
-        }
+        .control-panel.active { display: block; }
 
         .control-header {
             display: flex;
@@ -589,9 +532,7 @@
             color: white;
         }
 
-        .control-content {
-            padding: 20px;
-        }
+        .control-content { padding: 20px; }
 
         .control-section {
             margin-bottom: 25px;
@@ -631,10 +572,7 @@
             cursor: pointer;
         }
 
-        .control-section input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-        }
+        .control-section input[type="range"] { width: 100%; cursor: pointer; }
 
         .control-section input[type="file"] {
             width: 100%;
@@ -659,23 +597,11 @@
             font-weight: 600;
         }
 
-        /* Responsive */
         @media (max-width: 480px) {
-            .header-title {
-                font-size: 26px;
-            }
-            
-            .header-motto {
-                font-size: 16px;
-            }
-            
-            .section-title {
-                font-size: 22px;
-            }
-            
-            .zone-title {
-                font-size: 18px;
-            }
+            .header-title { font-size: 26px; }
+            .header-motto { font-size: 16px; }
+            .section-title { font-size: 22px; }
+            .zone-title { font-size: 18px; }
         }
     </style>
 </head>
@@ -880,12 +806,14 @@
             appId: "1:377815974425:web:3d1254d14640f43516a088"
         };
 
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
         const provider = new firebase.auth.GoogleAuthProvider();
 
+        // Global Variables
         let currentUser = null;
         let currentUserType = null;
         let isAdmin = false;
@@ -893,7 +821,7 @@
 
         // Zone Cards Data
         let zoneCards = [
-            { id: 1, zone: "জোন-১", areas: ["খিলগাঁও", "মালিবাগ", "মগবাজার", "শান্তিনগর", "মতিঝিল", "শাহজাহানপুর", "বাসাবো", "বনশ্রী", "কাররাইল", "মুগদা", "মাঠ", "মানিকনগর"] },
+            { id: 1, zone: "জোন-১", areas: ["খিলগাঁও", "মালিবাগ", "মগবাজার", "শান্তিনগর", "মতিঝিল", "শাহজাহানপুর", "বাসাবো", "বনশ্রী"] },
             { id: 2, zone: "জোন-২", areas: ["মিরপুর ১", "মিরপুর ২", "মিরপুর ১০", "মিরপুর ১১"] },
             { id: 3, zone: "জোন-৩", areas: ["উত্তরা সেক্টর ১", "উত্তরা সেক্টর ৪", "উত্তরা সেক্টর ৭"] },
             { id: 4, zone: "জোন-৪", areas: ["ধানমন্ডি ৩", "ধানমন্ডি ৮", "ধানমন্ডি ২৭"] },
@@ -944,44 +872,73 @@
             window.open(window.location.href, '_blank');
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            checkEmbeddedBrowser();
-            console.log('Tutors Valley initialized');
-        });
-
+        // Loading Functions
         function showLoading() {
-            document.getElementById('loadingOverlay').classList.add('active');
-            setTimeout(() => hideLoading(), 2000);
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.classList.add('active');
         }
 
         function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('active');
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) setTimeout(() => overlay.classList.remove('active'), 2000);
         }
 
+        // Page Navigation - FIXED
         function showPage(pageId) {
-            showLoading();
-            setTimeout(() => {
-                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-                document.getElementById(pageId).classList.add('active');
-                hideLoading();
-            }, 2000);
+            console.log('Showing page:', pageId);
+            
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(function(page) {
+                page.classList.remove('active');
+                page.style.display = 'none';
+            });
+            
+            // Show target page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                if (pageId === 'loginPage') {
+                    targetPage.style.display = 'flex';
+                } else {
+                    targetPage.style.display = 'block';
+                }
+            }
+            
+            hideLoading();
         }
 
+        // Login Modal
         function showLoginModal(type) {
+            console.log('Show login modal for:', type);
+            
             if (checkEmbeddedBrowser()) {
                 alert("দয়া করে Chrome বা Safari ব্রাউজারে খুলুন।");
                 return;
             }
+            
             currentUserType = type;
-            document.getElementById('loginModal').classList.add('active');
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
         }
 
         function closeModal() {
-            document.getElementById('loginModal').classList.remove('active');
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
         }
 
         function closeAdminModal() {
-            document.getElementById('adminModal').classList.remove('active');
+            const modal = document.getElementById('adminModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
         }
 
         function showAdminLogin() {
@@ -989,14 +946,23 @@
                 alert("দয়া করে Chrome বা Safari ব্রাউজারে খুলুন।");
                 return;
             }
-            document.getElementById('adminModal').classList.add('active');
+            const modal = document.getElementById('adminModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
         }
 
+        // Google Login - FIXED
         function googleLogin() {
+            console.log('Google login clicked');
             showLoading();
+            
             auth.signInWithPopup(provider)
-                .then((result) => {
+                .then(function(result) {
+                    console.log('Login successful:', result.user.email);
                     currentUser = result.user;
+                    
                     if (currentUserType === 'tutor') {
                         saveUserData(currentUser, 'tutor');
                         showPage('homePage');
@@ -1006,33 +972,48 @@
                         showPage('homePage');
                         setupHomePage('guardian');
                     }
+                    
                     closeModal();
                     hideLoading();
                 })
-                .catch((error) => {
-                    document.getElementById('loginStatus').textContent = error.message;
+                .catch(function(error) {
+                    console.error('Login error:', error);
+                    const loginStatus = document.getElementById('loginStatus');
+                    if (loginStatus) {
+                        loginStatus.textContent = 'Error: ' + error.message;
+                    }
                     hideLoading();
                 });
         }
 
+        // Guest Login - FIXED
         function guestLogin() {
+            console.log('Guest login clicked');
             showLoading();
-            setTimeout(() => {
+            setTimeout(function() {
                 currentUserType = 'guest';
                 showPage('homePage');
                 setupHomePage('guest');
                 hideLoading();
-            }, 2000);
+            }, 1000);
         }
 
+        // Admin Login - FIXED
         function adminLogin() {
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
+            const adminEmail = document.getElementById('adminEmail');
+            const adminPassword = document.getElementById('adminPassword');
+            const adminStatus = document.getElementById('adminStatus');
+            
+            const email = adminEmail ? adminEmail.value : '';
+            const password = adminPassword ? adminPassword.value : '';
+            
+            console.log('Admin login attempt:', email);
             showLoading();
             
             if (email === ADMIN_EMAIL) {
                 auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
+                    .then(function(userCredential) {
+                        console.log('Admin login successful');
                         currentUser = userCredential.user;
                         isAdmin = true;
                         closeAdminModal();
@@ -1040,16 +1021,22 @@
                         setupHomePage('admin');
                         hideLoading();
                     })
-                    .catch((error) => {
-                        document.getElementById('adminStatus').textContent = error.message;
+                    .catch(function(error) {
+                        console.error('Admin login error:', error);
+                        if (adminStatus) {
+                            adminStatus.textContent = 'Error: ' + error.message;
+                        }
                         hideLoading();
                     });
             } else {
-                document.getElementById('adminStatus').textContent = "Invalid admin email";
+                if (adminStatus) {
+                    adminStatus.textContent = "Invalid admin email";
+                }
                 hideLoading();
             }
         }
 
+        // Save User Data
         function saveUserData(user, type) {
             db.collection('users').doc(user.uid).set({
                 email: user.email,
@@ -1057,24 +1044,36 @@
                 type: type,
                 photoURL: user.photoURL,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+            }, { merge: true }).catch(function(err) {
+                console.log('Save user error:', err);
+            });
         }
 
+        // Setup Home Page - FIXED
         function setupHomePage(userType) {
+            console.log('Setup home page for:', userType);
             currentUserType = userType;
-            document.getElementById('gearIcon').style.display = isAdmin ? 'block' : 'none';
+            
+            const gearIcon = document.getElementById('gearIcon');
+            if (gearIcon) {
+                gearIcon.style.display = isAdmin ? 'block' : 'none';
+            }
             
             const tutorControls = document.getElementById('tutorControls');
             const reviewForm = document.getElementById('reviewForm');
             
             if (userType === 'tutor') {
-                tutorControls.style.display = 'block';
-                reviewForm.style.display = 'block';
-                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('hidden'));
+                if (tutorControls) tutorControls.style.display = 'block';
+                if (reviewForm) reviewForm.style.display = 'block';
+                document.querySelectorAll('.group-btn').forEach(function(btn) {
+                    btn.classList.add('hidden');
+                });
             } else {
-                tutorControls.style.display = 'none';
-                reviewForm.style.display = (userType === 'guardian') ? 'block' : 'none';
-                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('hidden'));
+                if (tutorControls) tutorControls.style.display = 'none';
+                if (reviewForm) reviewForm.style.display = (userType === 'guardian') ? 'block' : 'none';
+                document.querySelectorAll('.group-btn').forEach(function(btn) {
+                    btn.classList.remove('hidden');
+                });
             }
             
             loadSettings();
@@ -1082,59 +1081,72 @@
             loadReviews();
         }
 
+        // Handle Gender Select
         function handleGenderSelect() {
             const gender = document.getElementById('genderSelect').value;
             showLoading();
             
-            setTimeout(() => {
-                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('hidden'));
+            setTimeout(function() {
+                document.querySelectorAll('.group-btn').forEach(function(btn) {
+                    btn.classList.add('hidden');
+                });
                 if (gender === 'male') {
-                    document.querySelectorAll('.male-group').forEach(btn => btn.classList.remove('hidden'));
+                    document.querySelectorAll('.male-group').forEach(function(btn) {
+                        btn.classList.remove('hidden');
+                    });
                 } else if (gender === 'female') {
-                    document.querySelectorAll('.female-group').forEach(btn => btn.classList.remove('hidden'));
+                    document.querySelectorAll('.female-group').forEach(function(btn) {
+                        btn.classList.remove('hidden');
+                    });
                 }
                 hideLoading();
             }, 2000);
         }
 
+        // Render Zone Cards
         function renderZoneCards() {
             const container = document.getElementById('cardsContainer');
             if (!container) return;
             container.innerHTML = '';
             
-            zoneCards.forEach(card => {
+            zoneCards.forEach(function(card) {
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'zone-card';
                 
                 let areaTags = '';
-                card.areas.forEach(area => {
-                    areaTags += `<span class="area-tag">${area}</span>`;
+                card.areas.forEach(function(area) {
+                    areaTags += '<span class="area-tag">' + area + '</span>';
                 });
                 
-                cardDiv.innerHTML = `
-                    <h3 class="zone-title">${card.zone}</h3>
-                    <div class="area-tags">${areaTags}</div>
-                    <button class="group-btn male-group hidden" onclick="joinGroup('https://chat.whatsapp.com/male')">💬 Join Male Group</button>
-                    <button class="group-btn female-group hidden" onclick="joinGroup('https://chat.whatsapp.com/female')">💬 Join Female Group</button>
-                `;
+                cardDiv.innerHTML = 
+                    '<h3 class="zone-title">' + card.zone + '</h3>' +
+                    '<div class="area-tags">' + areaTags + '</div>' +
+                    '<button class="group-btn male-group hidden" onclick="joinGroup(\'https://chat.whatsapp.com/male\')">💬 Join Male Group</button>' +
+                    '<button class="group-btn female-group hidden" onclick="joinGroup(\'https://chat.whatsapp.com/female\')">💬 Join Female Group</button>';
+                
                 container.appendChild(cardDiv);
             });
         }
 
+        // Join Group
         function joinGroup(link) {
             showLoading();
-            setTimeout(() => {
+            setTimeout(function() {
                 window.open(link, '_blank');
                 hideLoading();
             }, 2000);
         }
 
+        // Submit Review
         function submitReview() {
-            const text = document.getElementById('reviewText').value;
+            const reviewText = document.getElementById('reviewText');
+            const text = reviewText ? reviewText.value : '';
+            
             if (!text.trim()) {
                 alert('রিভিউ লিখুন');
                 return;
             }
+            
             showLoading();
             db.collection('reviews').add({
                 text: text,
@@ -1142,44 +1154,49 @@
                 userName: currentUser ? currentUser.displayName : 'Guest',
                 userType: currentUserType,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                document.getElementById('reviewText').value = '';
+            }).then(function() {
+                if (reviewText) reviewText.value = '';
                 loadReviews();
                 hideLoading();
-            }).catch((error) => {
+            }).catch(function(error) {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
+        // Load Reviews
         function loadReviews() {
             const container = document.getElementById('reviewsContainer');
             if (!container) return;
+            
             db.collection('reviews').orderBy('createdAt', 'desc').limit(20)
-                .onSnapshot((snapshot) => {
+                .onSnapshot(function(snapshot) {
                     container.innerHTML = '';
-                    snapshot.forEach((doc) => {
+                    snapshot.forEach(function(doc) {
                         const review = doc.data();
                         const reviewDiv = document.createElement('div');
                         reviewDiv.className = 'review-card';
-                        reviewDiv.innerHTML = `
-                            <div class="reviewer">${review.userName || 'Anonymous'} (${review.userType || 'guest'})</div>
-                            <div class="review-text">${review.text || ''}</div>
-                        `;
+                        reviewDiv.innerHTML = 
+                            '<div class="reviewer">' + (review.userName || 'Anonymous') + ' (' + (review.userType || 'guest') + ')</div>' +
+                            '<div class="review-text">' + (review.text || '') + '</div>';
                         container.appendChild(reviewDiv);
                     });
                 });
         }
 
+        // Control Panel
         function openControlPanel() {
             if (!isAdmin) return;
-            document.getElementById('controlPanel').classList.add('active');
+            const controlPanel = document.getElementById('controlPanel');
+            if (controlPanel) controlPanel.classList.add('active');
         }
 
         function closeControlPanel() {
-            document.getElementById('controlPanel').classList.remove('active');
+            const controlPanel = document.getElementById('controlPanel');
+            if (controlPanel) controlPanel.classList.remove('active');
         }
 
+        // Banner & Logo Settings
         function updateBannerColor() {
             const color = document.getElementById('bannerColor').value;
             document.querySelector('.header-section').style.background = color;
@@ -1191,13 +1208,13 @@
             if (!file) return;
             showLoading();
             const storageRef = storage.ref('logos/' + Date.now() + '.jpg');
-            storageRef.put(file).then((snapshot) => {
-                snapshot.ref.getDownloadURL().then((url) => {
+            storageRef.put(file).then(function(snapshot) {
+                snapshot.ref.getDownloadURL().then(function(url) {
                     document.getElementById('logoImage').src = url;
                     appSettings.logoUrl = url;
                     hideLoading();
                 });
-            }).catch((error) => {
+            }).catch(function(error) {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
@@ -1205,8 +1222,11 @@
 
         function updateLogoSize() {
             const size = document.getElementById('logoSize').value;
-            document.getElementById('logoImage').style.width = size + 'px';
-            document.getElementById('logoImage').style.height = size + 'px';
+            const logoImage = document.getElementById('logoImage');
+            if (logoImage) {
+                logoImage.style.width = size + 'px';
+                logoImage.style.height = size + 'px';
+            }
             appSettings.logoSize = size;
         }
 
@@ -1215,18 +1235,19 @@
             if (!file) return;
             showLoading();
             const storageRef = storage.ref('ceo/' + Date.now() + '.jpg');
-            storageRef.put(file).then((snapshot) => {
-                snapshot.ref.getDownloadURL().then((url) => {
+            storageRef.put(file).then(function(snapshot) {
+                snapshot.ref.getDownloadURL().then(function(url) {
                     document.getElementById('ceoImage').src = url;
                     appSettings.ceoUrl = url;
                     hideLoading();
                 });
-            }).catch((error) => {
+            }).catch(function(error) {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
+        // Text Settings
         function loadTextSettings() {
             const section = document.getElementById('textSection').value;
             const settings = appSettings.texts[section];
@@ -1262,6 +1283,7 @@
             appSettings.fbLink = link;
         }
 
+        // Save Settings
         function saveAllSettings() {
             showLoading();
             db.collection('settings').doc('main').set({
@@ -1273,18 +1295,19 @@
                 texts: appSettings.texts,
                 zoneCards: zoneCards,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
+            }).then(function() {
                 alert('Settings saved!');
                 closeControlPanel();
                 hideLoading();
-            }).catch((error) => {
+            }).catch(function(error) {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
+        // Load Settings
         function loadSettings() {
-            db.collection('settings').doc('main').get().then((doc) => {
+            db.collection('settings').doc('main').get().then(function(doc) {
                 if (doc.exists) {
                     const data = doc.data();
                     if (data.bannerColor) {
@@ -1294,8 +1317,9 @@
                         document.getElementById('logoImage').src = data.logoUrl;
                     }
                     if (data.logoSize) {
-                        document.getElementById('logoImage').style.width = data.logoSize + 'px';
-                        document.getElementById('logoImage').style.height = data.logoSize + 'px';
+                        const logoImage = document.getElementById('logoImage');
+                        logoImage.style.width = data.logoSize + 'px';
+                        logoImage.style.height = data.logoSize + 'px';
                     }
                     if (data.ceoUrl) {
                         document.getElementById('ceoImage').src = data.ceoUrl;
@@ -1305,7 +1329,7 @@
                     }
                     if (data.texts) {
                         appSettings.texts = data.texts;
-                        Object.keys(data.texts).forEach(key => {
+                        Object.keys(data.texts).forEach(function(key) {
                             const el = document.getElementById(key);
                             if (el) {
                                 el.textContent = data.texts[key].content;
@@ -1319,25 +1343,46 @@
                         renderZoneCards();
                     }
                 }
+            }).catch(function(error) {
+                console.log('Error loading settings:', error);
             });
         }
 
+        // Logout
         function logout() {
             showLoading();
-            auth.signOut().then(() => {
+            auth.signOut().then(function() {
                 currentUser = null;
                 currentUserType = null;
                 isAdmin = false;
                 showPage('loginPage');
                 hideLoading();
-            }).catch((error) => {
+            }).catch(function(error) {
                 alert('Error: ' + error.message);
                 hideLoading();
             });
         }
 
-        auth.onAuthStateChanged((user) => {
-            console.log(user ? 'Signed in' : 'Signed out');
+        // Auth State Observer
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                console.log('User signed in:', user.email);
+            } else {
+                console.log('User signed out');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Tutors Valley initialized');
+            checkEmbeddedBrowser();
+            
+            // Ensure login page is visible
+            const loginPage = document.getElementById('loginPage');
+            if (loginPage) {
+                loginPage.classList.add('active');
+                loginPage.style.display = 'flex';
+            }
         });
     </script>
 </body>
