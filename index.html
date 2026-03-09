@@ -104,23 +104,23 @@
             
             function bind(id, fn) {
                 const btn = document.getElementById(id);
-                if (btn && typeof window[fn] === 'function') {
-                    btn.onclick = window[fn];
+                if (btn) {
+                    btn.onclick = fn;
                     console.log("✅ Bound", id);
                 }
             }
             
             bind('tutorBtn', function() { window.openModal('tutor'); });
             bind('guardianBtn', function() { window.openModal('guardian'); });
-            bind('guestBtn', 'guestLogin');
+            bind('guestBtn', window.guestLogin);
             bind('adminBtn', function() { window.openModal('admin'); });
-            bind('googleLoginBtn', 'googleLogin');
-            bind('closeModal', 'closeModal');
-            bind('logoutBtn', 'logout');
-            bind('submitReviewBtn', 'submitReview');
-            bind('closePanelBtn', 'toggleControl');
+            bind('googleLoginBtn', window.googleLogin);
+            bind('closeModal', window.closeModal);
+            bind('logoutBtn', window.logout);
+            bind('submitReviewBtn', window.submitReview);
+            bind('closePanelBtn', window.toggleControl);
             
-            document.getElementById('adminIcon').onclick = function() { window.toggleControl(); };
+            document.getElementById('adminIcon').onclick = window.toggleControl;
             
             window.onclick = function(event) {
                 if (event.target == document.getElementById('loginModal') && window.closeModal) {
