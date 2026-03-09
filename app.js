@@ -1,7 +1,8 @@
 // ============================================
-// 🔥 TUTORS VALLEY - FULLY FIXED
-// ✅ Login Working 100%
-// ✅ All Syntax Errors Fixed
+// 🔥 TUTORS VALLEY - WITH GENDER SELECTION
+// ✅ Gender Dropdown in Tutor Mode Only
+// ✅ Button Shows Based on Gender
+// ✅ 2 Second Loading After Selection
 // ============================================
 
 // Firebase Config
@@ -34,9 +35,10 @@ provider.setCustomParameters({ prompt: 'select_account' });
 let currentUser = null;
 let currentUserRole = null;
 let currentLoginRole = null;
+let currentUserGender = null; // ✅ Add gender variable
 const OWNER_EMAIL = "kabirhasanat7@gmail.com";
 
-// Fonts
+// Fonts List
 const fonts = {
     bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'Baloo Da 2', 'Mukta', 'Tiro Bangla', 'Kalam', 'Khand', 'Yantramanav', 'Amita', 'Akaya Telivigala'],
     english: ['Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Arial', 'Georgia', 'Verdana', 'Calibri', 'Times New Roman']
@@ -182,7 +184,9 @@ function loadUser(uid) {
         hideLoading();
         if (doc.exists) {
             currentUserRole = doc.data().role;
-            console.log("✅ Role loaded:", currentUserRole);
+            // ✅ DO NOT load gender from Firestore - reset on reload
+            currentUserGender = null;
+            console.log("✅ Role loaded:", currentUserRole, "Gender reset to null");
             showHome();
         } else {
             logout();
@@ -219,6 +223,46 @@ function closeModal() {
     document.getElementById('loginModal').style.display = 'none';
 }
 
+// ✅ Gender Selection Functions
+function showGenderDropdown() {
+    const container = document.getElementById('genderSelectionContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <select id="genderDropdown" onchange="handleGenderSelect(this.value)" style="width:100%;padding:12px 20px;font-size:1em;border:2px solid #0074D9;border-radius:10px;background:white;cursor:pointer;font-family:'Hind Siliguri',sans-serif;">
+            <option value="">লিঙ্গ নির্বাচন করুন</option>
+            <option value="male" ${currentUserGender === 'male' ? 'selected' : ''}>👨 পুরুষ (Male)</option>
+            <option value="female" ${currentUserGender === 'female' ? 'selected' : ''}>👩 নারী (Female)</option>
+        </select>
+    `;
+}
+
+function handleGenderSelect(gender) {
+    if (!gender) return;
+    
+    showLoading("লোড হচ্ছে...");
+    currentUserGender = gender;
+    
+    // Save to Firestore (optional)
+    if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({
+            gender: gender,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }
+    
+    // 2 second loading then show zones with buttons
+    setTimeout(function() {
+        hideLoading();
+        // Update dropdown to show selection
+        const container = document.getElementById('genderSelectionContainer');
+        if (container) {
+            container.innerHTML = `<div style="background:#d4edda;color:#155724;padding:15px;border-radius:10px;text-align:center;font-weight:600;">✅ লিঙ্গ নির্বাচন সম্পন্ন: ${gender === 'male' ? 'পুরুষ' : 'নারী'}</div>`;
+        }
+        loadZones();
+    }, 2000);
+}
+
 function showHome() {
     console.log("🏠 Showing Home for:", currentUserRole);
     showPage('homePage');
@@ -227,6 +271,18 @@ function showHome() {
 
     const reviewBox = document.getElementById('reviewBox');
     if (reviewBox) reviewBox.style.display = (currentUserRole === 'tutor' || currentUserRole === 'guardian') ? 'block' : 'none';
+
+    // ✅ Gender Dropdown Logic Based on Role
+    const container = document.getElementById('genderSelectionContainer');
+    if (container) {
+        if (currentUserRole === 'tutor') {
+            // ✅ Tutor: Show gender dropdown, reset on reload
+            showGenderDropdown();
+        } else {
+            // ✅ Admin & Guardian: No dropdown
+            container.innerHTML = '';
+        }
+    }
 
     Promise.all([loadAllSettings(), loadZones(), loadReviews()]).then(function() {
         console.log("✅ Home data loaded");
@@ -240,6 +296,7 @@ function logout() {
     showLoading("লগআউট হচ্ছে...");
     currentUser = null;
     currentUserRole = null;
+    currentUserGender = null;
 
     const adminIcon = document.getElementById('adminIcon');
     if (adminIcon) adminIcon.style.display = 'none';
@@ -487,11 +544,13 @@ function loadZones() {
     });
 }
 
+// ✅ UPDATED: Render zones with gender-based buttons
 function renderZones(zones) {
     const c = document.getElementById('zoneContainer');
     if (!c) return;
     c.innerHTML = '';
     const canSee = (currentUserRole === 'admin' || currentUserRole === 'tutor');
+    
     zones.forEach(function(z) {
         const card = document.createElement('div');
         card.className = 'zone-card';
@@ -499,13 +558,38 @@ function renderZones(zones) {
             return '<span class="area-tag">' + a + '</span>';
         }).join('') : '';
         let btns = '';
+        
         if (canSee) {
-            if (z.maleLink && z.maleLink.trim() !== '') btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">👨 মেল গ্রুপ</a>';
-            if (z.femaleLink && z.femaleLink.trim() !== '') btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">👩 ফিমেল গ্রুপ</a>';
+            // ✅ Show buttons based on gender selection
+            if (currentUserGender === 'male' && z.maleLink && z.maleLink.trim() !== '') {
+                btns += '<a href="' + z.maleLink + '" target="_blank" class="group-btn male-btn">📱 Join our whatsapp group</a>';
+            } else if (currentUserGender === 'female' && z.femaleLink && z.femaleLink.trim() !== '') {
+                btns += '<a href="' + z.femaleLink + '" target="_blank" class="group-btn female-btn">📱 Join our whatsapp group</a>';
+            }
+            // If no gender selected, show no buttons
         }
+        
         card.innerHTML = '<h3>' + z.title + '</h3><div class="area-tags">' + areas + '</div>' + (btns ? '<div style="margin-top:10px;">' + btns + '</div>' : '');
         c.appendChild(card);
     });
+
+    // Tutor Note Logic
+    if (canSee) {
+        db.collection('settings').doc('zones').get().then(function(doc) {
+            if (doc.exists && doc.data().tutorNote) {
+                const zt = document.getElementById('zoneTitle');
+                if (zt) {
+                    const old = zt.parentNode.querySelector('.tutor-note');
+                    if (old) old.remove();
+                    const note = document.createElement('p');
+                    note.className = 'tutor-note';
+                    note.style.cssText = 'background:#fff3cd;color:#856404;padding:10px;border-radius:5px;text-align:center;margin:10px auto;max-width:600px;font-size:' + (doc.data().tutorNoteSize || 16) + 'px;';
+                    note.innerText = '📢 ' + doc.data().tutorNote;
+                    zt.parentNode.insertBefore(note, zt.nextSibling);
+                }
+            }
+        });
+    }
 }
 
 function loadReviews() {
