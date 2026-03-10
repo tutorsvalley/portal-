@@ -310,7 +310,7 @@
         };
         let isSaving=false;
 
-        // --- FIXED: INSTANT REDIRECT FOR MESSENGER, WHATSAPP, INSTAGRAM ---
+        // --- INSTANT REDIRECT FOR MESSENGER, WHATSAPP, INSTAGRAM ---
         function checkEmbeddedBrowser(){
             const ua=navigator.userAgent||navigator.vendor||window.opera;
             const isMessenger=/Messenger/i.test(ua);
@@ -324,7 +324,6 @@
                 overlay.classList.add('active');
                 text.textContent='Opening in Browser...';
                 
-                // Force open in a new window/tab
                 setTimeout(function(){
                     window.open(window.location.href, '_blank');
                     setTimeout(function(){ 
@@ -405,7 +404,7 @@
             db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
         }
 
-        // --- FIXED: SETUP HOME PAGE LOGIC ---
+        // --- UPDATED LOGIC TO HIDE BUTTONS FOR GUEST/GUARDIAN ---
         function setupHomePage(userType){
             currentUserType=userType;
             console.log('Setup:',userType,'Admin:',isAdmin);
@@ -421,7 +420,7 @@
             if(genderSelect)genderSelect.value='';
             
             // Logic updated:
-            // 1. Guardian & Guest -> Hide ALL buttons immediately
+            // 1. Guest & Guardian -> Hide ALL buttons immediately
             // 2. Tutor -> Show NO buttons until gender selected
             // 3. Admin -> Show ALL buttons
             
