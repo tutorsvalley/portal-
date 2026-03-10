@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <meta name="theme-color" content="#001f3f">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;600;700&family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
@@ -14,11 +14,6 @@
         .loading-overlay.active{display:flex}
         .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid var(--secondary-color);border-radius:50%;animation:spin 1s linear infinite}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        .external-warning{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a1a;z-index:99999;display:none;justify-content:center;align-items:center;text-align:center;padding:20px;color:white}
-        .external-warning.active{display:flex}
-        .warning-content{max-width:400px;background:#2d2d2d;padding:30px;border-radius:15px}
-        .warning-icon{font-size:50px;margin-bottom:15px}
-        .open-browser-btn{background:#4CAF50;color:white;border:none;padding:12px 25px;font-size:16px;border-radius:8px;cursor:pointer;margin:15px 0;width:100%;font-weight:bold}
         .page{display:none;min-height:100vh}
         .page.active{display:block}
         .login-page{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
@@ -80,7 +75,6 @@
         .control-section input[type="text"],.control-section input[type="email"],.control-section input[type="password"],.control-section input[type="url"],.control-section select{width:100%;padding:8px;border:2px solid #ddd;border-radius:5px;font-size:13px;font-family:inherit}
         .control-section input[type="color"]{width:45px;height:30px;border:none;cursor:pointer}
         .control-section input[type="range"]{width:100%;cursor:pointer}
-        .control-section input[type="file"]{width:100%;padding:6px;border:2px dashed #ddd;border-radius:5px;cursor:pointer;font-size:12px}
         .save-btn{width:100%;padding:12px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:600}
         .card-item{background:#f5f5f5;padding:12px;border-radius:6px;margin-bottom:12px}
         .card-item h5{color:var(--primary-color);margin-bottom:8px}
@@ -89,7 +83,6 @@
         .add-card-btn{background:#28a745;color:white;border:none;padding:10px 15px;border-radius:6px;cursor:pointer;font-size:14px;width:100%;margin-bottom:12px}
         .save-indicator{position:fixed;bottom:20px;right:20px;background:#28a745;color:white;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999;animation:slideIn 0.3s ease}
         .save-indicator.active{display:block}
-        .save-indicator.error{background:#dc3545}
         @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
         @media(max-width:480px){
             .header-title{font-size:20px}
@@ -100,19 +93,13 @@
     </style>
 </head>
 <body>
-    <div id="externalBrowserWarning" class="external-warning">
-        <div class="warning-content">
-            <div class="warning-icon">⚠️</div>
-            <h2>ব্রাউজার সমর্থিত নয়</h2>
-            <p>মনে হচ্ছে আপনি Facebook বা Messenger এর ভেতরে লিংকটি খুলেছেন।</p>
-            <button class="open-browser-btn" onclick="forceOpenBrowser()">🚀 Chrome / Safari তে খুলুন</button>
-        </div>
-    </div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
     </div>
     <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
+    
+    <!-- Login Page -->
     <div id="loginPage" class="page login-page active">
         <div class="login-card">
             <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="login-logo" id="loginLogo">
@@ -126,6 +113,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -137,6 +126,8 @@
             <p id="loginStatus" style="color:red;margin-top:10px;text-align:center;"></p>
         </div>
     </div>
+
+    <!-- Home Page -->
     <div id="homePage" class="page">
         <header class="header-section">
             <div class="gear-icon" id="gearIcon" onclick="openControlPanel()" style="display:none;">⚙️</div>
@@ -177,6 +168,8 @@
         </div>
         <footer class="footer"><p id="copyrightText">© 2026 Tutors Valley. All rights reserved.</p></footer>
     </div>
+
+    <!-- Control Panel -->
     <div id="controlPanel" class="control-panel">
         <div class="control-header">
             <h3>⚙️ Admin Settings</h3>
@@ -184,20 +177,23 @@
         </div>
         <div class="control-content">
             <div class="control-section">
-                <h4>🏠 Homepage Logo URL</h4>
-                <input type="text" id="logoUrlInput" placeholder="Paste image URL here" onchange="updateLogoUrl()" style="width:100%;padding:8px;margin-bottom:8px;">
-                <label>Logo Size:</label>
+                <h4>🏠 Homepage Logo</h4>
+                <input type="text" id="logoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin-bottom:8px;">
+                <button onclick="applyLogoUrl()" style="padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;">Apply Logo</button>
+                <label style="margin-top:10px;">Logo Size:</label>
                 <input type="range" id="logoSize" min="60" max="150" value="80" onchange="updateLogoSize()">
             </div>
             <div class="control-section">
-                <h4>🔐 Login Page Logo URL</h4>
-                <input type="text" id="loginLogoUrlInput" placeholder="Paste image URL here" onchange="updateLoginLogoUrl()" style="width:100%;padding:8px;margin-bottom:8px;">
-                <label>Login Logo Size:</label>
+                <h4>🔐 Login Page Logo</h4>
+                <input type="text" id="loginLogoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin-bottom:8px;">
+                <button onclick="applyLoginLogoUrl()" style="padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;">Apply Logo</button>
+                <label style="margin-top:10px;">Login Logo Size:</label>
                 <input type="range" id="loginLogoSize" min="60" max="150" value="80" onchange="updateLoginLogoSize()">
             </div>
             <div class="control-section">
-                <h4>👤 CEO Image URL</h4>
-                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" onchange="updateCeoUrl()" style="width:100%;padding:8px;">
+                <h4>👤 CEO Image</h4>
+                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin-bottom:8px;">
+                <button onclick="applyCeoUrl()" style="padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;">Apply CEO Image</button>
             </div>
             <div class="control-section">
                 <h4>🎨 Banner Color</h4>
@@ -219,38 +215,6 @@
                 </select>
                 <input type="text" id="textContent" placeholder="Text Content" onchange="updateTextContent()" style="margin-top:8px;">
                 <select id="fontFamily" onchange="updateTextFont()" style="margin-top:8px;width:100%;padding:8px;">
-                    <optgroup label="🇧🇩 বাংলা ফন্ট (10টি)">
-                        <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
-                        <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
-                        <option value="Arial, sans-serif">Arial (বাংলা)</option>
-                        <option value="Verdana, sans-serif">Verdana (বাংলা)</option>
-                        <option value="Georgia, serif">Georgia (বাংলা)</option>
-                        <option value="'Times New Roman', serif">Times New Roman (বাংলা)</option>
-                        <option value="'Courier New', monospace">Courier New (বাংলা)</option>
-                        <option value="Impact, sans-serif">Impact (বাংলা)</option>
-                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS (বাংলা)</option>
-                        <option value="'Palatino Linotype', serif">Palatino Linotype (বাংলা)</option>
-                    </optgroup>
-                    <optgroup label="🇬🇧 English Fonts (10টি)">
-                        <option value="'Roboto', sans-serif">Roboto</option>
-                        <option value="'Open Sans', sans-serif">Open Sans</option>
-                        <option value="'Lato', sans-serif">Lato</option>
-                        <option value="'Poppins', sans-serif">Poppins</option>
-                        <option value="'Raleway', sans-serif">Raleway</option>
-                        <option value="'Montserrat', sans-serif">Montserrat</option>
-                        <option value="'Oswald', sans-serif">Oswald</option>
-                        <option value="'Merriweather', serif">Merriweather</option>
-                        <option value="'Playfair Display', serif">Playfair Display</option>
-                        <option value="'Ubuntu', sans-serif">Ubuntu</option>
-                    </optgroup>
-                </select>
-                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">
-                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
-            </div>
-            <div class="control-section">
-                <h4>🏷️ Area Tag Font Settings</h4>
-                <label>Area Tag Font:</label>
-                <select id="areaTagFont" onchange="updateAreaTagFont()" style="width:100%;padding:8px;margin-top:4px;">
                     <optgroup label="বাংলা ফন্ট">
                         <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
                         <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
@@ -261,12 +225,8 @@
                         <option value="'Poppins', sans-serif">Poppins</option>
                     </optgroup>
                 </select>
-                <label>Area Tag Font Size:</label>
-                <input type="range" id="areaTagFontSize" min="10" max="24" value="13" onchange="updateAreaTagFontSize()" style="margin-top:4px;">
-                <label>Area Tag Color:</label>
-                <input type="color" id="areaTagColor" value="#333333" onchange="updateAreaTagColor()" style="margin-top:4px;">
-                <label>Area Tag Background:</label>
-                <input type="color" id="areaTagBg" value="#e8e8e8" onchange="updateAreaTagBg()" style="margin-top:4px;">
+                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">
+                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
             </div>
             <div class="control-section">
                 <h4>📍 Zone Cards</h4>
@@ -280,6 +240,7 @@
             <button class="save-btn" onclick="saveAllSettings(false)">💾 Save All Settings</button>
         </div>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -313,23 +274,20 @@
         };
         let isSaving=false;
 
-        function checkEmbeddedBrowser(){
-            const ua=navigator.userAgent||navigator.vendor;
-            const warningDiv=document.getElementById('externalBrowserWarning');
-            if(/FBAN|FBAV|Instagram|Messenger|WhatsApp/i.test(ua)){
-                if(warningDiv){warningDiv.style.display='flex';warningDiv.classList.add('active');}
-                document.body.style.overflow='hidden';
-                return true;
-            }else{
-                if(warningDiv)warningDiv.style.display='none';
-                document.body.style.overflow='auto';
-                return false;
+        function showLoading(text='Saving...'){
+            const overlay=document.getElementById('loadingOverlay');
+            const loadingText=document.getElementById('loadingText');
+            if(overlay){
+                overlay.classList.add('active');
+                if(loadingText)loadingText.textContent=text;
             }
         }
 
-        function forceOpenBrowser(){window.open(window.location.href,'_blank');}
-        function showLoading(text='Saving...'){const overlay=document.getElementById('loadingOverlay');const loadingText=document.getElementById('loadingText');if(overlay){overlay.classList.add('active');if(loadingText)loadingText.textContent=text;}}
-        function hideLoading(){const overlay=document.getElementById('loadingOverlay');if(overlay)setTimeout(()=>overlay.classList.remove('active'),1500);}
+        function hideLoading(){
+            const overlay=document.getElementById('loadingOverlay');
+            if(overlay)setTimeout(()=>overlay.classList.remove('active'),1500);
+        }
+
         function showSaveIndicator(isError=false){
             const indicator=document.getElementById('saveIndicator');
             if(indicator){
@@ -344,28 +302,36 @@
             setTimeout(()=>{
                 document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
                 const target=document.getElementById(pageId);
-                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
+                if(target){
+                    target.classList.add('active');
+                    target.style.display=(pageId==='loginPage')?'flex':'block';
+                }
                 hideLoading();
             },1500);
         }
 
         function showLoginModal(type){
-            if(checkEmbeddedBrowser()){alert("দয়া করে Chrome বা Safari ব্রাউজারে খুলুন।");return;}
             currentUserType=type;
             const modal=document.getElementById('loginModal');
             const modalTitle=document.getElementById('modalTitle');
             if(modal){modal.classList.add('active');modal.style.display='flex';}
-            if(modalTitle){const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};modalTitle.textContent=titles[type]||'Login';}
+            if(modalTitle){
+                const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};
+                modalTitle.textContent=titles[type]||'Login';
+            }
         }
 
-        function closeModal(){const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('active');modal.style.display='none';}}
+        function closeModal(){
+            const modal=document.getElementById('loginModal');
+            if(modal){modal.classList.remove('active');modal.style.display='none';}
+        }
 
         function googleLogin(){
             showLoading('Logging in...');
             auth.signInWithPopup(provider).then(function(result){
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
-                console.log('Login successful, isAdmin:', isAdmin, 'email:', currentUser.email);
+                console.log('Login:',currentUser.email,'Admin:',isAdmin);
                 if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
                 else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
                 else if(currentUserType==='admin'){
@@ -385,74 +351,63 @@
             setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
         }
 
-        function saveUserData(user,type){db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(function(e){console.log('Save user error:',e);});}
+        function saveUserData(user,type){
+            db.collection('users').doc(user.uid).set({
+                email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            },{merge:true});
+        }
 
         function setupHomePage(userType){
             currentUserType=userType;
-            console.log('=== Setup Home Page ===');
-            console.log('User Type:', userType);
-            console.log('Is Admin:', isAdmin);
+            console.log('Setup:',userType,'Admin:',isAdmin);
             
             const gearIcon=document.getElementById('gearIcon');
-            if(gearIcon){
-                // Gear icon ONLY for admin
-                gearIcon.style.display=isAdmin?'block':'none';
-                console.log('Gear Icon:', isAdmin?'visible':'hidden');
-            }
+            if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
             
             const tutorControls=document.getElementById('tutorControls');
             const tutorNote=document.getElementById('tutorNote');
             const reviewForm=document.getElementById('reviewForm');
-            
-            // Reset gender select
             const genderSelect=document.getElementById('genderSelect');
+            
             if(genderSelect)genderSelect.value='';
             
-            // Hide all group buttons first
             document.querySelectorAll('.group-btn').forEach(btn=>{
                 btn.classList.add('hidden');
                 btn.style.display='none';
             });
             
             if(userType==='admin'){
-                console.log('Admin mode - showing ALL buttons');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                // Admin sees ALL group buttons
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
                     btn.style.display='block';
                 });
             }
             else if(userType==='tutor'){
-                console.log('Tutor mode - buttons hidden until gender select');
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
-                // Tutor: ALL buttons HIDDEN until gender selected
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.add('hidden');
                     btn.style.display='none';
                 });
             }
             else if(userType==='guardian'){
-                console.log('Guardian mode - showing ALL buttons');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                // Guardian sees ALL group buttons
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
                     btn.style.display='block';
                 });
             }
             else{
-                console.log('Guest mode - showing ALL buttons');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
-                // Guest sees ALL group buttons
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
                     btn.style.display='block';
@@ -466,32 +421,23 @@
 
         function handleGenderSelect(){
             const gender=document.getElementById('genderSelect').value;
-            console.log('Gender selected:', gender);
             showLoading('Loading...');
             setTimeout(function(){
-                // Hide ALL buttons first
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.add('hidden');
                     btn.style.display='none';
                 });
-                
-                // Show only selected gender button
                 if(gender==='male'){
-                    console.log('Showing MALE buttons only');
                     document.querySelectorAll('.male-group').forEach(btn=>{
                         btn.classList.remove('hidden');
                         btn.style.display='block';
                     });
                 }
                 else if(gender==='female'){
-                    console.log('Showing FEMALE buttons only');
                     document.querySelectorAll('.female-group').forEach(btn=>{
                         btn.classList.remove('hidden');
                         btn.style.display='block';
                     });
-                }
-                else{
-                    console.log('No gender selected - hiding all buttons');
                 }
                 hideLoading();
             },1500);
@@ -509,9 +455,7 @@
                 cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
             });
-            applyAreaTagStyles();
             
-            // Re-apply button visibility based on user type
             if(currentUserType==='admin'||currentUserType==='guardian'||currentUserType==='guest'){
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
@@ -539,24 +483,31 @@
             }
         }
 
-        function applyAreaTagStyles(){
-            const areaTags=document.querySelectorAll('.area-tag');
-            areaTags.forEach(function(tag){
-                tag.style.fontFamily=appSettings.areaTagFont;
-                tag.style.fontSize=appSettings.areaTagFontSize+'px';
-                tag.style.color=appSettings.areaTagColor;
-                tag.style.background=appSettings.areaTagBg;
-            });
+        function joinGroup(link){
+            showLoading('Opening...');
+            setTimeout(function(){window.open(link,'_blank');hideLoading();},1500);
         }
-
-        function joinGroup(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1500);}
 
         function submitReview(){
             const reviewText=document.getElementById('reviewText');
             const text=reviewText?reviewText.value:'';
             if(!text.trim()){alert('রিভিউ লিখুন');return;}
             showLoading('Submitting...');
-            db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+            db.collection('reviews').add({
+                text:text,userId:currentUser?currentUser.uid:'guest',
+                userName:currentUser?currentUser.displayName:'Guest',
+                userType:currentUserType,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function(){
+                if(reviewText)reviewText.value='';
+                loadReviews();
+                hideLoading();
+                showSaveIndicator();
+            }).catch(function(error){
+                alert('Error: '+error.message);
+                hideLoading();
+                showSaveIndicator(true);
+            });
         }
 
         function loadReviews(){
@@ -575,84 +526,188 @@
         }
 
         function openControlPanel(){
-            if(!isAdmin){
-                alert('Only admin can access settings!');
-                return;
-            }
+            if(!isAdmin){alert('Only admin can access settings!');return;}
             const controlPanel=document.getElementById('controlPanel');
             if(controlPanel)controlPanel.classList.add('active');
             loadControlSettings();
             renderCardSettings();
         }
-        function closeControlPanel(){const controlPanel=document.getElementById('controlPanel');if(controlPanel)controlPanel.classList.remove('active');}
+
+        function closeControlPanel(){
+            const controlPanel=document.getElementById('controlPanel');
+            if(controlPanel)controlPanel.classList.remove('active');
+        }
 
         function instantSave(){
             if(isSaving)return;
             saveAllSettings(true);
         }
 
-        function updateLogoUrl(){
-            const url=document.getElementById('logoUrlInput').value;
-            if(url){
-                document.getElementById('logoImage').src=url;
+        // Image URL Functions - FIXED
+        function applyLogoUrl(){
+            const url=document.getElementById('logoUrlInput').value.trim();
+            const logoImage=document.getElementById('logoImage');
+            if(url&&logoImage){
+                logoImage.src=url;
                 appSettings.logoUrl=url;
+                console.log('Logo URL applied:',url);
                 instantSave();
+                showSaveIndicator();
+            }else{
+                alert('Please enter a valid image URL!');
             }
         }
 
-        function updateLogoSize(){const size=document.getElementById('logoSize').value;const logoImage=document.getElementById('logoImage');if(logoImage){logoImage.style.width=size+'px';logoImage.style.height=size+'px';}appSettings.logoSize=size;instantSave();}
-
-        function updateLoginLogoUrl(){
-            const url=document.getElementById('loginLogoUrlInput').value;
-            if(url){
-                document.getElementById('loginLogo').src=url;
+        function applyLoginLogoUrl(){
+            const url=document.getElementById('loginLogoUrlInput').value.trim();
+            const loginLogo=document.getElementById('loginLogo');
+            if(url&&loginLogo){
+                loginLogo.src=url;
                 appSettings.loginLogoUrl=url;
+                console.log('Login Logo URL applied:',url);
                 instantSave();
+                showSaveIndicator();
+            }else{
+                alert('Please enter a valid image URL!');
             }
         }
 
-        function updateLoginLogoSize(){const size=document.getElementById('loginLogoSize').value;const loginLogo=document.getElementById('loginLogo');if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}appSettings.loginLogoSize=size;instantSave();}
-
-        function updateCeoUrl(){
-            const url=document.getElementById('ceoUrlInput').value;
-            if(url){
-                document.getElementById('ceoImage').src=url;
+        function applyCeoUrl(){
+            const url=document.getElementById('ceoUrlInput').value.trim();
+            const ceoImage=document.getElementById('ceoImage');
+            if(url&&ceoImage){
+                ceoImage.src=url;
                 appSettings.ceoUrl=url;
+                console.log('CEO URL applied:',url);
                 instantSave();
+                showSaveIndicator();
+            }else{
+                alert('Please enter a valid image URL!');
             }
         }
 
-        function updateBannerColor(){const color=document.getElementById('bannerColor').value;document.querySelector('.header-section').style.background=color;appSettings.bannerColor=color;instantSave();}
+        function updateLogoSize(){
+            const size=document.getElementById('logoSize').value;
+            const logoImage=document.getElementById('logoImage');
+            if(logoImage){
+                logoImage.style.width=size+'px';
+                logoImage.style.height=size+'px';
+            }
+            appSettings.logoSize=size;
+            instantSave();
+        }
 
-        function loadTextSettings(){const section=document.getElementById('textSection').value;const settings=appSettings.texts[section]||{};document.getElementById('textContent').value=settings.content||'';document.getElementById('fontFamily').value=settings.font||"'Hind Siliguri', sans-serif";document.getElementById('fontSize').value=settings.size||24;document.getElementById('fontColor').value=settings.color||"#000000";}
+        function updateLoginLogoSize(){
+            const size=document.getElementById('loginLogoSize').value;
+            const loginLogo=document.getElementById('loginLogo');
+            if(loginLogo){
+                loginLogo.style.width=size+'px';
+                loginLogo.style.height=size+'px';
+            }
+            appSettings.loginLogoSize=size;
+            instantSave();
+        }
 
-        function updateTextContent(){const section=document.getElementById('textSection').value;const content=document.getElementById('textContent').value;const el=document.getElementById(section);if(el){if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}else{el.textContent=content;}}if(!appSettings.texts[section])appSettings.texts[section]={};appSettings.texts[section].content=content;instantSave();}
+        function updateBannerColor(){
+            const color=document.getElementById('bannerColor').value;
+            document.querySelector('.header-section').style.background=color;
+            appSettings.bannerColor=color;
+            instantSave();
+        }
 
-        function updateTextFont(){const section=document.getElementById('textSection').value;const font=document.getElementById('fontFamily').value;document.getElementById(section).style.fontFamily=font;if(!appSettings.texts[section])appSettings.texts[section]={};appSettings.texts[section].font=font;instantSave();}
+        function loadTextSettings(){
+            const section=document.getElementById('textSection').value;
+            const settings=appSettings.texts[section]||{};
+            document.getElementById('textContent').value=settings.content||'';
+            document.getElementById('fontFamily').value=settings.font||"'Hind Siliguri', sans-serif";
+            document.getElementById('fontSize').value=settings.size||24;
+            document.getElementById('fontColor').value=settings.color||"#000000";
+        }
 
-        function updateTextSize(){const section=document.getElementById('textSection').value;const size=document.getElementById('fontSize').value;document.getElementById(section).style.fontSize=size+'px';if(!appSettings.texts[section])appSettings.texts[section]={};appSettings.texts[section].size=size;instantSave();}
+        function updateTextContent(){
+            const section=document.getElementById('textSection').value;
+            const content=document.getElementById('textContent').value;
+            const el=document.getElementById(section);
+            if(el){
+                if(section==='tutorNoteText'){
+                    el.innerHTML='📌 <b>নোট:</b> '+content;
+                }else{
+                    el.textContent=content;
+                }
+            }
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].content=content;
+            instantSave();
+        }
 
-        function updateTextColor(){const section=document.getElementById('textSection').value;const color=document.getElementById('fontColor').value;document.getElementById(section).style.color=color;if(!appSettings.texts[section])appSettings.texts[section]={};appSettings.texts[section].color=color;instantSave();}
+        function updateTextFont(){
+            const section=document.getElementById('textSection').value;
+            const font=document.getElementById('fontFamily').value;
+            document.getElementById(section).style.fontFamily=font;
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].font=font;
+            instantSave();
+        }
 
-        function updateAreaTagFont(){const font=document.getElementById('areaTagFont').value;appSettings.areaTagFont=font;applyAreaTagStyles();instantSave();}
-        function updateAreaTagFontSize(){const size=document.getElementById('areaTagFontSize').value;appSettings.areaTagFontSize=size;applyAreaTagStyles();instantSave();}
-        function updateAreaTagColor(){const color=document.getElementById('areaTagColor').value;appSettings.areaTagColor=color;applyAreaTagStyles();instantSave();}
-        function updateAreaTagBg(){const bg=document.getElementById('areaTagBg').value;appSettings.areaTagBg=bg;applyAreaTagStyles();instantSave();}
+        function updateTextSize(){
+            const section=document.getElementById('textSection').value;
+            const size=document.getElementById('fontSize').value;
+            document.getElementById(section).style.fontSize=size+'px';
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].size=size;
+            instantSave();
+        }
 
-        function updateFbLink(){const link=document.getElementById('fbLink').value;document.getElementById('fbButton').href=link;appSettings.fbLink=link;instantSave();}
+        function updateTextColor(){
+            const section=document.getElementById('textSection').value;
+            const color=document.getElementById('fontColor').value;
+            document.getElementById(section).style.color=color;
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].color=color;
+            instantSave();
+        }
+
+        function updateFbLink(){
+            const link=document.getElementById('fbLink').value;
+            document.getElementById('fbButton').href=link;
+            appSettings.fbLink=link;
+            instantSave();
+        }
 
         function renderCardSettings(){
-            const container=document.getElementById('cardSettings');if(!container)return;
+            const container=document.getElementById('cardSettings');
+            if(!container)return;
             container.innerHTML='';
             zoneCards.forEach(function(card,index){
-                const cardItem=document.createElement('div');cardItem.className='card-item';
-                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas (comma separated):</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
+                const cardItem=document.createElement('div');
+                cardItem.className='card-item';
+                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+
+                    '<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+
+                    '<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+
+                    '<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+
+                    '<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+
+                    '<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
                 container.appendChild(cardItem);
             });
         }
 
-        function addNewCard(){const newId=zoneCards.length+1;zoneCards.push({id:newId,zone:"New Zone",areas:["Area 1"],maleGroup:"https://chat.whatsapp.com/male",femaleGroup:"https://chat.whatsapp.com/female"});renderCardSettings();renderZoneCards();instantSave();}
-        function deleteZoneCard(index){if(confirm('Delete this zone?')){zoneCards.splice(index,1);renderCardSettings();renderZoneCards();instantSave();}}
+        function addNewCard(){
+            const newId=zoneCards.length+1;
+            zoneCards.push({id:newId,zone:"New Zone",areas:["Area 1"],maleGroup:"https://chat.whatsapp.com/male",femaleGroup:"https://chat.whatsapp.com/female"});
+            renderCardSettings();
+            renderZoneCards();
+            instantSave();
+        }
+
+        function deleteZoneCard(index){
+            if(confirm('Delete this zone?')){
+                zoneCards.splice(index,1);
+                renderCardSettings();
+                renderZoneCards();
+                instantSave();
+            }
+        }
+
         function updateZoneName(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();}
         function updateZoneAreas(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();}
         function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}
@@ -666,10 +721,6 @@
             document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';
             document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';
             document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';
-            document.getElementById('areaTagFont').value=appSettings.areaTagFont;
-            document.getElementById('areaTagFontSize').value=appSettings.areaTagFontSize;
-            document.getElementById('areaTagColor').value=appSettings.areaTagColor;
-            document.getElementById('areaTagBg').value=appSettings.areaTagBg;
         }
 
         function saveAllSettings(isInstant=false){
@@ -678,16 +729,21 @@
             if(!isInstant)showLoading('Saving...');
             
             db.collection('settings').doc('main').set({
-                bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
-                logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
-                fbLink:appSettings.fbLink,areaTagFont:appSettings.areaTagFont,areaTagFontSize:appSettings.areaTagFontSize,
-                areaTagColor:appSettings.areaTagColor,areaTagBg:appSettings.areaTagBg,texts:appSettings.texts,zoneCards:zoneCards,
+                bannerColor:appSettings.bannerColor,
+                logoSize:appSettings.logoSize,
+                loginLogoSize:appSettings.loginLogoSize,
+                logoUrl:appSettings.logoUrl,
+                loginLogoUrl:appSettings.loginLogoUrl,
+                ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,
+                texts:appSettings.texts,
+                zoneCards:zoneCards,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
                 isSaving=false;
-                if(!isInstant){hideLoading();}
+                if(!isInstant)hideLoading();
                 showSaveIndicator(false);
-                console.log('✅ Settings saved successfully!');
+                console.log('✅ Settings saved!');
             }).catch(function(error){
                 isSaving=false;
                 console.error('❌ Save error:',error);
@@ -701,40 +757,101 @@
             db.collection('settings').doc('main').get().then(function(doc){
                 if(doc.exists){
                     const data=doc.data();
-                    if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
-                    if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}
-                    if(data.logoSize){const logoImage=document.getElementById('logoImage');logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';appSettings.logoSize=data.logoSize;}
-                    if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}
-                    if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';appSettings.loginLogoSize=data.loginLogoSize;}
-                    if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
-                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
-                    if(data.areaTagFont){appSettings.areaTagFont=data.areaTagFont;}
-                    if(data.areaTagFontSize){appSettings.areaTagFontSize=data.areaTagFontSize;}
-                    if(data.areaTagColor){appSettings.areaTagColor=data.areaTagColor;}
-                    if(data.areaTagBg){appSettings.areaTagBg=data.areaTagBg;}
+                    console.log('Loaded settings:',data);
+                    
+                    if(data.bannerColor){
+                        document.querySelector('.header-section').style.background=data.bannerColor;
+                        appSettings.bannerColor=data.bannerColor;
+                    }
+                    if(data.logoUrl){
+                        document.getElementById('logoImage').src=data.logoUrl;
+                        appSettings.logoUrl=data.logoUrl;
+                    }
+                    if(data.logoSize){
+                        const logoImage=document.getElementById('logoImage');
+                        logoImage.style.width=data.logoSize+'px';
+                        logoImage.style.height=data.logoSize+'px';
+                        appSettings.logoSize=data.logoSize;
+                    }
+                    if(data.loginLogoUrl){
+                        document.getElementById('loginLogo').src=data.loginLogoUrl;
+                        appSettings.loginLogoUrl=data.loginLogoUrl;
+                    }
+                    if(data.loginLogoSize){
+                        const loginLogo=document.getElementById('loginLogo');
+                        loginLogo.style.width=data.loginLogoSize+'px';
+                        loginLogo.style.height=data.loginLogoSize+'px';
+                        appSettings.loginLogoSize=data.loginLogoSize;
+                    }
+                    if(data.ceoUrl){
+                        document.getElementById('ceoImage').src=data.ceoUrl;
+                        appSettings.ceoUrl=data.ceoUrl;
+                    }
+                    if(data.fbLink){
+                        document.getElementById('fbButton').href=data.fbLink;
+                        appSettings.fbLink=data.fbLink;
+                    }
                     if(data.texts){
                         appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
-                            if(el){if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontFamily=data.texts[key].font;el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}
+                            if(el){
+                                if(key==='tutorNoteText'){
+                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
+                                }else{
+                                    el.textContent=data.texts[key].content;
+                                }
+                                el.style.fontFamily=data.texts[key].font;
+                                el.style.fontSize=data.texts[key].size+'px';
+                                el.style.color=data.texts[key].color;
+                            }
                         });
                     }
-                    if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
-                    applyAreaTagStyles();
-                    console.log('✅ Settings loaded successfully!');
+                    if(data.zoneCards){
+                        zoneCards=data.zoneCards;
+                        renderZoneCards();
+                    }
+                    console.log('✅ Settings loaded!');
                 }else{
-                    console.log('No settings found, using defaults');
+                    console.log('No settings found');
                 }
             }).catch(function(error){
-                console.error('❌ Load settings error:',error);
+                console.error('❌ Load error:',error);
             });
         }
 
-        function logout(){showLoading('Logging out...');auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});}
+        function logout(){
+            showLoading('Logging out...');
+            auth.signOut().then(function(){
+                currentUser=null;
+                currentUserType=null;
+                isAdmin=false;
+                showPage('loginPage');
+                hideLoading();
+            }).catch(function(error){
+                alert('Error: '+error.message);
+                hideLoading();
+            });
+        }
 
-        auth.onAuthStateChanged(function(user){if(user){console.log('Signed in:',user.email);if(user.email===ADMIN_EMAIL)isAdmin=true;}else{console.log('Signed out');isAdmin=false;}});
+        auth.onAuthStateChanged(function(user){
+            if(user){
+                console.log('Signed in:',user.email);
+                if(user.email===ADMIN_EMAIL)isAdmin=true;
+            }else{
+                console.log('Signed out');
+                isAdmin=false;
+            }
+        });
 
-        document.addEventListener('DOMContentLoaded',function(){console.log('Tutors Valley initialized');checkEmbeddedBrowser();const loginPage=document.getElementById('loginPage');if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}});
+        document.addEventListener('DOMContentLoaded',function(){
+            console.log('Tutors Valley initialized');
+            const loginPage=document.getElementById('loginPage');
+            if(loginPage){
+                loginPage.classList.add('active');
+                loginPage.style.display='flex';
+            }
+        });
     </script>
 </body>
 </html>
