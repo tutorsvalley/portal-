@@ -1,610 +1,789 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="theme-color" content="#4361ee">
-    <title>Tutors Valley - Learning Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
+    <meta name="theme-color" content="#001f3f">
     
-    <!-- External Link Handler for Embedded Browser Fix -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <style>
-        /* ===== BASE RESET & VARIABLES ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #4361ee; --secondary: #3f37c9; --success: #4cc9f0;
-            --warning: #f72585; --dark: #1e293b; --light: #f8fafc;
-            --gray: #64748b; --white: #ffffff; --shadow: 0 4px 20px rgba(0,0,0,0.1);
-            --radius: 12px; --transition: all 0.3s ease;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--light); color: var(--dark);
-            line-height: 1.6; overflow-x: hidden;
-            min-height: 100vh; position: relative;
-        }
-        
-        /* ===== LOGIN STATE CLASSES - DO NOT MODIFY ===== */
-        body.logged-out .auth-only, 
-        body.logged-out .tutor-only, 
-        body.logged-out .guardian-only,
-        body.mode-guest .tutor-only,
-        body.mode-guest .guardian-only,
-        body.mode-tutor .guest-only,
-        body.mode-guardian .guest-only { display: none !important; }
-        
-        body.logged-in .guest-only { display: none !important; }
-        body.logged-out .guest-only { display: inline-flex !important; }
-        
-        /* ===== UI COMPONENTS ===== */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        /* Header */
-        header {
-            background: var(--white); box-shadow: var(--shadow);
-            position: sticky; top: 0; z-index: 1000; padding: 15px 0;        }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
-        .logo span { color: var(--secondary); }
-        
-        .nav-actions { display: flex; gap: 10px; align-items: center; }
-        
-        /* Buttons */
-        .btn {
-            padding: 12px 24px; border: none; border-radius: var(--radius);
-            font-weight: 600; cursor: pointer; transition: var(--transition);
-            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-            font-size: 0.95rem; justify-content: center;
-        }
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: var(--secondary); transform: translateY(-2px); }
-        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: var(--white); }
-        .btn-danger { background: var(--warning); color: var(--white); }
-        .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
-        
-        /* Hero Section */
-        .hero {
-            padding: 60px 0; text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--white); margin-bottom: 40px;
-        }
-        .hero h1 { font-size: 2.5rem; margin-bottom: 20px; }
-        .hero p { font-size: 1.2rem; opacity: 0.95; max-width: 600px; margin: 0 auto 30px; }
-        
-        /* Login Cards */
-        .login-section { padding: 40px 0; }
-        .login-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px; max-width: 1000px; margin: 0 auto;
-        }
-        .login-card {
-            background: var(--white); border-radius: var(--radius);
-            padding: 30px; text-align: center; box-shadow: var(--shadow);
-            transition: var(--transition); border: 2px solid transparent;
-        }
-        .login-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .login-card h3 { margin: 15px 0; color: var(--dark); }
-        .login-card .icon { font-size: 3rem; margin-bottom: 10px; }
-        
-        /* Dashboard Placeholder */
-        .dashboard { display: none; padding: 40px 0; }
-        .dashboard.active { display: block; }
-        .welcome-banner {
-            background: var(--white); border-radius: var(--radius);            padding: 25px; margin-bottom: 30px; box-shadow: var(--shadow);
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
-        .welcome-text h2 { color: var(--primary); }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: var(--primary); color: white; display: flex;
-            align-items: center; justify-content: center; font-weight: bold;
-        }
-        
-        /* Content Cards */
-        .content-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: var(--white); border-radius: var(--radius);
-            padding: 25px; box-shadow: var(--shadow);
-        }
-        .card h4 { margin-bottom: 12px; color: var(--secondary); }
-        
-        /* Footer */
-        footer {
-            background: var(--dark); color: var(--white);
-            padding: 30px 0; margin-top: 60px; text-align: center;
-        }
-        footer a { color: var(--success); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
-        
-        /* External Link Indicator */
-        a[href^="http"]:not([href*="github.io"]):not([href*="localhost"]):not([href^="#"]):after {
-            content: " ↗"; font-size: 0.8em; vertical-align: super;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .header-content { flex-wrap: wrap; gap: 10px; }
-            .welcome-banner { flex-direction: column; text-align: center; }
-        }
-        
-        /* Loading & Utilities */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mt-20 { margin-top: 20px; }
-        .session-warning {
-            background: #fff3cd; color: #856404; padding: 10px 15px;
-            border-radius: 8px; margin: 10px 0; font-size: 0.9rem;
-            display: none;        }
-        .session-warning.show { display: block; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-    </style>
-</head>
-<body class="logged-out">
-
-    <!-- ===== HEADER ===== -->
-    <header>
-        <div class="container header-content">
-            <a href="#" class="logo">Tutors<span>Valley</span></a>
-            <div class="nav-actions">
-                <span id="user-display" class="auth-only hidden" style="font-weight:500;color:var(--primary)"></span>
-                <button onclick="doLogout()" class="btn btn-danger btn-sm auth-only hidden">Logout</button>
-                <button onclick="showLoginSection()" class="btn btn-outline btn-sm guest-only">Login</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- ===== HERO SECTION (ALWAYS VISIBLE) ===== -->
-    <section class="hero">
-        <div class="container">
-            <h1>🎓 Welcome to Tutors Valley</h1>
-            <p>Your personalized learning platform for tutors, guardians, and students.</p>
-            <div class="guest-only">
-                <button onclick="doLogin('guest', {name: 'Guest User'}); navigateTo('home');" class="btn btn-primary">
-                    👤 Continue as Guest
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== LOGIN SECTION (Guest/Tutor/Guardian) ===== -->
-    <section id="login-section" class="login-section">
-        <div class="container">
-            <h2 class="text-center" style="margin-bottom:30px;color:var(--dark)">Choose Your Role</h2>
-            <div class="login-grid">
-                <!-- Guest Card -->
-                <div class="login-card guest-only">
-                    <div class="icon">👤</div>
-                    <h3>Guest User</h3>
-                    <p style="color:var(--gray);margin:10px 0 20px">Explore courses without registration</p>
-                    <button onclick="doLogin('guest', {name: 'Guest'}); navigateTo('home');" class="btn btn-primary" style="width:100%">
-                        Continue as Guest
-                    </button>
-                </div>
-                
-                <!-- Tutor Card -->
-                <div class="login-card">
-                    <div class="icon">👨‍🏫</div>                    <h3>Tutor</h3>
-                    <p style="color:var(--gray);margin:10px 0 20px">Manage classes & students</p>
-                    <button onclick="doLogin('tutor', {name: 'Tutor', email: 'tutor@tv.com'}); navigateTo('dashboard');" class="btn btn-outline" style="width:100%">
-                        Tutor Login
-                    </button>
-                </div>
-                
-                <!-- Guardian Card -->
-                <div class="login-card">
-                    <div class="icon">👨‍👩‍👧‍👦</div>
-                    <h3>Guardian</h3>
-                    <p style="color:var(--gray);margin:10px 0 20px">Track your child's progress</p>
-                    <button onclick="doLogin('guardian', {name: 'Guardian', child: 'Student'}); navigateTo('dashboard');" class="btn btn-outline" style="width:100%">
-                        Guardian Login
-                    </button>
-                </div>
-            </div>
-            <div id="session-warning" class="session-warning text-center">
-                ⚠️ Session will expire after 5 minutes of inactivity
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== HOME DASHBOARD (Protected) ===== -->
-    <section id="home-dashboard" class="dashboard container">
-        <div class="welcome-banner">
-            <div class="welcome-text">
-                <h2 id="welcome-msg">👋 Welcome!</h2>
-                <p id="role-desc" style="color:var(--gray)">Start exploring your learning path</p>
-            </div>
-            <div class="user-info">
-                <div class="avatar" id="user-avatar">G</div>
-                <div>
-                    <strong id="user-name">Guest</strong><br>
-                    <small id="user-mode" style="color:var(--gray)">Guest User</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="content-grid">
-            <div class="card">
-                <h4>📚 My Courses</h4>
-                <p style="color:var(--gray)">Access your enrolled courses and learning materials.</p>
-                <a href="https://example.com/courses" class="btn btn-sm btn-outline mt-20">View Courses</a>
-            </div>
-            <div class="card">
-                <h4>📅 Schedule</h4>
-                <p style="color:var(--gray)">Upcoming classes, assignments, and important dates.</p>
-                <a href="https://example.com/schedule" class="btn btn-sm btn-outline mt-20">View Schedule</a>
-            </div>            <div class="card">
-                <h4>💬 Support</h4>
-                <p style="color:var(--gray)">Get help from our support team or community forums.</p>
-                <a href="https://wa.me/1234567890" class="btn btn-sm btn-primary mt-20">WhatsApp Support</a>
-            </div>
-        </div>
-        
-        <div class="card mt-20" style="background:linear-gradient(135deg,#4361ee,#3a0ca3);color:white">
-            <h4 style="color:white">🔗 Quick Links</h4>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
-                <a href="https://google.com" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white">Google</a>
-                <a href="https://youtube.com" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white">YouTube</a>
-                <a href="https://github.com" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white">GitHub</a>
-                <a href="#" onclick="alert('Internal link clicked!');return false;" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white">Internal Page</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <div class="container">
-            <p>© 2026 Tutors Valley. All rights reserved.</p>
-            <p style="margin-top:10px;font-size:0.9rem;opacity:0.8">
-                <a href="https://tutorsvalley.github.io/privacy" target="_blank">Privacy Policy</a> | 
-                <a href="https://tutorsvalley.github.io/terms" target="_blank">Terms of Service</a> |
-                <a href="https://wa.me/1234567890" target="_blank">Contact via WhatsApp</a>
-            </p>
-        </div>
-    </footer>
-
-    <!-- ===== SESSION MANAGER - ALL BUG FIXES INTEGRATED ===== -->
+    <!-- AUTO REDIRECT FOR EMBEDDED BROWSERS -->
     <script>
-    (function() {
-        'use strict';
-        
-        // ===== CONFIGURATION =====
-        const Config = {
-            AUTH_KEY: 'tv_session_v2',
-            TIMEOUT: 5 * 60 * 1000, // 5 minutes in ms
-            WARNING_THRESHOLD: 4 * 60 * 1000 // Show warning at 4 minutes
-        };
-        
-        // ===== STATE MANAGEMENT =====
-        let sessionTimer = null;
-        let warningShown = false;
-        
-        // ===== INITIALIZATION =====
-        function init() {
-            restoreSession();
-            setupEventListeners();            updateUI();
-        }
-        
-        // ===== SESSION RESTORE (Fix: Reload/Back Button Logout) =====
-        function restoreSession() {
-            try {
-                const raw = localStorage.getItem(Config.AUTH_KEY);
-                if (!raw) { setLoggedOut(); return; }
+        (function(){
+            var url = window.location.href;
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // Detect Facebook, Messenger, Instagram, WhatsApp
+            var isEmbedded = /FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
+            
+            if(isEmbedded){
+                // Multiple redirect attempts to trigger native prompt
+                window.location.href = url;
+                window.location.replace(url);
+                window.open(url, "_blank", "noopener,noreferrer");
                 
-                const session = JSON.parse(raw);
-                const now = Date.now();
-                
-                // Check timeout
-                if (now - session.lastActive > Config.TIMEOUT) {
-                    clearSession(); setLoggedOut(); return;
-                }
-                
-                // Restore session
-                applySession(session);
-                
-            } catch (e) {
-                console.error('Session restore error:', e);
-                clearSession(); setLoggedOut();
+                // Fallback
+                setTimeout(function(){
+                    window.location.href = url;
+                }, 1000);
             }
-        }
-        
-        // ===== LOGIN FUNCTION (Call this from buttons) =====
-        window.doLogin = function(mode, userData) {
-            const session = {
-                mode: mode,
-                user: userData || {},
-                loginTime: Date.now(),
-                lastActive: Date.now()
-            };
-            
-            // Generate unique ID for guest to fix repeat login bug
-            if (mode === 'guest' && !session.user.id) {
-                session.user.id = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            }
-            
-            // Save to localStorage (persists across reloads/back navigation)
-            localStorage.setItem(Config.AUTH_KEY, JSON.stringify(session));
-            
-            // Apply UI
-            applySession(session);
-            resetActivityTimer();
-            showSessionWarning();
-            
-            // Trigger custom event for other scripts
-            window.dispatchEvent(new CustomEvent('tv:login', { detail: session }));        };
-        
-        // ===== LOGOUT FUNCTION =====
-        window.doLogout = function() {
-            clearSession();
-            setLoggedOut();
-            hideSessionWarning();
-            window.dispatchEvent(new CustomEvent('tv:logout'));
-        };
-        
-        // ===== APPLY SESSION TO UI =====
-        function applySession(session) {
-            // Update body classes for CSS-based show/hide
-            document.body.className = 'logged-in mode-' + session.mode;
-            
-            // Update user display
-            const user = session.user;
-            document.getElementById('user-name').textContent = user.name || session.mode;
-            document.getElementById('user-mode').textContent = 
-                session.mode.charAt(0).toUpperCase() + session.mode.slice(1) + ' User';
-            document.getElementById('user-avatar').textContent = 
-                (user.name || session.mode).charAt(0).toUpperCase();
-            document.getElementById('user-display').textContent = user.name || session.mode;
-            document.getElementById('user-display').classList.remove('hidden');
-            
-            // Update welcome message
-            const welcomeMsg = {
-                guest: '👋 Welcome, Guest!',
-                tutor: '👨‍🏫 Welcome, Tutor!',
-                guardian: '👨‍👩‍👧‍👦 Welcome, Guardian!',
-                admin: '⚙️ Welcome, Admin!'
-            };
-            document.getElementById('welcome-msg').textContent = welcomeMsg[session.mode] || '👋 Welcome!';
-            
-            // Update role description
-            const roleDesc = {
-                guest: 'Explore courses in demo mode',
-                tutor: 'Manage your classes and students',
-                guardian: 'Track your child\'s learning progress',
-                admin: 'System administration panel'
-            };
-            document.getElementById('role-desc').textContent = roleDesc[session.mode] || 'Start exploring';
-            
-            // Show dashboard, hide login
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('home-dashboard').classList.add('active');
-            
-            // Save scroll position (Fix: Homepage reset on reload)
-            savePageState();
-        }        
-        // ===== SET LOGGED OUT UI =====
-        function setLoggedOut() {
-            document.body.className = 'logged-out';
-            document.getElementById('user-display').classList.add('hidden');
-            document.getElementById('login-section').style.display = 'block';
-            document.getElementById('home-dashboard').classList.remove('active');
-        }
-        
-        // ===== CLEAR SESSION DATA =====
-        function clearSession() {
-            localStorage.removeItem(Config.AUTH_KEY);
-            if (sessionTimer) clearTimeout(sessionTimer);
-        }
-        
-        // ===== ACTIVITY TIMER (Auto Logout after 5 min) =====
-        function resetActivityTimer() {
-            const session = getCurrentSession();
-            if (!session) return;
-            
-            session.lastActive = Date.now();
-            localStorage.setItem(Config.AUTH_KEY, JSON.stringify(session));
-            warningShown = false;
-            hideSessionWarning();
-            
-            // Clear existing timer
-            if (sessionTimer) clearTimeout(sessionTimer);
-            
-            // Set new check interval
-            sessionTimer = setTimeout(checkInactivity, 30000); // Check every 30 sec
-        }
-        
-        function checkInactivity() {
-            const session = getCurrentSession();
-            if (!session) return;
-            
-            const now = Date.now();
-            const inactiveTime = now - session.lastActive;
-            
-            // Show warning at 4 minutes
-            if (inactiveTime > Config.WARNING_THRESHOLD && !warningShown) {
-                showSessionWarning();
-                warningShown = true;
-            }
-            
-            // Auto logout at 5 minutes
-            if (inactiveTime > Config.TIMEOUT) {
-                alert('⏰ Session expired due to inactivity.\nPlease login again.');
-                doLogout();
-                if (window.location.hash) window.location.hash = '';                return;
-            }
-            
-            // Continue checking
-            sessionTimer = setTimeout(checkInactivity, 30000);
-        }
-        
-        function getCurrentSession() {
-            try {
-                const raw = localStorage.getItem(Config.AUTH_KEY);
-                return raw ? JSON.parse(raw) : null;
-            } catch { return null; }
-        }
-        
-        // ===== PAGE STATE PERSISTENCE (Fix: Homepage reset) =====
-        function savePageState() {
-            const state = {
-                scrollY: window.scrollY,
-                timestamp: Date.now(),
-                hash: window.location.hash
-            };
-            sessionStorage.setItem('tv_page_state', JSON.stringify(state));
-        }
-        
-        function restorePageState() {
-            try {
-                const raw = sessionStorage.getItem('tv_page_state');
-                if (!raw) return;
-                const state = JSON.parse(raw);
-                // Only restore if recent (< 10 min)
-                if (Date.now() - state.timestamp < 600000) {
-                    requestAnimationFrame(() => {
-                        if (state.scrollY) window.scrollTo(0, state.scrollY);
-                        if (state.hash) window.location.hash = state.hash;
-                    });
-                }
-            } catch (e) {}
-        }
-        
-        // ===== NAVIGATION HELPER =====
-        window.navigateTo = function(section) {
-            if (section === 'home' || section === 'dashboard') {
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('home-dashboard').classList.add('active');
-                savePageState();
-            }
-        };
-        
-        window.showLoginSection = function() {
-            document.getElementById('login-section').style.display = 'block';            document.getElementById('home-dashboard').classList.remove('active');
-        };
-        
-        // ===== EXTERNAL LINK HANDLER (Fix: Embedded Browser) =====
-        function setupExternalLinks() {
-            document.addEventListener('click', function(e) {
-                const link = e.target.closest('a[href]');
-                if (!link) return;
-                
-                const href = link.href;
-                
-                // Skip internal links, anchors, and same-domain
-                if (href.startsWith('#') || 
-                    href.includes(window.location.hostname) || 
-                    href.includes('github.io') ||
-                    href.startsWith('mailto:') ||
-                    href.startsWith('tel:')) {
-                    return;
-                }
-                
-                // Handle external links
-                e.preventDefault();
-                
-                // Try to open in system browser (for mobile apps/webviews)
-                if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    // Method 1: _system target (works in Cordova/Capacitor)
-                    window.open(href, '_system', 'location=yes');
-                    
-                    // Method 2: Fallback to _blank with noopener
-                    setTimeout(() => {
-                        const newWin = window.open(href, '_blank', 'noopener,noreferrer,external');
-                        if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
-                            // Method 3: Force redirect if popup blocked
-                            window.location.href = href;
-                        }
-                    }, 150);
-                } else {
-                    // Desktop: Open in new tab
-                    window.open(href, '_blank', 'noopener,noreferrer');
-                }
-            }, true); // Use capture phase to catch all clicks
-        }
-        
-        // ===== EVENT LISTENERS =====
-        function setupEventListeners() {
-            // Track user activity for auto-logout
-            ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click']
-                .forEach(evt => document.addEventListener(evt, resetActivityTimer, { passive: true }));
-            
-            // Handle browser navigation (back/forward/reload)            window.addEventListener('pageshow', function(e) {
-                // Restore session when page is shown from bfcache or reload
-                if (e.persisted || 
-                    performance.getEntriesByType('navigation')[0]?.type === 'reload' ||
-                    performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
-                    restoreSession();
-                    restorePageState();
-                }
-            });
-            
-            // Save state before unload
-            window.addEventListener('beforeunload', function() {
-                savePageState();
-                const session = getCurrentSession();
-                if (session) {
-                    session.lastActive = Date.now();
-                    localStorage.setItem(Config.AUTH_KEY, JSON.stringify(session));
-                }
-            });
-            
-            // External link handler
-            setupExternalLinks();
-            
-            // Handle hash changes for SPA-like navigation
-            window.addEventListener('hashchange', function() {
-                if (getCurrentSession()) {
-                    savePageState();
-                }
-            });
-        }
-        
-        // ===== UI HELPERS =====
-        function showSessionWarning() {
-            const warning = document.getElementById('session-warning');
-            if (warning) warning.classList.add('show');
-        }
-        
-        function hideSessionWarning() {
-            const warning = document.getElementById('session-warning');
-            if (warning) warning.classList.remove('show');
-        }
-        
-        function updateUI() {
-            // Ensure correct initial state
-            const session = getCurrentSession();
-            if (session) {
-                applySession(session);
-                showSessionWarning();
-            } else {
-                setLoggedOut();            }
-        }
-        
-        // ===== START =====
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-        
-    })();
+        })();
     </script>
     
-    <!-- ===== OPTIONAL: WhatsApp Floating Button (Per User Preference) ===== -->
-    <a href="https://wa.me/1234567890" target="_blank" 
-       style="position:fixed;bottom:20px;right:20px;background:#25D366;color:white;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 15px rgba(0,0,0,0.3);z-index:9999;text-decoration:none;"
-       onclick="event.stopPropagation();">
-        💬
-    </a>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
+        body{font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;background:var(--bg-light);min-height:100vh}
+        
+        .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:10000}
+        .loading-overlay.active{display:flex}
+        .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid var(--secondary-color);border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        
+        .page{display:none;min-height:100vh}
+        .page.active{display:block}
+        
+        .login-page{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+        .login-page.active{display:flex}
+        .login-card{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+        .login-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover;background:#f0f0f0}
+        .header-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 8px;display:block;border:2px solid white;background:white;padding:2px;object-fit:cover;background:#f0f0f0}        
+        .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
+        .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
+        .login-buttons{display:flex;flex-direction:column;gap:12px}
+        .login-btn{padding:14px 20px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit}
+        .tutor-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+        .guardian-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:white}
+        .guest-btn{background:linear-gradient(135deg,#4facfe,#00f2fe);color:white}
+        .admin-btn{background:linear-gradient(135deg,#11998e,#38ef7d);color:white}
+        
+        .modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);justify-content:center;align-items:center}
+        .modal.active{display:flex}
+        .modal-content{background:white;padding:30px;border-radius:15px;width:90%;max-width:350px;position:relative}
+        .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}
+        .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
+        .google-btn img{width:20px;height:20px}
+        
+        .header-section{background:var(--primary-color);padding:15px 20px;position:relative;min-height:130px}
+        .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);display:none}
+        .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+        .header-center{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0}
+        .header-title{color:var(--text-light);font-size:24px;font-weight:700;margin-bottom:3px;text-align:center}
+        .header-motto{color:var(--accent-color);font-size:14px;font-weight:500;text-align:center}
+        .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
+        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
+        
+        .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
+        .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
+        .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
+        .tutor-controls{background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;text-align:center}
+        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}
+        
+        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+        .zone-title{font-size:18px;color:var(--primary-color);font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--secondary-color)}
+        .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+        .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
+        
+        .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600; transition:all 0.3s ease;} 
+        .group-btn:hover{transform:scale(1.02);}
+        .group-btn.hidden{display: none !important;} 
+        
+        .reviews-section{background:white;padding:20px 15px;margin-top:20px}
+        .review-form textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:8px}
+        .review-form button{padding:10px 25px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit}
+        .reviews-container{margin-top:15px}
+        .review-card{background:var(--bg-light);padding:12px;border-radius:8px;margin-bottom:12px}
+        .reviewer{font-weight:600;color:var(--primary-color);margin-bottom:6px}
+        
+        .ceo-section{background:linear-gradient(135deg,#f8f9fa,#e9ecef);padding:20px 15px;text-align:center;margin-top:20px;border-radius:12px}
+        .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}        .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
+        .ceo-info p{font-size:13px;color:#666}
+        
+        .footer{padding:20px;text-align:center;background:var(--primary-color);color:white;margin-top:30px;font-size:13px}
+        
+        .control-panel{display:none;position:fixed;top:0;left:0;width:100%;max-width:450px;height:100vh;background:white;box-shadow:5px 0 20px rgba(0,0,0,0.2);z-index:9998;overflow-y:auto}
+        .control-panel.active{display:block}
+        .control-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:var(--primary-color);color:white;position:sticky;top:0;z-index:10}
+        .control-content{padding:20px}
+        .control-section{margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #eee}
+        .control-section h4{font-size:16px;color:var(--primary-color);margin-bottom:10px}
+        .control-section label{display:block;margin:6px 0 4px;font-weight:500;font-size:13px}
+        .control-section input[type="text"],.control-section input[type="email"],.control-section input[type="password"],.control-section input[type="url"],.control-section select{width:100%;padding:8px;border:2px solid #ddd;border-radius:5px;font-size:13px;font-family:inherit}
+        .control-section input[type="color"]{width:45px;height:30px;border:none;cursor:pointer}
+        .control-section input[type="range"]{width:100%;cursor:pointer}
+        .save-btn{width:100%;padding:12px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:600}
+        .card-item{background:#f5f5f5;padding:12px;border-radius:6px;margin-bottom:12px}
+        .card-item h5{color:var(--primary-color);margin-bottom:8px}
+        .card-item input{margin-bottom:6px;width:100%;padding:6px;border:1px solid #ddd;border-radius:4px}
+        .delete-btn{background:#dc3545;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;margin-top:8px}
+        .add-card-btn{background:#28a745;color:white;border:none;padding:10px 15px;border-radius:6px;cursor:pointer;font-size:14px;width:100%;margin-bottom:12px}
+        .save-indicator{position:fixed;bottom:20px;right:20px;background:#28a745;color:white;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999;animation:slideIn 0.3s ease}
+        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+        .apply-btn{padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
+        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}
+        
+        @media(max-width:480px){
+            .header-title{font-size:20px}
+            .header-motto{font-size:12px}
+            .control-panel{max-width:100%}
+            .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
+    </div>
+    <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
     
+    <div id="loginPage" class="page login-page active">
+        <div class="login-card">
+            <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="login-logo" id="loginLogo">
+            <h1 class="login-title" id="loginTitleText">Tutors Valley</h1>
+            <p class="login-subtitle" id="loginSubtitleText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+            <div class="login-buttons">
+                <button class="login-btn tutor-btn" onclick="showLoginModal('tutor')">👨‍🏫 Tutor Login</button>
+                <button class="login-btn guardian-btn" onclick="showLoginModal('guardian')">👪 Guardian Login</button>
+                <button class="login-btn guest-btn" onclick="guestLogin()">👤 Continue as Guest</button>                <button class="login-btn admin-btn" onclick="showLoginModal('admin')">⚙️ Admin Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" style="text-align:center;color:var(--primary-color);margin-bottom:20px;">Login</h2>
+            <button class="google-btn" onclick="googleLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
+            <p id="loginStatus" style="color:red;margin-top:10px;text-align:center;"></p>
+        </div>
+    </div>
+
+    <div id="homePage" class="page">
+        <header class="header-section">
+            <div class="gear-icon" id="gearIcon" onclick="openControlPanel()">⚙️</div>
+            <div class="header-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="header-logo" id="logoImage">
+                <h1 class="header-title" id="brandingText">Tutors Valley</h1>
+                <p class="header-motto" id="mottoText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+            </div>
+            <div class="header-right">
+                <a id="fbButton" class="fb-page-btn" href="#" target="_blank">fb page</a>
+                <button class="logout-btn" onclick="logout()">লগআউট</button>
+            </div>
+        </header>
+        <div class="main-content">
+            <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>
+            <div id="tutorControls" class="tutor-controls" style="display:none;">
+                <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>
+                <select id="genderSelect" onchange="handleGenderSelect()">
+                    <option value="">-- নির্বাচন করুন --</option>
+                    <option value="male">পুরুষ</option>
+                    <option value="female">মহিলা</option>
+                </select>
+            </div>
+            <h2 class="section-title" id="zoneTitle">আমাদের এলাকা সমূহ</h2>
+            <div id="cardsContainer"></div>
+            <div class="reviews-section">
+                <h2 class="section-title" id="reviewsTitle">রিভিউ</h2>
+                <div id="reviewForm" class="review-form" style="display:none;">
+                    <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..."></textarea>
+                    <button onclick="submitReview()">জমা দিন</button>
+                </div>
+                <div id="reviewsContainer" class="reviews-container"></div>
+            </div>            <div class="ceo-section">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="CEO" class="ceo-img" id="ceoImage">
+                <div class="ceo-info"><h3 id="ceoName">CEO Name</h3><p id="ceoDescription">CEO Description</p></div>
+            </div>
+        </div>
+        <footer class="footer"><p id="copyrightText">© 2026 Tutors Valley. All rights reserved.</p></footer>
+    </div>
+
+    <div id="controlPanel" class="control-panel">
+        <div class="control-header">
+            <h3>⚙️ Admin Settings</h3>
+            <span class="close" onclick="closeControlPanel()" style="color:white;">&times;</span>
+        </div>
+        <div class="control-content">
+            <div class="control-section">
+                <h4>🏠 Homepage Logo</h4>
+                <img id="logoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png">
+                <input type="text" id="logoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
+                <button class="apply-btn" onclick="applyLogoUrl()">Apply Logo</button>
+                <label style="margin-top:10px;">Logo Size:</label>
+                <input type="range" id="logoSize" min="60" max="150" value="80" onchange="updateLogoSize()">
+            </div>
+            <div class="control-section">
+                <h4>🔐 Login Page Logo</h4>
+                <img id="loginLogoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png">
+                <input type="text" id="loginLogoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
+                <button class="apply-btn" onclick="applyLoginLogoUrl()">Apply Logo</button>
+                <label style="margin-top:10px;">Login Logo Size:</label>
+                <input type="range" id="loginLogoSize" min="60" max="150" value="80" onchange="updateLoginLogoSize()">
+            </div>
+            <div class="control-section">
+                <h4>👤 CEO Image</h4>
+                <img id="ceoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
+                <button class="apply-btn" onclick="applyCeoUrl()">Apply CEO Image</button>
+            </div>
+            <div class="control-section">
+                <h4>🎨 Banner Color</h4>
+                <input type="color" id="bannerColor" value="#001f3f" onchange="updateBannerColor()">
+            </div>
+            <div class="control-section">
+                <h4>📝 Text & Area Tag Settings</h4>
+                <select id="textSection" onchange="loadTextSettings()">
+                    <option value="brandingText">Branding</option>
+                    <option value="mottoText">Motto</option>
+                    <option value="loginTitleText">Login Title</option>
+                    <option value="loginSubtitleText">Login Subtitle</option>
+                    <option value="tutorNoteText">Tutor Note</option>
+                    <option value="zoneTitle">Zone Title</option>
+                    <option value="areaTagText">Area Tag Style</option>                    <option value="reviewsTitle">Reviews Title</option>
+                    <option value="ceoName">CEO Name</option>
+                    <option value="ceoDescription">CEO Description</option>
+                    <option value="copyrightText">Copyright</option>
+                </select>
+                <input type="text" id="textContent" placeholder="Text Content" onchange="updateTextContent()" style="margin-top:8px;">
+                
+                <select id="fontFamily" onchange="updateTextFont()" style="margin-top:8px;width:100%;padding:8px;">
+                    <optgroup label="🇧🇩 বাংলা ফন্ট (১০টি)">
+                        <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
+                        <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
+                        <option value="'Karma', sans-serif">Karma</option>
+                        <option value="'Rozha One', serif">Rozha One</option>
+                        <option value="'Tiro Bangla', serif">Tiro Bangla</option>
+                        <option value="Arial Unicode MS, sans-serif">Arial Unicode</option>
+                        <option value="Microsoft Sans Serif, sans-serif">MS Serif</option>
+                        <option value="SimSun, sans-serif">SimSun</option>
+                        <option value="Tahoma, sans-serif">Tahoma</option>
+                        <option value="Segoe UI, sans-serif">Segoe UI</option>
+                    </optgroup>
+                    <optgroup label="🇬🇧 English Fonts (১০টি)">
+                        <option value="'Roboto', sans-serif">Roboto</option>
+                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                        <option value="'Lato', sans-serif">Lato</option>
+                        <option value="'Poppins', sans-serif">Poppins</option>
+                        <option value="'Raleway', sans-serif">Raleway</option>
+                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                        <option value="'Oswald', sans-serif">Oswald</option>
+                        <option value="'Merriweather', serif">Merriweather</option>
+                        <option value="'Playfair Display', serif">Playfair Display</option>
+                        <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                    </optgroup>
+                </select>
+                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">
+                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
+            </div>
+            <div class="control-section">
+                <h4>📍 Zone Cards</h4>
+                <button class="add-card-btn" onclick="addNewCard()">+ Add New Zone</button>
+                <div id="cardSettings"></div>
+            </div>
+            <div class="control-section">
+                <h4>📘 Facebook Link</h4>
+                <input type="url" id="fbLink" placeholder="Facebook URL" onchange="updateFbLink()">
+            </div>
+            <button class="save-btn" onclick="saveAllSettings(false)">💾 Save All Settings</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
+        firebase.initializeApp(firebaseConfig);
+        const auth=firebase.auth();
+        const db=firebase.firestore();
+        const provider=new firebase.auth.GoogleAuthProvider();
+        let currentUser=null;
+        let currentUserType=null;
+        let isAdmin=false;
+        const ADMIN_EMAIL="kabirhasanat7@gmail.com";
+        let zoneCards=[
+            {id:1,zone:"জোন-১",areas:["খিলগাঁও","মালিবাগ"],maleGroup:"https://chat.whatsapp.com/male1",femaleGroup:"https://chat.whatsapp.com/female1"},
+            {id:2,zone:"জোন-২",areas:["মিরপুর ১","মিরপুর ২"],maleGroup:"https://chat.whatsapp.com/male2",femaleGroup:"https://chat.whatsapp.com/female2"}
+        ];
+        const DEFAULT_LOGO="https://cdn-icons-png.flaticon.com/512/2995/2995477.png";
+        const DEFAULT_CEO="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        
+        let appSettings={
+            bannerColor:"#001f3f",
+            logoSize:80,
+            loginLogoSize:80,
+            logoUrl:DEFAULT_LOGO,
+            loginLogoUrl:DEFAULT_LOGO,
+            ceoUrl:DEFAULT_CEO,
+            fbLink:"https://facebook.com/tutorsvalley",
+            texts:{}
+        };
+        let isSaving=false;
+
+        function showLoading(text='Saving...'){
+            const overlay=document.getElementById('loadingOverlay');
+            const loadingText=document.getElementById('loadingText');
+            if(overlay){overlay.classList.add('active');if(loadingText)loadingText.textContent=text;}
+        }
+
+        function hideLoading(){
+            const overlay=document.getElementById('loadingOverlay');
+            if(overlay)setTimeout(()=>overlay.classList.remove('active'),1500);
+        }
+
+        function showSaveIndicator(isError=false){
+            const indicator=document.getElementById('saveIndicator');
+            if(indicator){
+                indicator.textContent=isError?'❌ Save Failed!':'✅ Settings Saved!';
+                indicator.className='save-indicator active'+(isError?' error':'');
+                setTimeout(()=>indicator.classList.remove('active'),3000);
+            }
+        }
+        function showPage(pageId){
+            showLoading('Loading...');
+            setTimeout(()=>{
+                document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+                const target=document.getElementById(pageId);
+                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
+                hideLoading();
+            },1500);
+        }
+
+        function showLoginModal(type){
+            currentUserType=type;
+            const modal=document.getElementById('loginModal');
+            const modalTitle=document.getElementById('modalTitle');
+            if(modal){modal.classList.add('active');modal.style.display='flex';}
+            if(modalTitle){const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};modalTitle.textContent=titles[type]||'Login';}
+        }
+
+        function closeModal(){const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('active');modal.style.display='none';}}
+
+        function googleLogin(){
+            showLoading('Logging in...');
+            auth.signInWithPopup(provider).then(function(result){
+                currentUser=result.user;
+                isAdmin=(currentUser.email===ADMIN_EMAIL);
+                console.log('Login:',currentUser.email,'Admin:',isAdmin);
+                if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
+                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
+                else if(currentUserType==='admin'){
+                    if(currentUser.email===ADMIN_EMAIL){showPage('homePage');setupHomePage('admin');}
+                    else{alert('❌ Only owner can login as admin!');logout();return;}
+                }
+                closeModal();hideLoading();
+            }).catch(function(error){
+                const loginStatus=document.getElementById('loginStatus');
+                if(loginStatus)loginStatus.textContent='Error: '+error.message;
+                hideLoading();
+            });
+        }
+
+        function guestLogin(){
+            showLoading('Loading...');
+            setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
+        }
+
+        function saveUserData(user,type){
+            db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+        }
+        function setupHomePage(userType){
+            currentUserType=userType;
+            console.log('Setup:',userType,'Admin:',isAdmin);
+            
+            const gearIcon=document.getElementById('gearIcon');
+            if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
+            
+            const tutorControls=document.getElementById('tutorControls');
+            const tutorNote=document.getElementById('tutorNote');
+            const reviewForm=document.getElementById('reviewForm');
+            const genderSelect=document.getElementById('genderSelect');
+            
+            if(genderSelect)genderSelect.value='';
+            
+            if(userType==='admin'){
+                if(tutorControls)tutorControls.style.display='none';
+                if(tutorNote)tutorNote.style.display='none';
+                if(reviewForm)reviewForm.style.display='block';
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));
+            }
+            else if(userType==='tutor'){
+                if(tutorControls)tutorControls.style.display='block';
+                if(tutorNote)tutorNote.style.display='block';
+                if(reviewForm)reviewForm.style.display='block';
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
+            }
+            else if(userType==='guardian'){
+                if(tutorControls)tutorControls.style.display='none';
+                if(tutorNote)tutorNote.style.display='none';
+                if(reviewForm)reviewForm.style.display='block';
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
+            }
+            else{
+                if(tutorControls)tutorControls.style.display='none';
+                if(tutorNote)tutorNote.style.display='none';
+                if(reviewForm)reviewForm.style.display='none';
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
+            }
+            
+            loadSettings();
+            renderZoneCards();
+            loadReviews();
+        }
+
+        function handleGenderSelect(){
+            const gender=document.getElementById('genderSelect').value;
+            showLoading('Loading...');
+            setTimeout(function(){
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                hideLoading();
+            },1500);
+        }
+
+        function renderZoneCards(){
+            const container=document.getElementById('cardsContainer');
+            if(!container)return;
+            container.innerHTML='';
+            zoneCards.forEach(function(card){
+                const cardDiv=document.createElement('div');
+                cardDiv.className='zone-card';
+                let areaTags='';
+                card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});
+                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
+                container.appendChild(cardDiv);
+            });
+            applyAreaTagStyles();
+            
+            if(currentUserType==='admin'){
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');});
+            }
+            else if(currentUserType==='tutor'){
+                const gender=document.getElementById('genderSelect').value;
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');});
+                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');});}
+                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');});}
+            }
+        }
+
+        function applyAreaTagStyles(){
+            const areaTags=document.querySelectorAll('.area-tag');
+            const currentFont = appSettings.areaTagFont || "'Hind Siliguri', sans-serif";
+            areaTags.forEach(function(tag){
+                tag.style.fontFamily=currentFont;
+                tag.style.fontSize=appSettings.areaTagFontSize+'px';
+                tag.style.color=appSettings.areaTagColor;
+                tag.style.background=appSettings.areaTagBg;
+            });
+        }
+
+        function joinGroup(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1500);}
+
+        function submitReview(){
+            const reviewText=document.getElementById('reviewText');
+            const text=reviewText?reviewText.value:'';
+            if(!text.trim()){alert('রিভিউ লিখুন');return;}
+            showLoading('Submitting...');
+            db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+        }
+        function loadReviews(){
+            const container=document.getElementById('reviewsContainer');
+            if(!container)return;
+            db.collection('reviews').orderBy('createdAt','desc').limit(20).onSnapshot(function(snapshot){
+                container.innerHTML='';
+                snapshot.forEach(function(doc){
+                    const review=doc.data();
+                    const reviewDiv=document.createElement('div');
+                    reviewDiv.className='review-card';
+                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';
+                    container.appendChild(reviewDiv);
+                });
+            });
+        }
+
+        function openControlPanel(){
+            if(!isAdmin){alert('Only admin can access settings!');return;}
+            const controlPanel=document.getElementById('controlPanel');
+            if(controlPanel)controlPanel.classList.add('active');
+            loadControlSettings();
+            renderCardSettings();
+        }
+
+        function closeControlPanel(){
+            const controlPanel=document.getElementById('controlPanel');
+            if(controlPanel)controlPanel.classList.remove('active');
+        }
+
+        function instantSave(){if(isSaving)return;saveAllSettings(true);}
+
+        function applyLogoUrl(){
+            const url=document.getElementById('logoUrlInput').value.trim();
+            const logoImage=document.getElementById('logoImage');
+            const logoPreview=document.getElementById('logoPreview');
+            if(url){
+                const img=new Image();
+                img.onload=function(){
+                    if(logoImage)logoImage.src=url;
+                    if(logoPreview)logoPreview.src=url;
+                    appSettings.logoUrl=url;
+                    console.log('✅ Logo applied:',url);
+                    instantSave();
+                    showSaveIndicator();
+                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
+                img.src=url;
+            }else{alert('Please enter an image URL!');}
+        }
+        function applyLoginLogoUrl(){
+            const url=document.getElementById('loginLogoUrlInput').value.trim();
+            const loginLogo=document.getElementById('loginLogo');
+            const loginLogoPreview=document.getElementById('loginLogoPreview');
+            if(url){
+                const img=new Image();
+                img.onload=function(){
+                    if(loginLogo)loginLogo.src=url;
+                    if(loginLogoPreview)loginLogoPreview.src=url;
+                    appSettings.loginLogoUrl=url;
+                    console.log('✅ Login Logo applied:',url);
+                    instantSave();
+                    showSaveIndicator();
+                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
+                img.src=url;
+            }else{alert('Please enter an image URL!');}
+        }
+
+        function applyCeoUrl(){
+            const url=document.getElementById('ceoUrlInput').value.trim();
+            const ceoImage=document.getElementById('ceoImage');
+            const ceoPreview=document.getElementById('ceoPreview');
+            if(url){
+                const img=new Image();
+                img.onload=function(){
+                    if(ceoImage)ceoImage.src=url;
+                    if(ceoPreview)ceoPreview.src=url;
+                    appSettings.ceoUrl=url;
+                    console.log('✅ CEO Image applied:',url);
+                    instantSave();
+                    showSaveIndicator();
+                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
+                img.src=url;
+            }else{alert('Please enter an image URL!');}
+        }
+
+        function updateLogoSize(){
+            const size=document.getElementById('logoSize').value;
+            const logoImage=document.getElementById('logoImage');
+            const logoPreview=document.getElementById('logoPreview');
+            if(logoImage){logoImage.style.width=size+'px';logoImage.style.height=size+'px';}
+            if(logoPreview){logoPreview.style.width=size+'px';logoPreview.style.height=size+'px';}
+            appSettings.logoSize=size;
+            instantSave();
+        }
+
+        function updateLoginLogoSize(){
+            const size=document.getElementById('loginLogoSize').value;            const loginLogo=document.getElementById('loginLogo');
+            const loginLogoPreview=document.getElementById('loginLogoPreview');
+            if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}
+            if(loginLogoPreview){loginLogoPreview.style.width=size+'px';loginLogoPreview.style.height=size+'px';}
+            appSettings.loginLogoSize=size;
+            instantSave();
+        }
+
+        function updateBannerColor(){
+            const color=document.getElementById('bannerColor').value;
+            document.querySelector('.header-section').style.background=color;
+            appSettings.bannerColor=color;
+            instantSave();
+        }
+
+        function loadTextSettings(){
+            const section=document.getElementById('textSection').value;
+            const settings=appSettings.texts[section]||{};
+            document.getElementById('textContent').value=settings.content||'';
+            document.getElementById('fontFamily').value=settings.font||"'Hind Siliguri', sans-serif";
+            document.getElementById('fontSize').value=settings.size||24;
+            document.getElementById('fontColor').value=settings.color||"#000000";
+        }
+
+        function updateTextContent(){
+            const section=document.getElementById('textSection').value;
+            const content=document.getElementById('textContent').value;
+            const el=document.getElementById(section);
+            if(el){if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}else{el.textContent=content;}}
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].content=content;
+            instantSave();
+        }
+
+        function updateTextFont(){
+            const section=document.getElementById('textSection').value;
+            const font=document.getElementById('fontFamily').value;
+            document.getElementById(section).style.fontFamily=font;
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].font=font;
+            instantSave();
+        }
+
+        function updateTextSize(){
+            const section=document.getElementById('textSection').value;
+            const size=document.getElementById('fontSize').value;
+            document.getElementById(section).style.fontSize=size+'px';
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].size=size;
+            instantSave();        }
+
+        function updateTextColor(){
+            const section=document.getElementById('textSection').value;
+            const color=document.getElementById('fontColor').value;
+            document.getElementById(section).style.color=color;
+            if(!appSettings.texts[section])appSettings.texts[section]={};
+            appSettings.texts[section].color=color;
+            instantSave();
+        }
+
+        function updateFbLink(){
+            const link=document.getElementById('fbLink').value;
+            document.getElementById('fbButton').href=link;
+            appSettings.fbLink=link;
+            instantSave();
+        }
+
+        function renderCardSettings(){
+            const container=document.getElementById('cardSettings');
+            if(!container)return;
+            container.innerHTML='';
+            zoneCards.forEach(function(card,index){
+                const cardItem=document.createElement('div');
+                cardItem.className='card-item';
+                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
+                container.appendChild(cardItem);
+            });
+        }
+
+        function addNewCard(){
+            const newId=zoneCards.length+1;
+            zoneCards.push({id:newId,zone:"New Zone",areas:["Area 1"],maleGroup:"https://chat.whatsapp.com/male",femaleGroup:"https://chat.whatsapp.com/female"});
+            renderCardSettings();
+            renderZoneCards();
+            instantSave();
+        }
+
+        function deleteZoneCard(index){
+            if(confirm('Delete this zone?')){
+                zoneCards.splice(index,1);
+                renderCardSettings();
+                renderZoneCards();
+                instantSave();
+            }
+        }
+
+        function updateZoneName(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();}
+        function updateZoneAreas(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();}
+        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
+
+        function loadControlSettings(){
+            document.getElementById('bannerColor').value=appSettings.bannerColor;
+            document.getElementById('logoSize').value=appSettings.logoSize;
+            document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
+            document.getElementById('fbLink').value=appSettings.fbLink;
+            document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';
+            document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';
+            document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';
+        }
+
+        function saveAllSettings(isInstant=false){
+            if(isSaving)return;
+            isSaving=true;
+            if(!isInstant)showLoading('Saving...');
+            
+            db.collection('settings').doc('main').set({
+                bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
+                logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,
+                updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function(){
+                isSaving=false;
+                if(!isInstant)hideLoading();
+                showSaveIndicator(false);
+                console.log('✅ Settings saved!');
+            }).catch(function(error){
+                isSaving=false;
+                console.error('❌ Save error:',error);
+                alert('Save Failed: '+error.message);
+                if(!isInstant)hideLoading();
+                showSaveIndicator(true);
+            });
+        }
+
+        function loadSettings(){
+            db.collection('settings').doc('main').get().then(function(doc){
+                if(doc.exists){
+                    const data=doc.data();
+                    
+                    if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
+                    if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}
+                    if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}
+                    if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}
+                    if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}
+                    if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
+                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
+                    
+                    if(data.texts){                        appSettings.texts=data.texts;
+                        Object.keys(data.texts).forEach(function(key){
+                            const el=document.getElementById(key);
+                            if(el){
+                                el.style.fontFamily=data.texts[key].font || "'Hind Siliguri', sans-serif";
+                                
+                                if(key==='tutorNoteText'){
+                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
+                                }else{
+                                    el.textContent=data.texts[key].content;
+                                }
+                                
+                                el.style.fontSize=data.texts[key].size+'px';
+                                el.style.color=data.texts[key].color;
+                            }
+                        });
+                    }
+                    if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
+                    
+                    applyAreaTagStyles();
+                }else{
+                    console.log('No settings found, using defaults');
+                    document.getElementById('logoImage').src=DEFAULT_LOGO;
+                    document.getElementById('loginLogo').src=DEFAULT_LOGO;
+                    document.getElementById('ceoImage').src=DEFAULT_CEO;
+                }
+            }).catch(function(error){console.error('❌ Load error:',error);});
+        }
+
+        function logout(){
+            showLoading('Logging out...');
+            auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});
+        }
+
+        auth.onAuthStateChanged(function(user){if(user){console.log('Signed in:',user.email);if(user.email===ADMIN_EMAIL)isAdmin=true;}else{console.log('Signed out');isAdmin=false;}});
+
+        document.addEventListener('DOMContentLoaded',function(){
+            console.log('Tutors Valley initialized');
+            document.getElementById('logoImage').src=DEFAULT_LOGO;
+            document.getElementById('loginLogo').src=DEFAULT_LOGO;
+            document.getElementById('ceoImage').src=DEFAULT_CEO;
+            const logoPreview=document.getElementById('logoPreview');
+            const loginLogoPreview=document.getElementById('loginLogoPreview');
+            const ceoPreview=document.getElementById('ceoPreview');
+            if(logoPreview)logoPreview.src=DEFAULT_LOGO;
+            if(loginLogoPreview)loginLogoPreview.src=DEFAULT_LOGO;
+            if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
+            const gearIcon=document.getElementById('gearIcon');
+            if(gearIcon)gearIcon.style.display='none';
+            const loginPage=document.getElementById('loginPage');            if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
+        });
+    </script>
 </body>
 </html>
