@@ -20,7 +20,6 @@
         .login-page.active{display:flex}
         .login-card{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
         .login-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover;background:#f0f0f0}
-        .login-logo[src=""], .login-logo:not([src]){background:#ddd url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23999"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>') center/40px no-repeat}
         .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
         .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
         .login-buttons{display:flex;flex-direction:column;gap:12px}
@@ -36,11 +35,10 @@
         .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
         .google-btn img{width:20px;height:20px}
         .header-section{background:var(--primary-color);padding:15px 20px;position:relative;min-height:130px}
-        .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7)}
+        .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);display:none}
         .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
         .header-center{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0}
         .header-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 8px;display:block;border:2px solid white;background:white;padding:2px;object-fit:cover;background:#f0f0f0}
-        .header-logo[src=""], .header-logo:not([src]){background:#ddd url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23999"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>') center/40px no-repeat}
         .header-title{color:var(--text-light);font-size:24px;font-weight:700;margin-bottom:3px;text-align:center}
         .header-motto{color:var(--accent-color);font-size:14px;font-weight:500;text-align:center}
         .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
@@ -64,7 +62,6 @@
         .reviewer{font-weight:600;color:var(--primary-color);margin-bottom:6px}
         .ceo-section{background:linear-gradient(135deg,#f8f9fa,#e9ecef);padding:20px 15px;text-align:center;margin-top:20px;border-radius:12px}
         .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}
-        .ceo-img[src=""], .ceo-img:not([src]){background:#ddd url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23999"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>') center/40px no-repeat}
         .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
         .ceo-info p{font-size:13px;color:#666}
         .footer{padding:20px;text-align:center;background:var(--primary-color);color:white;margin-top:30px;font-size:13px}
@@ -108,7 +105,7 @@
     <!-- Login Page -->
     <div id="loginPage" class="page login-page active">
         <div class="login-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="login-logo" id="loginLogo" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23999%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/></svg>'">
+            <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="login-logo" id="loginLogo">
             <h1 class="login-title" id="loginTitleText">Tutors Valley</h1>
             <p class="login-subtitle" id="loginSubtitleText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             <div class="login-buttons">
@@ -136,9 +133,9 @@
     <!-- Home Page -->
     <div id="homePage" class="page">
         <header class="header-section">
-            <div class="gear-icon" id="gearIcon" onclick="openControlPanel()" style="display:none;">⚙️</div>
+            <div class="gear-icon" id="gearIcon" onclick="openControlPanel()">⚙️</div>
             <div class="header-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="header-logo" id="logoImage" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23999%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/></svg>'">
+                <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="header-logo" id="logoImage">
                 <h1 class="header-title" id="brandingText">Tutors Valley</h1>
                 <p class="header-motto" id="mottoText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             </div>
@@ -168,7 +165,7 @@
                 <div id="reviewsContainer" class="reviews-container"></div>
             </div>
             <div class="ceo-section">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="CEO" class="ceo-img" id="ceoImage" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23999%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/></svg>'">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="CEO" class="ceo-img" id="ceoImage">
                 <div class="ceo-info"><h3 id="ceoName">CEO Name</h3><p id="ceoDescription">CEO Description</p></div>
             </div>
         </div>
@@ -267,18 +264,15 @@
             {id:1,zone:"জোন-১",areas:["খিলগাঁও","মালিবাগ"],maleGroup:"https://chat.whatsapp.com/male1",femaleGroup:"https://chat.whatsapp.com/female1"},
             {id:2,zone:"জোন-২",areas:["মিরপুর ১","মিরপুর ২"],maleGroup:"https://chat.whatsapp.com/male2",femaleGroup:"https://chat.whatsapp.com/female2"}
         ];
-        
-        // DEFAULT IMAGES - These will always show
-        const DEFAULT_LOGO = "https://cdn-icons-png.flaticon.com/512/2995/2995477.png";
-        const DEFAULT_CEO = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-        
+        const DEFAULT_LOGO="https://cdn-icons-png.flaticon.com/512/2995/2995477.png";
+        const DEFAULT_CEO="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
         let appSettings={
             bannerColor:"#001f3f",
             logoSize:80,
             loginLogoSize:80,
-            logoUrl: DEFAULT_LOGO,
-            loginLogoUrl: DEFAULT_LOGO,
-            ceoUrl: DEFAULT_CEO,
+            logoUrl:DEFAULT_LOGO,
+            loginLogoUrl:DEFAULT_LOGO,
+            ceoUrl:DEFAULT_CEO,
             fbLink:"https://facebook.com/tutorsvalley",
             texts:{}
         };
@@ -334,15 +328,36 @@
             showLoading('Logging in...');
             auth.signInWithPopup(provider).then(function(result){
                 currentUser=result.user;
+                // FIXED: Only admin email gets admin access
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
-                console.log('Login:',currentUser.email,'Admin:',isAdmin);
-                if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
-                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
-                else if(currentUserType==='admin'){
-                    if(currentUser.email===ADMIN_EMAIL){showPage('homePage');setupHomePage('admin');}
-                    else{alert('❌ Only owner can login as admin!');logout();return;}
+                console.log('=== LOGIN ===');
+                console.log('Email:',currentUser.email);
+                console.log('Is Admin:',isAdmin);
+                console.log('Admin Email:',ADMIN_EMAIL);
+                
+                if(currentUserType==='tutor'){
+                    saveUserData(currentUser,'tutor');
+                    showPage('homePage');
+                    setupHomePage('tutor');
                 }
-                closeModal();hideLoading();
+                else if(currentUserType==='guardian'){
+                    saveUserData(currentUser,'guardian');
+                    showPage('homePage');
+                    setupHomePage('guardian');
+                }
+                else if(currentUserType==='admin'){
+                    if(currentUser.email===ADMIN_EMAIL){
+                        showPage('homePage');
+                        setupHomePage('admin');
+                    }
+                    else{
+                        alert('❌ Only owner can login as admin!');
+                        logout();
+                        return;
+                    }
+                }
+                closeModal();
+                hideLoading();
             }).catch(function(error){
                 const loginStatus=document.getElementById('loginStatus');
                 if(loginStatus)loginStatus.textContent='Error: '+error.message;
@@ -352,19 +367,42 @@
 
         function guestLogin(){
             showLoading('Loading...');
-            setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
+            setTimeout(function(){
+                currentUserType='guest';
+                isAdmin=false;
+                showPage('homePage');
+                setupHomePage('guest');
+                hideLoading();
+            },1500);
         }
 
         function saveUserData(user,type){
-            db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+            db.collection('users').doc(user.uid).set({
+                email:user.email,
+                name:user.displayName,
+                type:type,
+                photoURL:user.photoURL,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            },{merge:true});
         }
 
         function setupHomePage(userType){
             currentUserType=userType;
-            console.log('Setup:',userType,'Admin:',isAdmin);
+            console.log('=== SETUP HOME PAGE ===');
+            console.log('User Type:',userType);
+            console.log('Is Admin:',isAdmin);
             
+            // FIXED: Gear icon ONLY for admin
             const gearIcon=document.getElementById('gearIcon');
-            if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
+            if(gearIcon){
+                if(isAdmin===true){
+                    gearIcon.style.display='block';
+                    console.log('✅ Gear Icon: VISIBLE (Admin)');
+                }else{
+                    gearIcon.style.display='none';
+                    console.log('❌ Gear Icon: HIDDEN (Not Admin)');
+                }
+            }
             
             const tutorControls=document.getElementById('tutorControls');
             const tutorNote=document.getElementById('tutorNote');
@@ -373,31 +411,50 @@
             
             if(genderSelect)genderSelect.value='';
             
-            document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+            document.querySelectorAll('.group-btn').forEach(btn=>{
+                btn.classList.add('hidden');
+                btn.style.display='none';
+            });
             
             if(userType==='admin'){
+                console.log('Mode: ADMIN');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                    btn.style.display='block';
+                });
             }
             else if(userType==='tutor'){
+                console.log('Mode: TUTOR');
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
             }
             else if(userType==='guardian'){
+                console.log('Mode: GUARDIAN');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                    btn.style.display='block';
+                });
             }
             else{
+                console.log('Mode: GUEST');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                    btn.style.display='block';
+                });
             }
             
             loadSettings();
@@ -409,9 +466,22 @@
             const gender=document.getElementById('genderSelect').value;
             showLoading('Loading...');
             setTimeout(function(){
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
-                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
-                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
+                if(gender==='male'){
+                    document.querySelectorAll('.male-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
+                else if(gender==='female'){
+                    document.querySelectorAll('.female-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
                 hideLoading();
             },1500);
         }
@@ -424,29 +494,72 @@
                 const cardDiv=document.createElement('div');
                 cardDiv.className='zone-card';
                 let areaTags='';
-                card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});
-                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
+                card.areas.forEach(function(area){
+                    areaTags+='<span class="area-tag">'+area+'</span>';
+                });
+                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3>'+
+                    '<div class="area-tags">'+areaTags+'</div>'+
+                    '<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+
+                    '<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
             });
+            
             if(currentUserType==='admin'||currentUserType==='guardian'||currentUserType==='guest'){
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                    btn.style.display='block';
+                });
             }
             else if(currentUserType==='tutor'){
                 const gender=document.getElementById('genderSelect').value;
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
-                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
-                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
+                if(gender==='male'){
+                    document.querySelectorAll('.male-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
+                else if(gender==='female'){
+                    document.querySelectorAll('.female-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
             }
         }
 
-        function joinGroup(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1500);}
+        function joinGroup(link){
+            showLoading('Opening...');
+            setTimeout(function(){
+                window.open(link,'_blank');
+                hideLoading();
+            },1500);
+        }
 
         function submitReview(){
             const reviewText=document.getElementById('reviewText');
             const text=reviewText?reviewText.value:'';
             if(!text.trim()){alert('রিভিউ লিখুন');return;}
             showLoading('Submitting...');
-            db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+            db.collection('reviews').add({
+                text:text,
+                userId:currentUser?currentUser.uid:'guest',
+                userName:currentUser?currentUser.displayName:'Guest',
+                userType:currentUserType,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function(){
+                if(reviewText)reviewText.value='';
+                loadReviews();
+                hideLoading();
+                showSaveIndicator();
+            }).catch(function(error){
+                alert('Error: '+error.message);
+                hideLoading();
+                showSaveIndicator(true);
+            });
         }
 
         function loadReviews(){
@@ -458,14 +571,20 @@
                     const review=doc.data();
                     const reviewDiv=document.createElement('div');
                     reviewDiv.className='review-card';
-                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';
+                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div>'+
+                        '<div class="review-text">'+(review.text||'')+'</div>';
                     container.appendChild(reviewDiv);
                 });
             });
         }
 
         function openControlPanel(){
-            if(!isAdmin){alert('Only admin can access settings!');return;}
+            // FIXED: Double check admin status
+            if(isAdmin!==true){
+                alert('❌ Only admin can access settings!');
+                console.log('Blocked: Not admin');
+                return;
+            }
             const controlPanel=document.getElementById('controlPanel');
             if(controlPanel)controlPanel.classList.add('active');
             loadControlSettings();
@@ -477,16 +596,16 @@
             if(controlPanel)controlPanel.classList.remove('active');
         }
 
-        function instantSave(){if(isSaving)return;saveAllSettings(true);}
+        function instantSave(){
+            if(isSaving)return;
+            saveAllSettings(true);
+        }
 
-        // FIXED IMAGE FUNCTIONS
         function applyLogoUrl(){
             const url=document.getElementById('logoUrlInput').value.trim();
             const logoImage=document.getElementById('logoImage');
             const logoPreview=document.getElementById('logoPreview');
-            
             if(url){
-                // Test if URL is valid
                 const img=new Image();
                 img.onload=function(){
                     if(logoImage)logoImage.src=url;
@@ -497,7 +616,7 @@
                     showSaveIndicator();
                 };
                 img.onerror=function(){
-                    alert('❌ Invalid image URL! Please use a direct image link (ends with .png, .jpg, etc.)');
+                    alert('❌ Invalid image URL!');
                 };
                 img.src=url;
             }else{
@@ -509,7 +628,6 @@
             const url=document.getElementById('loginLogoUrlInput').value.trim();
             const loginLogo=document.getElementById('loginLogo');
             const loginLogoPreview=document.getElementById('loginLogoPreview');
-            
             if(url){
                 const img=new Image();
                 img.onload=function(){
@@ -533,7 +651,6 @@
             const url=document.getElementById('ceoUrlInput').value.trim();
             const ceoImage=document.getElementById('ceoImage');
             const ceoPreview=document.getElementById('ceoPreview');
-            
             if(url){
                 const img=new Image();
                 img.onload=function(){
@@ -593,7 +710,13 @@
             const section=document.getElementById('textSection').value;
             const content=document.getElementById('textContent').value;
             const el=document.getElementById(section);
-            if(el){if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}else{el.textContent=content;}}
+            if(el){
+                if(section==='tutorNoteText'){
+                    el.innerHTML='📌 <b>নোট:</b> '+content;
+                }else{
+                    el.textContent=content;
+                }
+            }
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].content=content;
             instantSave();
@@ -640,7 +763,12 @@
             zoneCards.forEach(function(card,index){
                 const cardItem=document.createElement('div');
                 cardItem.className='card-item';
-                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
+                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+
+                    '<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+
+                    '<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+
+                    '<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+
+                    '<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+
+                    '<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
                 container.appendChild(cardItem);
             });
         }
@@ -683,9 +811,15 @@
             if(!isInstant)showLoading('Saving...');
             
             db.collection('settings').doc('main').set({
-                bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
-                logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
-                fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,
+                bannerColor:appSettings.bannerColor,
+                logoSize:appSettings.logoSize,
+                loginLogoSize:appSettings.loginLogoSize,
+                logoUrl:appSettings.logoUrl,
+                loginLogoUrl:appSettings.loginLogoUrl,
+                ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,
+                texts:appSettings.texts,
+                zoneCards:zoneCards,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
                 isSaving=false;
@@ -707,7 +841,10 @@
                     const data=doc.data();
                     console.log('Loaded:',data);
                     
-                    if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
+                    if(data.bannerColor){
+                        document.querySelector('.header-section').style.background=data.bannerColor;
+                        appSettings.bannerColor=data.bannerColor;
+                    }
                     if(data.logoUrl){
                         document.getElementById('logoImage').src=data.logoUrl;
                         const logoPreview=document.getElementById('logoPreview');
@@ -740,19 +877,33 @@
                         if(ceoPreview)ceoPreview.src=data.ceoUrl;
                         appSettings.ceoUrl=data.ceoUrl;
                     }
-                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
+                    if(data.fbLink){
+                        document.getElementById('fbButton').href=data.fbLink;
+                        appSettings.fbLink=data.fbLink;
+                    }
                     if(data.texts){
                         appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
-                            if(el){if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontFamily=data.texts[key].font;el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}
+                            if(el){
+                                if(key==='tutorNoteText'){
+                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
+                                }else{
+                                    el.textContent=data.texts[key].content;
+                                }
+                                el.style.fontFamily=data.texts[key].font;
+                                el.style.fontSize=data.texts[key].size+'px';
+                                el.style.color=data.texts[key].color;
+                            }
                         });
                     }
-                    if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
+                    if(data.zoneCards){
+                        zoneCards=data.zoneCards;
+                        renderZoneCards();
+                    }
                     console.log('✅ Settings loaded!');
                 }else{
                     console.log('No settings found, using defaults');
-                    // Set default images
                     document.getElementById('logoImage').src=DEFAULT_LOGO;
                     document.getElementById('loginLogo').src=DEFAULT_LOGO;
                     document.getElementById('ceoImage').src=DEFAULT_CEO;
@@ -764,14 +915,41 @@
 
         function logout(){
             showLoading('Logging out...');
-            auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});
+            auth.signOut().then(function(){
+                currentUser=null;
+                currentUserType=null;
+                isAdmin=false;
+                console.log('Logged out, isAdmin:',isAdmin);
+                showPage('loginPage');
+                hideLoading();
+            }).catch(function(error){
+                alert('Error: '+error.message);
+                hideLoading();
+            });
         }
 
-        auth.onAuthStateChanged(function(user){if(user){console.log('Signed in:',user.email);if(user.email===ADMIN_EMAIL)isAdmin=true;}else{console.log('Signed out');isAdmin=false;}});
+        auth.onAuthStateChanged(function(user){
+            if(user){
+                console.log('Auth State:',user.email);
+                // FIXED: Only set admin if email matches
+                if(user.email===ADMIN_EMAIL){
+                    isAdmin=true;
+                    console.log('✅ Admin access granted');
+                }else{
+                    isAdmin=false;
+                    console.log('❌ Not admin');
+                }
+            }else{
+                console.log('No user');
+                isAdmin=false;
+            }
+        });
 
         document.addEventListener('DOMContentLoaded',function(){
-            console.log('Tutors Valley initialized');
-            // Set default images immediately
+            console.log('=== TUTORS VALLEY INITIALIZED ===');
+            console.log('Admin Email:',ADMIN_EMAIL);
+            
+            // Set default images
             document.getElementById('logoImage').src=DEFAULT_LOGO;
             document.getElementById('loginLogo').src=DEFAULT_LOGO;
             document.getElementById('ceoImage').src=DEFAULT_CEO;
@@ -782,8 +960,15 @@
             if(loginLogoPreview)loginLogoPreview.src=DEFAULT_LOGO;
             if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
             
+            // Hide gear icon by default
+            const gearIcon=document.getElementById('gearIcon');
+            if(gearIcon)gearIcon.style.display='none';
+            
             const loginPage=document.getElementById('loginPage');
-            if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
+            if(loginPage){
+                loginPage.classList.add('active');
+                loginPage.style.display='flex';
+            }
         });
     </script>
 </body>
