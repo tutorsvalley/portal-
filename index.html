@@ -129,12 +129,9 @@
             <h1>Tutors Valley</h1>
             <p>এই লিংকটি Messenger এ খোলা যাবে না।<br>নিচের বাটনে ক্লিক করে ব্রাউজারে খুলুন।</p>
             
-            <a href="https://tutorsvalley.github.io/portal-/" 
-               class="btn" 
-               target="_blank" 
-               rel="noopener noreferrer">
+            <button class="btn" onclick="forceOpenBrowser()">
                 🌐 ব্রাউজারে খুলুন
-            </a>
+            </button>
             
             <div class="note">
                 ⚠️ <b>নির্দেশনা:</b><br>
@@ -354,6 +351,33 @@
                 document.getElementById('embeddedWarning').classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
+        }
+
+        function forceOpenBrowser(){
+            var url = window.location.href;
+            
+            // Multiple aggressive attempts
+            var newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+            
+            setTimeout(function(){
+                window.location.href = url;
+            }, 100);
+            
+            setTimeout(function(){
+                var a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }, 200);
+            
+            setTimeout(function(){
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }, 300);
+            
+            return false;
         }
 
         function resetLogoutTimer(){
