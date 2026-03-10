@@ -47,8 +47,7 @@
         .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
         .tutor-controls{background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;text-align:center}
-        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}
-        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
         .zone-title{font-size:18px;color:var(--primary-color);font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--secondary-color)}
         .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
         .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
@@ -97,8 +96,7 @@
 </head>
 <body>
     <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
+        <div class="loading-spinner"></div>        <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
     </div>
     <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
     
@@ -147,8 +145,7 @@
         <div class="main-content">
             <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>
             <div id="tutorControls" class="tutor-controls" style="display:none;">
-                <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>
-                <select id="genderSelect" onchange="handleGenderSelect()">
+                <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>                <select id="genderSelect" onchange="handleGenderSelect()">
                     <option value="">-- নির্বাচন করুন --</option>
                     <option value="male">পুরুষ</option>
                     <option value="female">মহিলা</option>
@@ -197,8 +194,7 @@
             </div>
             <div class="control-section">
                 <h4>👤 CEO Image</h4>
-                <img id="ceoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
+                <img id="ceoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
                 <button class="apply-btn" onclick="applyCeoUrl()">Apply CEO Image</button>
             </div>
             <div class="control-section">
@@ -247,8 +243,7 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
@@ -297,7 +292,6 @@
                 setTimeout(()=>indicator.classList.remove('active'),3000);
             }
         }
-
         function showPage(pageId){
             showLoading('Loading...');
             setTimeout(()=>{
@@ -347,8 +341,7 @@
                 }
                 else if(currentUserType==='admin'){
                     if(currentUser.email===ADMIN_EMAIL){
-                        showPage('homePage');
-                        setupHomePage('admin');
+                        showPage('homePage');                        setupHomePage('admin');
                     }
                     else{
                         alert('❌ Only owner can login as admin!');
@@ -397,8 +390,7 @@
             if(gearIcon){
                 if(isAdmin===true){
                     gearIcon.style.display='block';
-                    console.log('✅ Gear Icon: VISIBLE (Admin)');
-                }else{
+                    console.log('✅ Gear Icon: VISIBLE (Admin)');                }else{
                     gearIcon.style.display='none';
                     console.log('❌ Gear Icon: HIDDEN (Not Admin)');
                 }
@@ -447,8 +439,7 @@
                 });
             }
             else{
-                console.log('Mode: GUEST');
-                if(tutorControls)tutorControls.style.display='none';
+                console.log('Mode: GUEST');                if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
                 document.querySelectorAll('.group-btn').forEach(btn=>{
@@ -497,8 +488,7 @@
                 card.areas.forEach(function(area){
                     areaTags+='<span class="area-tag">'+area+'</span>';
                 });
-                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3>'+
-                    '<div class="area-tags">'+areaTags+'</div>'+
+                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3>'+                    '<div class="area-tags">'+areaTags+'</div>'+
                     '<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+
                     '<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
@@ -547,8 +537,7 @@
             db.collection('reviews').add({
                 text:text,
                 userId:currentUser?currentUser.uid:'guest',
-                userName:currentUser?currentUser.displayName:'Guest',
-                userType:currentUserType,
+                userName:currentUser?currentUser.displayName:'Guest',                userType:currentUserType,
                 createdAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
                 if(reviewText)reviewText.value='';
@@ -597,8 +586,7 @@
         }
 
         function instantSave(){
-            if(isSaving)return;
-            saveAllSettings(true);
+            if(isSaving)return;            saveAllSettings(true);
         }
 
         function applyLogoUrl(){
@@ -647,8 +635,7 @@
             }
         }
 
-        function applyCeoUrl(){
-            const url=document.getElementById('ceoUrlInput').value.trim();
+        function applyCeoUrl(){            const url=document.getElementById('ceoUrlInput').value.trim();
             const ceoImage=document.getElementById('ceoImage');
             const ceoPreview=document.getElementById('ceoPreview');
             if(url){
@@ -697,8 +684,7 @@
             instantSave();
         }
 
-        function loadTextSettings(){
-            const section=document.getElementById('textSection').value;
+        function loadTextSettings(){            const section=document.getElementById('textSection').value;
             const settings=appSettings.texts[section]||{};
             document.getElementById('textContent').value=settings.content||'';
             document.getElementById('fontFamily').value=settings.font||"'Hind Siliguri', sans-serif";
@@ -748,7 +734,6 @@
             appSettings.texts[section].color=color;
             instantSave();
         }
-
         function updateFbLink(){
             const link=document.getElementById('fbLink').value;
             document.getElementById('fbButton').href=link;
@@ -797,8 +782,7 @@
 
         function loadControlSettings(){
             document.getElementById('bannerColor').value=appSettings.bannerColor;
-            document.getElementById('logoSize').value=appSettings.logoSize;
-            document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
+            document.getElementById('logoSize').value=appSettings.logoSize;            document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
             document.getElementById('fbLink').value=appSettings.fbLink;
             document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';
             document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';
@@ -847,8 +831,7 @@
                     }
                     if(data.logoUrl){
                         document.getElementById('logoImage').src=data.logoUrl;
-                        const logoPreview=document.getElementById('logoPreview');
-                        if(logoPreview)logoPreview.src=data.logoUrl;
+                        const logoPreview=document.getElementById('logoPreview');                        if(logoPreview)logoPreview.src=data.logoUrl;
                         appSettings.logoUrl=data.logoUrl;
                     }
                     if(data.logoSize){
@@ -897,8 +880,7 @@
                             }
                         });
                     }
-                    if(data.zoneCards){
-                        zoneCards=data.zoneCards;
+                    if(data.zoneCards){                        zoneCards=data.zoneCards;
                         renderZoneCards();
                     }
                     console.log('✅ Settings loaded!');
@@ -947,8 +929,7 @@
 
         document.addEventListener('DOMContentLoaded',function(){
             console.log('=== TUTORS VALLEY INITIALIZED ===');
-            console.log('Admin Email:',ADMIN_EMAIL);
-            
+            console.log('Admin Email:',ADMIN_EMAIL);            
             // Set default images
             document.getElementById('logoImage').src=DEFAULT_LOGO;
             document.getElementById('loginLogo').src=DEFAULT_LOGO;
