@@ -1,14 +1,3 @@
-# ✅ সমস্যা সমাধান - লগইন বাটন এখন কাজ করবে
-
-আপনার সমস্যাটি বুঝতে পেরেছি। কোডে `checkEmbeddedBrowser()` ফাংশনটি লগইন পেজে কল হচ্ছে না, তাই মাসেঞ্জার/হয়াৎস্যাপ থেকে আসলেও সেখানে রিডাইরেক্ট হয় না এবং লগইন বাটনে ক্লিক করলেও সমস্যা হতে পারে।
-
-নিচে **সম্পূর্ণ ঠিক করা কোড** দিচ্ছি যেখানে:
-1.  **লগইন বাটন কাজ করবে:** যেকোনো ব্রাউজারে (Chrome, Safari, Firefox) লগইন বাটনে ক্লিক করলে Google Login মোডাল খুলবে।
-2.  **Embedded Browser Fix:** যদি কেউ Facebook/Messenger/WhatsApp থেকে ক্লিক করে, তবে সাথে সাথে নতুন ব্রাউজারে চলে যাবে।
-3.  **Admin Panel:** শুধুমাত্র অ্যাডমিন দেখতে পাবেন।
-4.  **Group Buttons:** শুধু টিউটর এবং অ্যাডমিন দেখতে পাবেন।
-
-```html
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -72,6 +61,7 @@
         .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
         .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
         
+        /* FIXED: Ensure buttons always display unless explicitly hidden */
         .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600; display: block !important;} 
         .group-btn.hidden{display: none !important;}
         
@@ -334,6 +324,7 @@
                 overlay.classList.add('active');
                 text.textContent='Opening in Browser...';
                 
+                // Force open in a new window/tab
                 setTimeout(function(){
                     window.open(window.location.href, '_blank');
                     setTimeout(function(){ 
@@ -826,4 +817,3 @@
     </script>
 </body>
 </html>
-```
