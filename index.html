@@ -58,7 +58,7 @@
         .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
         .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
         .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600}
-        .group-btn.hidden{display:none}
+        .group-btn.hidden{display:none!important}
         .reviews-section{background:white;padding:20px 15px;margin-top:20px}
         .review-form textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:8px}
         .review-form button{padding:10px 25px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit}
@@ -365,7 +365,7 @@
             auth.signInWithPopup(provider).then(function(result){
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
-                console.log('Login successful, isAdmin:', isAdmin);
+                console.log('Login successful, isAdmin:', isAdmin, 'email:', currentUser.email);
                 if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
                 else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
                 else if(currentUserType==='admin'){
@@ -389,42 +389,74 @@
 
         function setupHomePage(userType){
             currentUserType=userType;
-            console.log('Setup home page for:', userType, 'isAdmin:', isAdmin);
+            console.log('=== Setup Home Page ===');
+            console.log('User Type:', userType);
+            console.log('Is Admin:', isAdmin);
             
             const gearIcon=document.getElementById('gearIcon');
-            if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
+            if(gearIcon){
+                // Gear icon ONLY for admin
+                gearIcon.style.display=isAdmin?'block':'none';
+                console.log('Gear Icon:', isAdmin?'visible':'hidden');
+            }
             
             const tutorControls=document.getElementById('tutorControls');
             const tutorNote=document.getElementById('tutorNote');
             const reviewForm=document.getElementById('reviewForm');
             
+            // Reset gender select
+            const genderSelect=document.getElementById('genderSelect');
+            if(genderSelect)genderSelect.value='';
+            
+            // Hide all group buttons first
+            document.querySelectorAll('.group-btn').forEach(btn=>{
+                btn.classList.add('hidden');
+                btn.style.display='none';
+            });
+            
             if(userType==='admin'){
-                console.log('Admin mode - showing all buttons');
-                if(tutorControls)tutorControls.style.display='block';
-                if(tutorNote)tutorNote.style.display='block';
+                console.log('Admin mode - showing ALL buttons');
+                if(tutorControls)tutorControls.style.display='none';
+                if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
+                // Admin sees ALL group buttons
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
                     btn.style.display='block';
                 });
             }
             else if(userType==='tutor'){
+                console.log('Tutor mode - buttons hidden until gender select');
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
+                // Tutor: ALL buttons HIDDEN until gender selected
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
             }
             else if(userType==='guardian'){
+                console.log('Guardian mode - showing ALL buttons');
                 if(tutorControls)tutorControls.style.display='none';
-                if(tutorNote)tutorNote.style.display='block';
+                if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));
+                // Guardian sees ALL group buttons
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                    btn.style.display='block';
+                });
             }
             else{
+                console.log('Guest mode - showing ALL buttons');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
-                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));
+                // Guest sees ALL group buttons
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                    btn.style.display='block';
+                });
             }
             
             loadSettings();
@@ -434,11 +466,33 @@
 
         function handleGenderSelect(){
             const gender=document.getElementById('genderSelect').value;
+            console.log('Gender selected:', gender);
             showLoading('Loading...');
             setTimeout(function(){
-                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
-                if(gender==='male')document.querySelectorAll('.male-group').forEach(btn=>btn.classList.remove('hidden'));
-                else if(gender==='female')document.querySelectorAll('.female-group').forEach(btn=>btn.classList.remove('hidden'));
+                // Hide ALL buttons first
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
+                
+                // Show only selected gender button
+                if(gender==='male'){
+                    console.log('Showing MALE buttons only');
+                    document.querySelectorAll('.male-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
+                else if(gender==='female'){
+                    console.log('Showing FEMALE buttons only');
+                    document.querySelectorAll('.female-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
+                else{
+                    console.log('No gender selected - hiding all buttons');
+                }
                 hideLoading();
             },1500);
         }
@@ -452,16 +506,36 @@
                 cardDiv.className='zone-card';
                 let areaTags='';
                 card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});
-                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
+                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
             });
             applyAreaTagStyles();
             
-            if(isAdmin){
+            // Re-apply button visibility based on user type
+            if(currentUserType==='admin'||currentUserType==='guardian'||currentUserType==='guest'){
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
                     btn.style.display='block';
                 });
+            }
+            else if(currentUserType==='tutor'){
+                const gender=document.getElementById('genderSelect').value;
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
+                if(gender==='male'){
+                    document.querySelectorAll('.male-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
+                else if(gender==='female'){
+                    document.querySelectorAll('.female-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }
             }
         }
 
@@ -500,7 +574,16 @@
             });
         }
 
-        function openControlPanel(){if(!isAdmin)return;const controlPanel=document.getElementById('controlPanel');if(controlPanel)controlPanel.classList.add('active');loadControlSettings();renderCardSettings();}
+        function openControlPanel(){
+            if(!isAdmin){
+                alert('Only admin can access settings!');
+                return;
+            }
+            const controlPanel=document.getElementById('controlPanel');
+            if(controlPanel)controlPanel.classList.add('active');
+            loadControlSettings();
+            renderCardSettings();
+        }
         function closeControlPanel(){const controlPanel=document.getElementById('controlPanel');if(controlPanel)controlPanel.classList.remove('active');}
 
         function instantSave(){
