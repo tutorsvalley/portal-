@@ -11,11 +11,13 @@
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
         body{font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;background:var(--bg-light);min-height:100vh}
         
+        /* Loading Animation */
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:10000}
         .loading-overlay.active{display:flex}
         .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid var(--secondary-color);border-radius:50%;animation:spin 1s linear infinite}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
         
+        /* Page Styles */
         .page{display:none;min-height:100vh}
         .page.active{display:block}
         
@@ -34,6 +36,7 @@
         .guest-btn{background:linear-gradient(135deg,#4facfe,#00f2fe);color:white}
         .admin-btn{background:linear-gradient(135deg,#11998e,#38ef7d);color:white}
         
+        /* Modal */
         .modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);justify-content:center;align-items:center}
         .modal.active{display:flex}
         .modal-content{background:white;padding:30px;border-radius:15px;width:90%;max-width:350px;position:relative}
@@ -41,6 +44,7 @@
         .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
         .google-btn img{width:20px;height:20px}
         
+        /* Header */
         .header-section{background:var(--primary-color);padding:15px 20px;position:relative;min-height:130px}
         .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);display:none}
         .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
@@ -50,6 +54,7 @@
         .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
         .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
         
+        /* Main Content */
         .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
         .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
@@ -61,10 +66,13 @@
         .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
         .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
         
-        /* FIXED: Ensure buttons always display unless explicitly hidden */
-        .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600; display: block !important;} 
-        .group-btn.hidden{display: none !important;}
+        /* GROUP BUTTON STYLES - FIXED */
+        .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600; transition:all 0.3s ease;} 
+        .group-btn:hover{transform:scale(1.02);}
         
+        .group-btn.hidden{opacity:0; pointer-events:none; transform:translateY(-10px); display: none !important;} 
+        
+        /* Reviews Section */
         .reviews-section{background:white;padding:20px 15px;margin-top:20px}
         .review-form textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:8px}
         .review-form button{padding:10px 25px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit}
@@ -72,13 +80,16 @@
         .review-card{background:var(--bg-light);padding:12px;border-radius:8px;margin-bottom:12px}
         .reviewer{font-weight:600;color:var(--primary-color);margin-bottom:6px}
         
+        /* CEO Section */
         .ceo-section{background:linear-gradient(135deg,#f8f9fa,#e9ecef);padding:20px 15px;text-align:center;margin-top:20px;border-radius:12px}
         .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}
         .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
         .ceo-info p{font-size:13px;color:#666}
         
+        /* Footer */
         .footer{padding:20px;text-align:center;background:var(--primary-color);color:white;margin-top:30px;font-size:13px}
         
+        /* Control Panel */
         .control-panel{display:none;position:fixed;top:0;left:0;width:100%;max-width:450px;height:100vh;background:white;box-shadow:5px 0 20px rgba(0,0,0,0.2);z-index:9998;overflow-y:auto}
         .control-panel.active{display:block}
         .control-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:var(--primary-color);color:white;position:sticky;top:0;z-index:10}
@@ -419,7 +430,7 @@
             
             if(genderSelect)genderSelect.value='';
             
-            // Logic updated:
+            // Strict permission logic:
             // 1. Guest & Guardian -> Hide ALL buttons immediately
             // 2. Tutor -> Show NO buttons until gender selected
             // 3. Admin -> Show ALL buttons
