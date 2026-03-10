@@ -129,7 +129,10 @@
             <h1>Tutors Valley</h1>
             <p>এই লিংকটি Messenger এ খোলা যাবে না।<br>নিচের বাটনে ক্লিক করে ব্রাউজারে খুলুন।</p>
             
-            <a href="#" class="btn" onclick="openInBrowser();return false;">
+            <a href="https://tutorsvalley.github.io/portal-/" 
+               class="btn" 
+               target="_blank" 
+               rel="noopener noreferrer">
                 🌐 ব্রাউজারে খুলুন
             </a>
             
@@ -351,15 +354,6 @@
                 document.getElementById('embeddedWarning').classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
-        }
-
-        function openInBrowser(){
-            var url = window.location.href;
-            window.open(url, '_blank', 'noopener,noreferrer');
-            window.location.href = url;
-            setTimeout(function(){
-                window.open(url, '_blank', 'noopener,noreferrer');
-            }, 500);
         }
 
         function resetLogoutTimer(){
