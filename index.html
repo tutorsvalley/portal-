@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <meta name="theme-color" content="#001f3f">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;600;700&family=Ubuntu:wght@300;400;500;700&family=Arial:wght@400;700&family=Verdana:wght@400;700&family=Georgia:wght@400;700&family=Times+New+Roman:wght@400;700&family=Courier+New:wght@400;700&family=Impact:wght@400&family=Trebuchet+MS:wght@400;700&family=Palatino+Linotype:wght@400;700&family=Garamond:wght@400;700&family=Bookman+Old+Style:wght@400;700&family=Avant+Garde:wght@400&family=Optima:wght@400&family=Futura:wght@400&display=swap" rel="stylesheet">
+    <!-- সব বাংলা সহযোগী ফন্ট যোগ করা হয়েছে -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Karma:wght@400;600;700&family=Rozha+One&family=Tiro+Bangla&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
@@ -46,8 +47,8 @@
         .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
         .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
-        .tutor-controls{background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;text-align:center}
-        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+        .tutor-controls{background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;text-align:center}        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}
+        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
         .zone-title{font-size:18px;color:var(--primary-color);font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--secondary-color)}
         .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
         .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
@@ -95,8 +96,8 @@
     </style>
 </head>
 <body>
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner"></div>        <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
+    <div id="loadingOverlay" class="loading-overlay">        <div class="loading-spinner"></div>
+        <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
     </div>
     <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
     
@@ -144,8 +145,8 @@
         </header>
         <div class="main-content">
             <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>
-            <div id="tutorControls" class="tutor-controls" style="display:none;">
-                <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>                <select id="genderSelect" onchange="handleGenderSelect()">
+            <div id="tutorControls" class="tutor-controls" style="display:none;">                <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>
+                <select id="genderSelect" onchange="handleGenderSelect()">
                     <option value="">-- নির্বাচন করুন --</option>
                     <option value="male">পুরুষ</option>
                     <option value="female">মহিলা</option>
@@ -193,8 +194,8 @@
                 <input type="range" id="loginLogoSize" min="60" max="150" value="80" onchange="updateLoginLogoSize()">
             </div>
             <div class="control-section">
-                <h4>👤 CEO Image</h4>
-                <img id="ceoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
+                <h4>👤 CEO Image</h4>                <img id="ceoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
                 <button class="apply-btn" onclick="applyCeoUrl()">Apply CEO Image</button>
             </div>
             <div class="control-section">
@@ -202,7 +203,7 @@
                 <input type="color" id="bannerColor" value="#001f3f" onchange="updateBannerColor()">
             </div>
             <div class="control-section">
-                <h4>📝 Text Settings (20 Fonts)</h4>
+                <h4>📝 Text & Area Tag Settings</h4>
                 <select id="textSection" onchange="loadTextSettings()">
                     <option value="brandingText">Branding</option>
                     <option value="mottoText">Motto</option>
@@ -210,40 +211,30 @@
                     <option value="loginSubtitleText">Login Subtitle</option>
                     <option value="tutorNoteText">Tutor Note</option>
                     <option value="zoneTitle">Zone Title</option>
-                    <option value="areaTagText">Area Tag</option>
+                    <option value="areaTagText">Area Tag Style</option>
                     <option value="reviewsTitle">Reviews Title</option>
                     <option value="ceoName">CEO Name</option>
                     <option value="ceoDescription">CEO Description</option>
                     <option value="copyrightText">Copyright</option>
                 </select>
                 <input type="text" id="textContent" placeholder="Text Content" onchange="updateTextContent()" style="margin-top:8px;">
+                
                 <select id="fontFamily" onchange="updateTextFont()" style="margin-top:8px;width:100%;padding:8px;">
-                    <optgroup label="🇧🇩 বাংলা ফন্ট (10টি)">
-                        <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
-                        <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
-                        <option value="Arial, sans-serif">Arial</option>
-                        <option value="Verdana, sans-serif">Verdana</option>
-                        <option value="Georgia, serif">Georgia</option>
-                        <option value="'Times New Roman', serif">Times New Roman</option>
-                        <option value="'Courier New', monospace">Courier New</option>
-                        <option value="Impact, sans-serif">Impact</option>
-                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                        <option value="'Palatino Linotype', serif">Palatino Linotype</option>
-                    </optgroup>
-                    <optgroup label="🇬🇧 English Fonts (10টি)">
-                        <option value="'Roboto', sans-serif">Roboto</option>
-                        <option value="'Open Sans', sans-serif">Open Sans</option>
-                        <option value="'Lato', sans-serif">Lato</option>
-                        <option value="'Poppins', sans-serif">Poppins</option>
-                        <option value="'Raleway', sans-serif">Raleway</option>
-                        <option value="'Montserrat', sans-serif">Montserrat</option>
-                        <option value="'Oswald', sans-serif">Oswald</option>
-                        <option value="'Merriweather', serif">Merriweather</option>
-                        <option value="'Playfair Display', serif">Playfair Display</option>
-                        <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                    <optgroup label="🇧🇩 বাংলা ফন্ট (সেরা মানের)">
+                        <option value="'Hind Siliguri', sans-serif">Hind Siliguri (মডার্ণ)</option>
+                        <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali (Google)</option>
+                        <option value="'Karma', sans-serif">Karma (সিম্পল ও ক্লিন)</option>
+                        <option value="'Rozha One', serif">Rozha One (একাডেমিক)</option>
+                        <option value="'Tiro Bangla', serif">Tiro Bangla (প্রফেশনাল)</option>
+                        <option value="Arial Unicode MS, sans-serif">Arial Unicode (সিস্টেম)</option>
+                        <option value="Microsoft Sans Serif, sans-serif">MS Serif (Windows)</option>
+                        <option value="SimSun, sans-serif">SimSun (Legacy)</option>
+                        <option value="Tahoma, sans-serif">Tahoma (স্বল্প জায়গায়)</option>
+                        <option value="Segoe UI, sans-serif">Segoe UI (Moden)</option>
                     </optgroup>
                 </select>
-                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
+                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">
+                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
             </div>
             <div class="control-section">
                 <h4>📍 Zone Cards</h4>
@@ -252,8 +243,7 @@
             </div>
             <div class="control-section">
                 <h4>📘 Facebook Link</h4>
-                <input type="url" id="fbLink" placeholder="Facebook URL" onchange="updateFbLink()">
-            </div>
+                <input type="url" id="fbLink" placeholder="Facebook URL" onchange="updateFbLink()">            </div>
             <button class="save-btn" onclick="saveAllSettings(false)">💾 Save All Settings</button>
         </div>
     </div>
@@ -277,6 +267,7 @@
         ];
         const DEFAULT_LOGO="https://cdn-icons-png.flaticon.com/512/2995/2995477.png";
         const DEFAULT_CEO="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        
         let appSettings={
             bannerColor:"#001f3f",
             logoSize:80,
@@ -285,37 +276,23 @@
             loginLogoUrl:DEFAULT_LOGO,
             ceoUrl:DEFAULT_CEO,
             fbLink:"https://facebook.com/tutorsvalley",
-            areaTagFont:"'Hind Siliguri', sans-serif",
-            areaTagFontSize:13,
-            areaTagColor:"#333333",
-            areaTagBg:"#e8e8e8",
             texts:{}
         };
         let isSaving=false;
+
         // FIXED: Instant redirect for Messenger/Facebook
         function checkEmbeddedBrowser(){
             const ua=navigator.userAgent||navigator.vendor||window.opera;
-            const warningDiv=document.getElementById('externalBrowserWarning');
             const isFacebook=/FBAN|FBAV/i.test(ua);
-            const isInstagram=/Instagram/i.test(ua);
             const isMessenger=/Messenger/i.test(ua);
-            const isWhatsApp=/WhatsApp/i.test(ua);
             
-            if(isFacebook||isInstagram||isMessenger||isWhatsApp){
-                // INSTANT redirect to Chrome
-                const currentUrl=window.location.href;
-                const intentUrl='intent://'+currentUrl.replace('https://','').replace('http://','')+'#Intent;scheme=https;package=com.android.chrome;end';
-                window.location.href=intentUrl;
-                
-                // Fallback after 1 second
+            if(isFacebook||isMessenger){
                 setTimeout(function(){
-                    window.open(currentUrl,'_blank');
-                },1000);
-                
+                    window.open(window.location.href,'_blank');
+                },500);
                 return true;
             }
-            return false;
-        }
+            return false;        }
 
         function showLoading(text='Saving...'){
             const overlay=document.getElementById('loadingOverlay');
@@ -341,7 +318,8 @@
             showLoading('Loading...');
             setTimeout(()=>{
                 document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-                const target=document.getElementById(pageId);                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
+                const target=document.getElementById(pageId);
+                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
                 hideLoading();
             },1500);
         }
@@ -351,16 +329,10 @@
             const modal=document.getElementById('loginModal');
             const modalTitle=document.getElementById('modalTitle');
             if(modal){modal.classList.add('active');modal.style.display='flex';}
-            if(modalTitle){
-                const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};
-                modalTitle.textContent=titles[type]||'Login';
-            }
+            if(modalTitle){const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};modalTitle.textContent=titles[type]||'Login';}
         }
 
-        function closeModal(){
-            const modal=document.getElementById('loginModal');
-            if(modal){modal.classList.remove('active');modal.style.display='none';}
-        }
+        function closeModal(){const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('active');modal.style.display='none';}}
 
         function googleLogin(){
             showLoading('Logging in...');
@@ -369,8 +341,7 @@
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
                 console.log('Login:',currentUser.email,'Admin:',isAdmin);
                 if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
-                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
-                else if(currentUserType==='admin'){
+                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}                else if(currentUserType==='admin'){
                     if(currentUser.email===ADMIN_EMAIL){showPage('homePage');setupHomePage('admin');}
                     else{alert('❌ Only owner can login as admin!');logout();return;}
                 }
@@ -390,6 +361,7 @@
         function saveUserData(user,type){
             db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
         }
+
         function setupHomePage(userType){
             currentUserType=userType;
             console.log('Setup:',userType,'Admin:',isAdmin);
@@ -418,8 +390,7 @@
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
             }
-            else if(userType==='guardian'){
-                if(tutorControls)tutorControls.style.display='none';
+            else if(userType==='guardian'){                if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
@@ -439,7 +410,8 @@
         function handleGenderSelect(){
             const gender=document.getElementById('genderSelect').value;
             showLoading('Loading...');
-            setTimeout(function(){                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+            setTimeout(function(){
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
                 if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
                 else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
                 hideLoading();
@@ -458,6 +430,7 @@
                 cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
             });
+            // FIXED: Apply area tag styles immediately after render
             applyAreaTagStyles();
             if(currentUserType==='admin'||currentUserType==='guardian'||currentUserType==='guest'){
                 document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
@@ -466,14 +439,15 @@
                 const gender=document.getElementById('genderSelect').value;
                 document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
                 if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
-                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
-            }
+                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}            }
         }
 
         function applyAreaTagStyles(){
             const areaTags=document.querySelectorAll('.area-tag');
+            // Get current font from settings if exists, otherwise default
+            const currentFont = appSettings.areaTagFont || "'Hind Siliguri', sans-serif";
             areaTags.forEach(function(tag){
-                tag.style.fontFamily=appSettings.areaTagFont;
+                tag.style.fontFamily=currentFont;
                 tag.style.fontSize=appSettings.areaTagFontSize+'px';
                 tag.style.color=appSettings.areaTagColor;
                 tag.style.background=appSettings.areaTagBg;
@@ -489,6 +463,7 @@
             showLoading('Submitting...');
             db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
         }
+
         function loadReviews(){
             const container=document.getElementById('reviewsContainer');
             if(!container)return;
@@ -513,8 +488,7 @@
         }
 
         function closeControlPanel(){
-            const controlPanel=document.getElementById('controlPanel');
-            if(controlPanel)controlPanel.classList.remove('active');
+            const controlPanel=document.getElementById('controlPanel');            if(controlPanel)controlPanel.classList.remove('active');
         }
 
         function instantSave(){if(isSaving)return;saveAllSettings(true);}
@@ -537,6 +511,7 @@
                 img.src=url;
             }else{alert('Please enter an image URL!');}
         }
+
         function applyLoginLogoUrl(){
             const url=document.getElementById('loginLogoUrlInput').value.trim();
             const loginLogo=document.getElementById('loginLogo');
@@ -562,8 +537,7 @@
             const ceoPreview=document.getElementById('ceoPreview');
             if(url){
                 const img=new Image();
-                img.onload=function(){
-                    if(ceoImage)ceoImage.src=url;
+                img.onload=function(){                    if(ceoImage)ceoImage.src=url;
                     if(ceoPreview)ceoPreview.src=url;
                     appSettings.ceoUrl=url;
                     console.log('✅ CEO Image applied:',url);
@@ -586,7 +560,8 @@
         }
 
         function updateLoginLogoSize(){
-            const size=document.getElementById('loginLogoSize').value;            const loginLogo=document.getElementById('loginLogo');
+            const size=document.getElementById('loginLogoSize').value;
+            const loginLogo=document.getElementById('loginLogo');
             const loginLogoPreview=document.getElementById('loginLogoPreview');
             if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}
             if(loginLogoPreview){loginLogoPreview.style.width=size+'px';loginLogoPreview.style.height=size+'px';}
@@ -611,8 +586,7 @@
         }
 
         function updateTextContent(){
-            const section=document.getElementById('textSection').value;
-            const content=document.getElementById('textContent').value;
+            const section=document.getElementById('textSection').value;            const content=document.getElementById('textContent').value;
             const el=document.getElementById(section);
             if(el){if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}else{el.textContent=content;}}
             if(!appSettings.texts[section])appSettings.texts[section]={};
@@ -635,7 +609,8 @@
             document.getElementById(section).style.fontSize=size+'px';
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].size=size;
-            instantSave();        }
+            instantSave();
+        }
 
         function updateTextColor(){
             const section=document.getElementById('textSection').value;
@@ -660,8 +635,7 @@
             zoneCards.forEach(function(card,index){
                 const cardItem=document.createElement('div');
                 cardItem.className='card-item';
-                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
-                container.appendChild(cardItem);
+                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';                container.appendChild(cardItem);
             });
         }
 
@@ -684,7 +658,8 @@
 
         function updateZoneName(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();}
         function updateZoneAreas(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();}
-        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
+        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}
+        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
 
         function loadControlSettings(){
             document.getElementById('bannerColor').value=appSettings.bannerColor;
@@ -704,14 +679,12 @@
             db.collection('settings').doc('main').set({
                 bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
                 logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
-                fbLink:appSettings.fbLink,areaTagFont:appSettings.areaTagFont,areaTagFontSize:appSettings.areaTagFontSize,
-                areaTagColor:appSettings.areaTagColor,areaTagBg:appSettings.areaTagBg,texts:appSettings.texts,zoneCards:zoneCards,
+                fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
                 isSaving=false;
                 if(!isInstant)hideLoading();
-                showSaveIndicator(false);
-                console.log('✅ Settings saved!');
+                showSaveIndicator(false);                console.log('✅ Settings saved!');
             }).catch(function(error){
                 isSaving=false;
                 console.error('❌ Save error:',error);
@@ -725,7 +698,6 @@
             db.collection('settings').doc('main').get().then(function(doc){
                 if(doc.exists){
                     const data=doc.data();
-                    console.log('Loaded:',data);
                     
                     if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
                     if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}
@@ -733,23 +705,35 @@
                     if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}
                     if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}
                     if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
-                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}                    if(data.areaTagFont){appSettings.areaTagFont=data.areaTagFont;}
-                    if(data.areaTagFontSize){appSettings.areaTagFontSize=data.areaTagFontSize;}
-                    if(data.areaTagColor){appSettings.areaTagColor=data.areaTagColor;}
-                    if(data.areaTagBg){appSettings.areaTagBg=data.areaTagBg;}
+                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
+                    
+                    // FIXED: Correctly applying fonts now
                     if(data.texts){
                         appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
-                            if(el){if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontFamily=data.texts[key].font;el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}
+                            if(el){
+                                // Ensure font is applied first
+                                el.style.fontFamily=data.texts[key].font || "'Hind Siliguri', sans-serif";
+                                
+                                // Then content
+                                if(key==='tutorNoteText'){
+                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
+                                }else{
+                                    el.textContent=data.texts[key].content;
+                                }
+                                
+                                el.style.fontSize=data.texts[key].size+'px';
+                                el.style.color=data.texts[key].color;
+                            }
                         });
                     }
                     if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
+                    
+                    // FIXED: Apply Area Tag styles immediately after loading settings
                     applyAreaTagStyles();
-                    console.log('✅ Settings loaded!');
                 }else{
-                    console.log('No settings found, using defaults');
-                    document.getElementById('logoImage').src=DEFAULT_LOGO;
+                    console.log('No settings found, using defaults');                    document.getElementById('logoImage').src=DEFAULT_LOGO;
                     document.getElementById('loginLogo').src=DEFAULT_LOGO;
                     document.getElementById('ceoImage').src=DEFAULT_CEO;
                 }
