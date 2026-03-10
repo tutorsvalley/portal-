@@ -5,35 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <meta name="theme-color" content="#001f3f">
-    
-    <!-- AUTO REDIRECT FOR EMBEDDED BROWSERS -->
-    <script>
-        (function(){
-            var url = window.location.href;
-            var ua = navigator.userAgent || navigator.vendor || window.opera;
-            
-            // Detect Facebook, Messenger, Instagram, WhatsApp
-            var isEmbedded = /FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
-            
-            if(isEmbedded){
-                // Multiple redirect attempts to trigger native prompt
-                window.location.href = url;
-                window.location.replace(url);
-                window.open(url, "_blank", "noopener,noreferrer");
-                
-                // Fallback
-                setTimeout(function(){
-                    window.location.href = url;
-                }, 1000);
-            }
-        })();
-    </script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
         body{font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;background:var(--bg-light);min-height:100vh}
+        
+        /* EMBEDDED BROWSER WARNING */
+        #embeddedWarning{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);z-index:99999;justify-content:center;align-items:center;text-align:center;padding:20px}
+        #embeddedWarning.active{display:flex}
+        #embeddedWarning .container{background:white;padding:40px 30px;border-radius:20px;max-width:400px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+        #embeddedWarning .icon{font-size:60px;margin-bottom:20px}
+        #embeddedWarning h1{color:#001f3f;font-size:24px;margin-bottom:15px}
+        #embeddedWarning p{color:#666;margin-bottom:25px;font-size:16px;line-height:1.6}
+        #embeddedWarning .btn{background:#0074D9;color:white;padding:18px 30px;border:none;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;text-decoration:none;display:block;width:100%;margin-bottom:15px}
+        #embeddedWarning .btn:hover{background:#0056b3}
+        #embeddedWarning .note{margin-top:20px;padding:15px;background:#fff3cd;border-radius:8px;font-size:14px;color:#856404;text-align:left}
+        #embeddedWarning .note ol{margin-left:20px;margin-top:10px}
+        #embeddedWarning .note li{margin-bottom:8px}
         
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:10000}
         .loading-overlay.active{display:flex}
@@ -133,6 +122,28 @@
     </style>
 </head>
 <body>
+    <!-- EMBEDDED BROWSER WARNING -->
+    <div id="embeddedWarning">
+        <div class="container">
+            <div class="icon">🚀</div>
+            <h1>Tutors Valley</h1>
+            <p>এই লিংকটি Messenger এ খোলা যাবে না।<br>নিচের বাটনে ক্লিক করে ব্রাউজারে খুলুন।</p>
+            
+            <a href="#" class="btn" onclick="openInBrowser();return false;">
+                🌐 ব্রাউজারে খুলুন
+            </a>
+            
+            <div class="note">
+                ⚠️ <b>নির্দেশনা:</b><br>
+                <ol>
+                    <li>উপরের বাটনে ক্লিক করুন</li>
+                    <li>"Leave App" বা "Open in Browser" এ ক্লিক করুন</li>
+                    <li>তাহলেই সাইট খুলবে</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
@@ -328,6 +339,71 @@
             texts:{}
         };
         let isSaving=false;
+        let logoutTimer=null;
+        const SESSION_TIMEOUT = 5 * 60 * 1000;
+
+        // === EMBEDDED BROWSER FUNCTIONS ===
+        function checkEmbeddedBrowser(){
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            var isEmbedded = /FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
+            
+            if(isEmbedded){
+                document.getElementById('embeddedWarning').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function openInBrowser(){
+            var url = window.location.href;
+            window.open(url, '_blank', 'noopener,noreferrer');
+            window.location.href = url;
+            setTimeout(function(){
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }, 500);
+        }
+
+        function resetLogoutTimer(){
+            if(logoutTimer)clearTimeout(logoutTimer);
+            if(currentUserType && currentUserType !== 'guest'){
+                logoutTimer=setTimeout(function(){
+                    logout();
+                    alert('⏰ ৫ মিনিট নিষ্ক্রিয় থাকায় আপনি লগআউট হয়ে গেছেন।');
+                }, SESSION_TIMEOUT);
+            }
+        }
+
+        function saveSession(){
+            localStorage.setItem('tutorsValley_session', JSON.stringify({
+                currentUserType: currentUserType,
+                isAdmin: isAdmin,
+                timestamp: Date.now()
+            }));
+        }
+
+        function loadSession(){
+            try{
+                const session = JSON.parse(localStorage.getItem('tutorsValley_session'));
+                if(session && session.currentUserType){
+                    currentUserType = session.currentUserType;
+                    isAdmin = session.isAdmin || false;
+                    return true;
+                }
+            }catch(e){
+                console.log('No saved session');
+            }
+            return false;
+        }
+
+        function clearSession(){
+            localStorage.removeItem('tutorsValley_session');
+            if(logoutTimer)clearTimeout(logoutTimer);
+        }
+
+        ['click','mousemove','keypress','scroll','touchstart'].forEach(function(event){
+            document.addEventListener(event, function(){
+                if(currentUserType) resetLogoutTimer();
+            }, true);
+        });
 
         function showLoading(text='Saving...'){
             const overlay=document.getElementById('loadingOverlay');
@@ -375,10 +451,10 @@
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
                 console.log('Login:',currentUser.email,'Admin:',isAdmin);
-                if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
-                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
+                if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');saveSession();showPage('homePage');setupHomePage('tutor');resetLogoutTimer();}
+                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');saveSession();showPage('homePage');setupHomePage('guardian');resetLogoutTimer();}
                 else if(currentUserType==='admin'){
-                    if(currentUser.email===ADMIN_EMAIL){showPage('homePage');setupHomePage('admin');}
+                    if(currentUser.email===ADMIN_EMAIL){saveSession();showPage('homePage');setupHomePage('admin');resetLogoutTimer();}
                     else{alert('❌ Only owner can login as admin!');logout();return;}
                 }
                 closeModal();hideLoading();
@@ -391,7 +467,15 @@
 
         function guestLogin(){
             showLoading('Loading...');
-            setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
+            setTimeout(function(){
+                currentUserType='guest';
+                isAdmin=false;
+                saveSession();
+                showPage('homePage');
+                setupHomePage('guest');
+                resetLogoutTimer();
+                hideLoading();
+            },1500);
         }
 
         function saveUserData(user,type){
@@ -753,20 +837,14 @@
                             const el=document.getElementById(key);
                             if(el){
                                 el.style.fontFamily=data.texts[key].font || "'Hind Siliguri', sans-serif";
-                                
-                                if(key==='tutorNoteText'){
-                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
-                                }else{
-                                    el.textContent=data.texts[key].content;
-                                }
-                                
+                                if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}
+                                else{el.textContent=data.texts[key].content;}
                                 el.style.fontSize=data.texts[key].size+'px';
                                 el.style.color=data.texts[key].color;
                             }
                         });
                     }
                     if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
-                    
                     applyAreaTagStyles();
                 }else{
                     console.log('No settings found, using defaults');
@@ -779,26 +857,53 @@
 
         function logout(){
             showLoading('Logging out...');
-            auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});
+            auth.signOut().then(function(){
+                currentUser=null;
+                currentUserType=null;
+                isAdmin=false;
+                clearSession();
+                showPage('loginPage');
+                hideLoading();
+            }).catch(function(error){alert('Error: '+error.message);hideLoading();});
         }
 
-        auth.onAuthStateChanged(function(user){if(user){console.log('Signed in:',user.email);if(user.email===ADMIN_EMAIL)isAdmin=true;}else{console.log('Signed out');isAdmin=false;}});
+        auth.onAuthStateChanged(function(user){
+            if(user){
+                console.log('Signed in:',user.email);
+                if(user.email===ADMIN_EMAIL)isAdmin=true;
+                resetLogoutTimer();
+            }else{
+                console.log('Signed out');
+                isAdmin=false;
+            }
+        });
 
         document.addEventListener('DOMContentLoaded',function(){
             console.log('Tutors Valley initialized');
-            document.getElementById('logoImage').src=DEFAULT_LOGO;
-            document.getElementById('loginLogo').src=DEFAULT_LOGO;
-            document.getElementById('ceoImage').src=DEFAULT_CEO;
-            const logoPreview=document.getElementById('logoPreview');
-            const loginLogoPreview=document.getElementById('loginLogoPreview');
-            const ceoPreview=document.getElementById('ceoPreview');
-            if(logoPreview)logoPreview.src=DEFAULT_LOGO;
-            if(loginLogoPreview)loginLogoPreview.src=DEFAULT_LOGO;
-            if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
-            const gearIcon=document.getElementById('gearIcon');
-            if(gearIcon)gearIcon.style.display='none';
-            const loginPage=document.getElementById('loginPage');
-            if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
+            checkEmbeddedBrowser();
+            
+            if(loadSession()){
+                console.log('Session restored:', currentUserType);
+                document.getElementById('embeddedWarning').classList.remove('active');
+                document.body.style.overflow = 'auto';
+                showPage('homePage');
+                setupHomePage(currentUserType);
+                resetLogoutTimer();
+            }else{
+                document.getElementById('logoImage').src=DEFAULT_LOGO;
+                document.getElementById('loginLogo').src=DEFAULT_LOGO;
+                document.getElementById('ceoImage').src=DEFAULT_CEO;
+                const logoPreview=document.getElementById('logoPreview');
+                const loginLogoPreview=document.getElementById('loginLogoPreview');
+                const ceoPreview=document.getElementById('ceoPreview');
+                if(logoPreview)logoPreview.src=DEFAULT_LOGO;
+                if(loginLogoPreview)loginLogoPreview.src=DEFAULT_LOGO;
+                if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
+                const gearIcon=document.getElementById('gearIcon');
+                if(gearIcon)gearIcon.style.display='none';
+                const loginPage=document.getElementById('loginPage');
+                if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
+            }
         });
     </script>
 </body>
