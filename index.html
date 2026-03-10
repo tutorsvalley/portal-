@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <meta name="theme-color" content="#001f3f">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;600;700&family=Ubuntu:wght@300;400;500;700&family=Arial:wght@400;700&family=Verdana:wght@400;700&family=Georgia:wght@400;700&family=Times+New+Roman:wght@400;700&family=Courier+New:wght@400;700&family=Impact:wght@400&family=Trebuchet+MS:wght@400;700&family=Palatino+Linotype:wght@400;700&family=Garamond:wght@400;700&family=Bookman+Old+Style:wght@400;700&family=Avant+Garde:wght@400&family=Optima:wght@400&family=Futura:wght@400&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
@@ -202,7 +202,7 @@
                 <input type="color" id="bannerColor" value="#001f3f" onchange="updateBannerColor()">
             </div>
             <div class="control-section">
-                <h4>📝 Text Settings</h4>
+                <h4>📝 Text Settings (20 Fonts)</h4>
                 <select id="textSection" onchange="loadTextSettings()">
                     <option value="brandingText">Branding</option>
                     <option value="mottoText">Motto</option>
@@ -210,6 +210,7 @@
                     <option value="loginSubtitleText">Login Subtitle</option>
                     <option value="tutorNoteText">Tutor Note</option>
                     <option value="zoneTitle">Zone Title</option>
+                    <option value="areaTagText">Area Tag</option>
                     <option value="reviewsTitle">Reviews Title</option>
                     <option value="ceoName">CEO Name</option>
                     <option value="ceoDescription">CEO Description</option>
@@ -217,18 +218,32 @@
                 </select>
                 <input type="text" id="textContent" placeholder="Text Content" onchange="updateTextContent()" style="margin-top:8px;">
                 <select id="fontFamily" onchange="updateTextFont()" style="margin-top:8px;width:100%;padding:8px;">
-                    <optgroup label="বাংলা ফন্ট">
+                    <optgroup label="🇧🇩 বাংলা ফন্ট (10টি)">
                         <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
                         <option value="'Noto Sans Bengali', sans-serif">Noto Sans Bengali</option>
                         <option value="Arial, sans-serif">Arial</option>
+                        <option value="Verdana, sans-serif">Verdana</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="Impact, sans-serif">Impact</option>
+                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        <option value="'Palatino Linotype', serif">Palatino Linotype</option>
                     </optgroup>
-                    <optgroup label="English Fonts">
+                    <optgroup label="🇬🇧 English Fonts (10টি)">
                         <option value="'Roboto', sans-serif">Roboto</option>
+                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                        <option value="'Lato', sans-serif">Lato</option>
                         <option value="'Poppins', sans-serif">Poppins</option>
+                        <option value="'Raleway', sans-serif">Raleway</option>
+                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                        <option value="'Oswald', sans-serif">Oswald</option>
+                        <option value="'Merriweather', serif">Merriweather</option>
+                        <option value="'Playfair Display', serif">Playfair Display</option>
+                        <option value="'Ubuntu', sans-serif">Ubuntu</option>
                     </optgroup>
                 </select>
-                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">
-                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
+                <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
             </div>
             <div class="control-section">
                 <h4>📍 Zone Cards</h4>
@@ -243,7 +258,8 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
@@ -269,9 +285,37 @@
             loginLogoUrl:DEFAULT_LOGO,
             ceoUrl:DEFAULT_CEO,
             fbLink:"https://facebook.com/tutorsvalley",
+            areaTagFont:"'Hind Siliguri', sans-serif",
+            areaTagFontSize:13,
+            areaTagColor:"#333333",
+            areaTagBg:"#e8e8e8",
             texts:{}
         };
         let isSaving=false;
+        // FIXED: Instant redirect for Messenger/Facebook
+        function checkEmbeddedBrowser(){
+            const ua=navigator.userAgent||navigator.vendor||window.opera;
+            const warningDiv=document.getElementById('externalBrowserWarning');
+            const isFacebook=/FBAN|FBAV/i.test(ua);
+            const isInstagram=/Instagram/i.test(ua);
+            const isMessenger=/Messenger/i.test(ua);
+            const isWhatsApp=/WhatsApp/i.test(ua);
+            
+            if(isFacebook||isInstagram||isMessenger||isWhatsApp){
+                // INSTANT redirect to Chrome
+                const currentUrl=window.location.href;
+                const intentUrl='intent://'+currentUrl.replace('https://','').replace('http://','')+'#Intent;scheme=https;package=com.android.chrome;end';
+                window.location.href=intentUrl;
+                
+                // Fallback after 1 second
+                setTimeout(function(){
+                    window.open(currentUrl,'_blank');
+                },1000);
+                
+                return true;
+            }
+            return false;
+        }
 
         function showLoading(text='Saving...'){
             const overlay=document.getElementById('loadingOverlay');
@@ -292,12 +336,12 @@
                 setTimeout(()=>indicator.classList.remove('active'),3000);
             }
         }
+
         function showPage(pageId){
             showLoading('Loading...');
             setTimeout(()=>{
                 document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-                const target=document.getElementById(pageId);
-                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
+                const target=document.getElementById(pageId);                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
                 hideLoading();
             },1500);
         }
@@ -322,35 +366,15 @@
             showLoading('Logging in...');
             auth.signInWithPopup(provider).then(function(result){
                 currentUser=result.user;
-                // FIXED: Only admin email gets admin access
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
-                console.log('=== LOGIN ===');
-                console.log('Email:',currentUser.email);
-                console.log('Is Admin:',isAdmin);
-                console.log('Admin Email:',ADMIN_EMAIL);
-                
-                if(currentUserType==='tutor'){
-                    saveUserData(currentUser,'tutor');
-                    showPage('homePage');
-                    setupHomePage('tutor');
-                }
-                else if(currentUserType==='guardian'){
-                    saveUserData(currentUser,'guardian');
-                    showPage('homePage');
-                    setupHomePage('guardian');
-                }
+                console.log('Login:',currentUser.email,'Admin:',isAdmin);
+                if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
+                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
                 else if(currentUserType==='admin'){
-                    if(currentUser.email===ADMIN_EMAIL){
-                        showPage('homePage');                        setupHomePage('admin');
-                    }
-                    else{
-                        alert('❌ Only owner can login as admin!');
-                        logout();
-                        return;
-                    }
+                    if(currentUser.email===ADMIN_EMAIL){showPage('homePage');setupHomePage('admin');}
+                    else{alert('❌ Only owner can login as admin!');logout();return;}
                 }
-                closeModal();
-                hideLoading();
+                closeModal();hideLoading();
             }).catch(function(error){
                 const loginStatus=document.getElementById('loginStatus');
                 if(loginStatus)loginStatus.textContent='Error: '+error.message;
@@ -360,41 +384,18 @@
 
         function guestLogin(){
             showLoading('Loading...');
-            setTimeout(function(){
-                currentUserType='guest';
-                isAdmin=false;
-                showPage('homePage');
-                setupHomePage('guest');
-                hideLoading();
-            },1500);
+            setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
         }
 
         function saveUserData(user,type){
-            db.collection('users').doc(user.uid).set({
-                email:user.email,
-                name:user.displayName,
-                type:type,
-                photoURL:user.photoURL,
-                createdAt:firebase.firestore.FieldValue.serverTimestamp()
-            },{merge:true});
+            db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
         }
-
         function setupHomePage(userType){
             currentUserType=userType;
-            console.log('=== SETUP HOME PAGE ===');
-            console.log('User Type:',userType);
-            console.log('Is Admin:',isAdmin);
+            console.log('Setup:',userType,'Admin:',isAdmin);
             
-            // FIXED: Gear icon ONLY for admin
             const gearIcon=document.getElementById('gearIcon');
-            if(gearIcon){
-                if(isAdmin===true){
-                    gearIcon.style.display='block';
-                    console.log('✅ Gear Icon: VISIBLE (Admin)');                }else{
-                    gearIcon.style.display='none';
-                    console.log('❌ Gear Icon: HIDDEN (Not Admin)');
-                }
-            }
+            if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
             
             const tutorControls=document.getElementById('tutorControls');
             const tutorNote=document.getElementById('tutorNote');
@@ -403,49 +404,31 @@
             
             if(genderSelect)genderSelect.value='';
             
-            document.querySelectorAll('.group-btn').forEach(btn=>{
-                btn.classList.add('hidden');
-                btn.style.display='none';
-            });
+            document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
             
             if(userType==='admin'){
-                console.log('Mode: ADMIN');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.remove('hidden');
-                    btn.style.display='block';
-                });
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
             }
             else if(userType==='tutor'){
-                console.log('Mode: TUTOR');
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.add('hidden');
-                    btn.style.display='none';
-                });
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
             }
             else if(userType==='guardian'){
-                console.log('Mode: GUARDIAN');
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.remove('hidden');
-                    btn.style.display='block';
-                });
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
             }
             else{
-                console.log('Mode: GUEST');                if(tutorControls)tutorControls.style.display='none';
+                if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.remove('hidden');
-                    btn.style.display='block';
-                });
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
             }
             
             loadSettings();
@@ -456,23 +439,9 @@
         function handleGenderSelect(){
             const gender=document.getElementById('genderSelect').value;
             showLoading('Loading...');
-            setTimeout(function(){
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.add('hidden');
-                    btn.style.display='none';
-                });
-                if(gender==='male'){
-                    document.querySelectorAll('.male-group').forEach(btn=>{
-                        btn.classList.remove('hidden');
-                        btn.style.display='block';
-                    });
-                }
-                else if(gender==='female'){
-                    document.querySelectorAll('.female-group').forEach(btn=>{
-                        btn.classList.remove('hidden');
-                        btn.style.display='block';
-                    });
-                }
+            setTimeout(function(){                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
                 hideLoading();
             },1500);
         }
@@ -485,72 +454,41 @@
                 const cardDiv=document.createElement('div');
                 cardDiv.className='zone-card';
                 let areaTags='';
-                card.areas.forEach(function(area){
-                    areaTags+='<span class="area-tag">'+area+'</span>';
-                });
-                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3>'+                    '<div class="area-tags">'+areaTags+'</div>'+
-                    '<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+
-                    '<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
+                card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});
+                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
             });
-            
+            applyAreaTagStyles();
             if(currentUserType==='admin'||currentUserType==='guardian'||currentUserType==='guest'){
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.remove('hidden');
-                    btn.style.display='block';
-                });
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
             }
             else if(currentUserType==='tutor'){
                 const gender=document.getElementById('genderSelect').value;
-                document.querySelectorAll('.group-btn').forEach(btn=>{
-                    btn.classList.add('hidden');
-                    btn.style.display='none';
-                });
-                if(gender==='male'){
-                    document.querySelectorAll('.male-group').forEach(btn=>{
-                        btn.classList.remove('hidden');
-                        btn.style.display='block';
-                    });
-                }
-                else if(gender==='female'){
-                    document.querySelectorAll('.female-group').forEach(btn=>{
-                        btn.classList.remove('hidden');
-                        btn.style.display='block';
-                    });
-                }
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
             }
         }
 
-        function joinGroup(link){
-            showLoading('Opening...');
-            setTimeout(function(){
-                window.open(link,'_blank');
-                hideLoading();
-            },1500);
+        function applyAreaTagStyles(){
+            const areaTags=document.querySelectorAll('.area-tag');
+            areaTags.forEach(function(tag){
+                tag.style.fontFamily=appSettings.areaTagFont;
+                tag.style.fontSize=appSettings.areaTagFontSize+'px';
+                tag.style.color=appSettings.areaTagColor;
+                tag.style.background=appSettings.areaTagBg;
+            });
         }
+
+        function joinGroup(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1500);}
 
         function submitReview(){
             const reviewText=document.getElementById('reviewText');
             const text=reviewText?reviewText.value:'';
             if(!text.trim()){alert('রিভিউ লিখুন');return;}
             showLoading('Submitting...');
-            db.collection('reviews').add({
-                text:text,
-                userId:currentUser?currentUser.uid:'guest',
-                userName:currentUser?currentUser.displayName:'Guest',                userType:currentUserType,
-                createdAt:firebase.firestore.FieldValue.serverTimestamp()
-            }).then(function(){
-                if(reviewText)reviewText.value='';
-                loadReviews();
-                hideLoading();
-                showSaveIndicator();
-            }).catch(function(error){
-                alert('Error: '+error.message);
-                hideLoading();
-                showSaveIndicator(true);
-            });
+            db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
         }
-
         function loadReviews(){
             const container=document.getElementById('reviewsContainer');
             if(!container)return;
@@ -560,20 +498,14 @@
                     const review=doc.data();
                     const reviewDiv=document.createElement('div');
                     reviewDiv.className='review-card';
-                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div>'+
-                        '<div class="review-text">'+(review.text||'')+'</div>';
+                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';
                     container.appendChild(reviewDiv);
                 });
             });
         }
 
         function openControlPanel(){
-            // FIXED: Double check admin status
-            if(isAdmin!==true){
-                alert('❌ Only admin can access settings!');
-                console.log('Blocked: Not admin');
-                return;
-            }
+            if(!isAdmin){alert('Only admin can access settings!');return;}
             const controlPanel=document.getElementById('controlPanel');
             if(controlPanel)controlPanel.classList.add('active');
             loadControlSettings();
@@ -585,9 +517,7 @@
             if(controlPanel)controlPanel.classList.remove('active');
         }
 
-        function instantSave(){
-            if(isSaving)return;            saveAllSettings(true);
-        }
+        function instantSave(){if(isSaving)return;saveAllSettings(true);}
 
         function applyLogoUrl(){
             const url=document.getElementById('logoUrlInput').value.trim();
@@ -603,15 +533,10 @@
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){
-                    alert('❌ Invalid image URL!');
-                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
                 img.src=url;
-            }else{
-                alert('Please enter an image URL!');
-            }
+            }else{alert('Please enter an image URL!');}
         }
-
         function applyLoginLogoUrl(){
             const url=document.getElementById('loginLogoUrlInput').value.trim();
             const loginLogo=document.getElementById('loginLogo');
@@ -626,16 +551,13 @@
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){
-                    alert('❌ Invalid image URL!');
-                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
                 img.src=url;
-            }else{
-                alert('Please enter an image URL!');
-            }
+            }else{alert('Please enter an image URL!');}
         }
 
-        function applyCeoUrl(){            const url=document.getElementById('ceoUrlInput').value.trim();
+        function applyCeoUrl(){
+            const url=document.getElementById('ceoUrlInput').value.trim();
             const ceoImage=document.getElementById('ceoImage');
             const ceoPreview=document.getElementById('ceoPreview');
             if(url){
@@ -648,13 +570,9 @@
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){
-                    alert('❌ Invalid image URL!');
-                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
                 img.src=url;
-            }else{
-                alert('Please enter an image URL!');
-            }
+            }else{alert('Please enter an image URL!');}
         }
 
         function updateLogoSize(){
@@ -668,8 +586,7 @@
         }
 
         function updateLoginLogoSize(){
-            const size=document.getElementById('loginLogoSize').value;
-            const loginLogo=document.getElementById('loginLogo');
+            const size=document.getElementById('loginLogoSize').value;            const loginLogo=document.getElementById('loginLogo');
             const loginLogoPreview=document.getElementById('loginLogoPreview');
             if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}
             if(loginLogoPreview){loginLogoPreview.style.width=size+'px';loginLogoPreview.style.height=size+'px';}
@@ -684,7 +601,8 @@
             instantSave();
         }
 
-        function loadTextSettings(){            const section=document.getElementById('textSection').value;
+        function loadTextSettings(){
+            const section=document.getElementById('textSection').value;
             const settings=appSettings.texts[section]||{};
             document.getElementById('textContent').value=settings.content||'';
             document.getElementById('fontFamily').value=settings.font||"'Hind Siliguri', sans-serif";
@@ -696,13 +614,7 @@
             const section=document.getElementById('textSection').value;
             const content=document.getElementById('textContent').value;
             const el=document.getElementById(section);
-            if(el){
-                if(section==='tutorNoteText'){
-                    el.innerHTML='📌 <b>নোট:</b> '+content;
-                }else{
-                    el.textContent=content;
-                }
-            }
+            if(el){if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}else{el.textContent=content;}}
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].content=content;
             instantSave();
@@ -723,8 +635,7 @@
             document.getElementById(section).style.fontSize=size+'px';
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].size=size;
-            instantSave();
-        }
+            instantSave();        }
 
         function updateTextColor(){
             const section=document.getElementById('textSection').value;
@@ -734,6 +645,7 @@
             appSettings.texts[section].color=color;
             instantSave();
         }
+
         function updateFbLink(){
             const link=document.getElementById('fbLink').value;
             document.getElementById('fbButton').href=link;
@@ -748,12 +660,7 @@
             zoneCards.forEach(function(card,index){
                 const cardItem=document.createElement('div');
                 cardItem.className='card-item';
-                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+
-                    '<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+
-                    '<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+
-                    '<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+
-                    '<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+
-                    '<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
+                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
                 container.appendChild(cardItem);
             });
         }
@@ -777,12 +684,12 @@
 
         function updateZoneName(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();}
         function updateZoneAreas(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();}
-        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}
-        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
+        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
 
         function loadControlSettings(){
             document.getElementById('bannerColor').value=appSettings.bannerColor;
-            document.getElementById('logoSize').value=appSettings.logoSize;            document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
+            document.getElementById('logoSize').value=appSettings.logoSize;
+            document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
             document.getElementById('fbLink').value=appSettings.fbLink;
             document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';
             document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';
@@ -795,15 +702,10 @@
             if(!isInstant)showLoading('Saving...');
             
             db.collection('settings').doc('main').set({
-                bannerColor:appSettings.bannerColor,
-                logoSize:appSettings.logoSize,
-                loginLogoSize:appSettings.loginLogoSize,
-                logoUrl:appSettings.logoUrl,
-                loginLogoUrl:appSettings.loginLogoUrl,
-                ceoUrl:appSettings.ceoUrl,
-                fbLink:appSettings.fbLink,
-                texts:appSettings.texts,
-                zoneCards:zoneCards,
+                bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
+                logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,areaTagFont:appSettings.areaTagFont,areaTagFontSize:appSettings.areaTagFontSize,
+                areaTagColor:appSettings.areaTagColor,areaTagBg:appSettings.areaTagBg,texts:appSettings.texts,zoneCards:zoneCards,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
                 isSaving=false;
@@ -825,64 +727,25 @@
                     const data=doc.data();
                     console.log('Loaded:',data);
                     
-                    if(data.bannerColor){
-                        document.querySelector('.header-section').style.background=data.bannerColor;
-                        appSettings.bannerColor=data.bannerColor;
-                    }
-                    if(data.logoUrl){
-                        document.getElementById('logoImage').src=data.logoUrl;
-                        const logoPreview=document.getElementById('logoPreview');                        if(logoPreview)logoPreview.src=data.logoUrl;
-                        appSettings.logoUrl=data.logoUrl;
-                    }
-                    if(data.logoSize){
-                        const logoImage=document.getElementById('logoImage');
-                        const logoPreview=document.getElementById('logoPreview');
-                        if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}
-                        if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}
-                        appSettings.logoSize=data.logoSize;
-                    }
-                    if(data.loginLogoUrl){
-                        document.getElementById('loginLogo').src=data.loginLogoUrl;
-                        const loginLogoPreview=document.getElementById('loginLogoPreview');
-                        if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;
-                        appSettings.loginLogoUrl=data.loginLogoUrl;
-                    }
-                    if(data.loginLogoSize){
-                        const loginLogo=document.getElementById('loginLogo');
-                        const loginLogoPreview=document.getElementById('loginLogoPreview');
-                        if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}
-                        if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}
-                        appSettings.loginLogoSize=data.loginLogoSize;
-                    }
-                    if(data.ceoUrl){
-                        document.getElementById('ceoImage').src=data.ceoUrl;
-                        const ceoPreview=document.getElementById('ceoPreview');
-                        if(ceoPreview)ceoPreview.src=data.ceoUrl;
-                        appSettings.ceoUrl=data.ceoUrl;
-                    }
-                    if(data.fbLink){
-                        document.getElementById('fbButton').href=data.fbLink;
-                        appSettings.fbLink=data.fbLink;
-                    }
+                    if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
+                    if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}
+                    if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}
+                    if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}
+                    if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}
+                    if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
+                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}                    if(data.areaTagFont){appSettings.areaTagFont=data.areaTagFont;}
+                    if(data.areaTagFontSize){appSettings.areaTagFontSize=data.areaTagFontSize;}
+                    if(data.areaTagColor){appSettings.areaTagColor=data.areaTagColor;}
+                    if(data.areaTagBg){appSettings.areaTagBg=data.areaTagBg;}
                     if(data.texts){
                         appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
-                            if(el){
-                                if(key==='tutorNoteText'){
-                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
-                                }else{
-                                    el.textContent=data.texts[key].content;
-                                }
-                                el.style.fontFamily=data.texts[key].font;
-                                el.style.fontSize=data.texts[key].size+'px';
-                                el.style.color=data.texts[key].color;
-                            }
+                            if(el){if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontFamily=data.texts[key].font;el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}
                         });
                     }
-                    if(data.zoneCards){                        zoneCards=data.zoneCards;
-                        renderZoneCards();
-                    }
+                    if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
+                    applyAreaTagStyles();
                     console.log('✅ Settings loaded!');
                 }else{
                     console.log('No settings found, using defaults');
@@ -890,47 +753,19 @@
                     document.getElementById('loginLogo').src=DEFAULT_LOGO;
                     document.getElementById('ceoImage').src=DEFAULT_CEO;
                 }
-            }).catch(function(error){
-                console.error('❌ Load error:',error);
-            });
+            }).catch(function(error){console.error('❌ Load error:',error);});
         }
 
         function logout(){
             showLoading('Logging out...');
-            auth.signOut().then(function(){
-                currentUser=null;
-                currentUserType=null;
-                isAdmin=false;
-                console.log('Logged out, isAdmin:',isAdmin);
-                showPage('loginPage');
-                hideLoading();
-            }).catch(function(error){
-                alert('Error: '+error.message);
-                hideLoading();
-            });
+            auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});
         }
 
-        auth.onAuthStateChanged(function(user){
-            if(user){
-                console.log('Auth State:',user.email);
-                // FIXED: Only set admin if email matches
-                if(user.email===ADMIN_EMAIL){
-                    isAdmin=true;
-                    console.log('✅ Admin access granted');
-                }else{
-                    isAdmin=false;
-                    console.log('❌ Not admin');
-                }
-            }else{
-                console.log('No user');
-                isAdmin=false;
-            }
-        });
+        auth.onAuthStateChanged(function(user){if(user){console.log('Signed in:',user.email);if(user.email===ADMIN_EMAIL)isAdmin=true;}else{console.log('Signed out');isAdmin=false;}});
 
         document.addEventListener('DOMContentLoaded',function(){
-            console.log('=== TUTORS VALLEY INITIALIZED ===');
-            console.log('Admin Email:',ADMIN_EMAIL);            
-            // Set default images
+            console.log('Tutors Valley initialized');
+            checkEmbeddedBrowser();
             document.getElementById('logoImage').src=DEFAULT_LOGO;
             document.getElementById('loginLogo').src=DEFAULT_LOGO;
             document.getElementById('ceoImage').src=DEFAULT_CEO;
@@ -940,16 +775,10 @@
             if(logoPreview)logoPreview.src=DEFAULT_LOGO;
             if(loginLogoPreview)loginLogoPreview.src=DEFAULT_LOGO;
             if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
-            
-            // Hide gear icon by default
             const gearIcon=document.getElementById('gearIcon');
             if(gearIcon)gearIcon.style.display='none';
-            
             const loginPage=document.getElementById('loginPage');
-            if(loginPage){
-                loginPage.classList.add('active');
-                loginPage.style.display='flex';
-            }
+            if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
         });
     </script>
 </body>
