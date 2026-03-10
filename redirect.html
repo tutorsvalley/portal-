@@ -4,28 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>...</title>
+    <style>
+        body{display:none}
+    </style>
     <script>
         (function(){
             var url = "https://tutorsvalley.github.io/portal-/";
-            var ua = navigator.userAgent || navigator.vendor || window.opera;
             
-            // Android Chrome Intent (সবচেয়ে Fast)
-            if(/Android/i.test(ua)){
-                // Multiple redirect attempts
-                window.location.href = "intent://" + url.replace("https://", "") + "#Intent;scheme=https;package=com.android.chrome;end";
+            // Multiple redirect attempts
+            window.location.href = url;
+            window.location.replace(url);
+            window.open(url, "_blank", "noopener,noreferrer");
+            document.location = url;
+            
+            // Fallback after 2 seconds
+            setTimeout(function(){
                 window.location.href = url;
-                window.open(url, "_blank");
-                document.location = url;
-            }
-            // iOS Safari
-            else if(/iPhone|iPad|iPod/i.test(ua)){
-                window.location.href = url;
-                window.open(url, "_blank");
-            }
-            // Desktop/Other
-            else{
-                window.location.replace(url);
-            }
+            }, 2000);
         })();
     </script>
 </head>
