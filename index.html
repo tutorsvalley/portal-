@@ -24,7 +24,7 @@
         .login-page{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
         .login-page.active{display:flex}
         .login-card{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
-        .login-logo{width:100px;height:100px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover}
+        .login-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover}
         .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
         .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
         .login-buttons{display:flex;flex-direction:column;gap:12px}
@@ -115,7 +115,7 @@
     <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
     <div id="loginPage" class="page login-page active">
         <div class="login-card">
-            <img src="https://via.placeholder.com/100" alt="Logo" class="login-logo" id="loginLogo">
+            <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="login-logo" id="loginLogo">
             <h1 class="login-title" id="loginTitleText">Tutors Valley</h1>
             <p class="login-subtitle" id="loginSubtitleText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             <div class="login-buttons">
@@ -141,7 +141,7 @@
         <header class="header-section">
             <div class="gear-icon" id="gearIcon" onclick="openControlPanel()" style="display:none;">⚙️</div>
             <div class="header-center">
-                <img src="https://via.placeholder.com/80" alt="Logo" class="header-logo" id="logoImage">
+                <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="header-logo" id="logoImage">
                 <h1 class="header-title" id="brandingText">Tutors Valley</h1>
                 <p class="header-motto" id="mottoText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             </div>
@@ -171,7 +171,7 @@
                 <div id="reviewsContainer" class="reviews-container"></div>
             </div>
             <div class="ceo-section">
-                <img src="https://via.placeholder.com/80" alt="CEO" class="ceo-img" id="ceoImage">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="CEO" class="ceo-img" id="ceoImage">
                 <div class="ceo-info"><h3 id="ceoName">CEO Name</h3><p id="ceoDescription">CEO Description</p></div>
             </div>
         </div>
@@ -184,16 +184,20 @@
         </div>
         <div class="control-content">
             <div class="control-section">
-                <h4>🏠 Homepage Logo</h4>
-                <input type="file" id="logoUpload" accept="image/*" onchange="uploadLogo()">
+                <h4>🏠 Homepage Logo URL</h4>
+                <input type="text" id="logoUrlInput" placeholder="Paste image URL here" onchange="updateLogoUrl()" style="width:100%;padding:8px;margin-bottom:8px;">
                 <label>Logo Size:</label>
                 <input type="range" id="logoSize" min="60" max="150" value="80" onchange="updateLogoSize()">
             </div>
             <div class="control-section">
-                <h4>🔐 Login Page Logo</h4>
-                <input type="file" id="loginLogoUpload" accept="image/*" onchange="uploadLoginLogo()">
+                <h4>🔐 Login Page Logo URL</h4>
+                <input type="text" id="loginLogoUrlInput" placeholder="Paste image URL here" onchange="updateLoginLogoUrl()" style="width:100%;padding:8px;margin-bottom:8px;">
                 <label>Login Logo Size:</label>
-                <input type="range" id="loginLogoSize" min="80" max="200" value="100" onchange="updateLoginLogoSize()">
+                <input type="range" id="loginLogoSize" min="60" max="150" value="80" onchange="updateLoginLogoSize()">
+            </div>
+            <div class="control-section">
+                <h4>👤 CEO Image URL</h4>
+                <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" onchange="updateCeoUrl()" style="width:100%;padding:8px;">
             </div>
             <div class="control-section">
                 <h4>🎨 Banner Color</h4>
@@ -270,10 +274,6 @@
                 <div id="cardSettings"></div>
             </div>
             <div class="control-section">
-                <h4>👤 CEO Image</h4>
-                <input type="file" id="ceoUpload" accept="image/*" onchange="uploadCeoImage()">
-            </div>
-            <div class="control-section">
                 <h4>📘 Facebook Link</h4>
                 <input type="url" id="fbLink" placeholder="Facebook URL" onchange="updateFbLink()">
             </div>
@@ -283,13 +283,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script>
         const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
         firebase.initializeApp(firebaseConfig);
         const auth=firebase.auth();
         const db=firebase.firestore();
-        const storage=firebase.storage();
         const provider=new firebase.auth.GoogleAuthProvider();
         let currentUser=null;
         let currentUserType=null;
@@ -302,7 +300,10 @@
         let appSettings={
             bannerColor:"#001f3f",
             logoSize:80,
-            loginLogoSize:100,
+            loginLogoSize:80,
+            logoUrl:"https://cdn-icons-png.flaticon.com/512/2995/2995477.png",
+            loginLogoUrl:"https://cdn-icons-png.flaticon.com/512/2995/2995477.png",
+            ceoUrl:"https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             fbLink:"https://facebook.com/tutorsvalley",
             areaTagFont:"'Hind Siliguri', sans-serif",
             areaTagFontSize:13,
@@ -310,7 +311,6 @@
             areaTagBg:"#e8e8e8",
             texts:{}
         };
-        let saveTimeout=null;
         let isSaving=false;
 
         function checkEmbeddedBrowser(){
@@ -365,6 +365,7 @@
             auth.signInWithPopup(provider).then(function(result){
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
+                console.log('Login successful, isAdmin:', isAdmin);
                 if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');showPage('homePage');setupHomePage('tutor');}
                 else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');showPage('homePage');setupHomePage('guardian');}
                 else if(currentUserType==='admin'){
@@ -397,33 +398,28 @@
             const tutorNote=document.getElementById('tutorNote');
             const reviewForm=document.getElementById('reviewForm');
             
-            // Admin sees EVERYTHING including all group buttons
             if(userType==='admin'){
                 console.log('Admin mode - showing all buttons');
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
-                // Show ALL group buttons immediately for admin
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
                     btn.style.display='block';
                 });
             }
-            // Tutor sees note, controls, and gender-based buttons
             else if(userType==='tutor'){
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
             }
-            // Guardian sees note and all buttons
             else if(userType==='guardian'){
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));
             }
-            // Guest sees nothing
             else{
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
@@ -461,7 +457,6 @@
             });
             applyAreaTagStyles();
             
-            // If admin, show all buttons immediately after render
             if(isAdmin){
                 document.querySelectorAll('.group-btn').forEach(btn=>{
                     btn.classList.remove('hidden');
@@ -513,32 +508,38 @@
             saveAllSettings(true);
         }
 
-        function uploadLogo(){
-            const file=document.getElementById('logoUpload').files[0];if(!file)return;
-            showLoading('Uploading...');
-            const storageRef=storage.ref('logos/'+Date.now()+'.jpg');
-            storageRef.put(file).then(function(snapshot){snapshot.ref.getDownloadURL().then(function(url){document.getElementById('logoImage').src=url;appSettings.logoUrl=url;hideLoading();instantSave();});}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+        function updateLogoUrl(){
+            const url=document.getElementById('logoUrlInput').value;
+            if(url){
+                document.getElementById('logoImage').src=url;
+                appSettings.logoUrl=url;
+                instantSave();
+            }
         }
 
         function updateLogoSize(){const size=document.getElementById('logoSize').value;const logoImage=document.getElementById('logoImage');if(logoImage){logoImage.style.width=size+'px';logoImage.style.height=size+'px';}appSettings.logoSize=size;instantSave();}
 
-        function uploadLoginLogo(){
-            const file=document.getElementById('loginLogoUpload').files[0];if(!file)return;
-            showLoading('Uploading...');
-            const storageRef=storage.ref('loginLogos/'+Date.now()+'.jpg');
-            storageRef.put(file).then(function(snapshot){snapshot.ref.getDownloadURL().then(function(url){document.getElementById('loginLogo').src=url;appSettings.loginLogoUrl=url;hideLoading();instantSave();});}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+        function updateLoginLogoUrl(){
+            const url=document.getElementById('loginLogoUrlInput').value;
+            if(url){
+                document.getElementById('loginLogo').src=url;
+                appSettings.loginLogoUrl=url;
+                instantSave();
+            }
         }
 
         function updateLoginLogoSize(){const size=document.getElementById('loginLogoSize').value;const loginLogo=document.getElementById('loginLogo');if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}appSettings.loginLogoSize=size;instantSave();}
 
-        function updateBannerColor(){const color=document.getElementById('bannerColor').value;document.querySelector('.header-section').style.background=color;appSettings.bannerColor=color;instantSave();}
-
-        function uploadCeoImage(){
-            const file=document.getElementById('ceoUpload').files[0];if(!file)return;
-            showLoading('Uploading...');
-            const storageRef=storage.ref('ceo/'+Date.now()+'.jpg');
-            storageRef.put(file).then(function(snapshot){snapshot.ref.getDownloadURL().then(function(url){document.getElementById('ceoImage').src=url;appSettings.ceoUrl=url;hideLoading();instantSave();});}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+        function updateCeoUrl(){
+            const url=document.getElementById('ceoUrlInput').value;
+            if(url){
+                document.getElementById('ceoImage').src=url;
+                appSettings.ceoUrl=url;
+                instantSave();
+            }
         }
+
+        function updateBannerColor(){const color=document.getElementById('bannerColor').value;document.querySelector('.header-section').style.background=color;appSettings.bannerColor=color;instantSave();}
 
         function loadTextSettings(){const section=document.getElementById('textSection').value;const settings=appSettings.texts[section]||{};document.getElementById('textContent').value=settings.content||'';document.getElementById('fontFamily').value=settings.font||"'Hind Siliguri', sans-serif";document.getElementById('fontSize').value=settings.size||24;document.getElementById('fontColor').value=settings.color||"#000000";}
 
@@ -579,6 +580,9 @@
             document.getElementById('logoSize').value=appSettings.logoSize;
             document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
             document.getElementById('fbLink').value=appSettings.fbLink;
+            document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';
+            document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';
+            document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';
             document.getElementById('areaTagFont').value=appSettings.areaTagFont;
             document.getElementById('areaTagFontSize').value=appSettings.areaTagFontSize;
             document.getElementById('areaTagColor').value=appSettings.areaTagColor;
@@ -592,8 +596,8 @@
             
             db.collection('settings').doc('main').set({
                 bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
-                fbLink:appSettings.fbLink,logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,
-                ceoUrl:appSettings.ceoUrl,areaTagFont:appSettings.areaTagFont,areaTagFontSize:appSettings.areaTagFontSize,
+                logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,areaTagFont:appSettings.areaTagFont,areaTagFontSize:appSettings.areaTagFontSize,
                 areaTagColor:appSettings.areaTagColor,areaTagBg:appSettings.areaTagBg,texts:appSettings.texts,zoneCards:zoneCards,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
