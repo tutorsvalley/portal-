@@ -10,17 +10,21 @@
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
         body{font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;background:var(--bg-light);min-height:100vh}
+        
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:10000}
         .loading-overlay.active{display:flex}
         .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid var(--secondary-color);border-radius:50%;animation:spin 1s linear infinite}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        
         .page{display:none;min-height:100vh}
         .page.active{display:block}
+        
         .login-page{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
         .login-page.active{display:flex}
         .login-card{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
         .login-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover;background:#f0f0f0}
         .header-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 8px;display:block;border:2px solid white;background:white;padding:2px;object-fit:cover;background:#f0f0f0}
+        
         .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
         .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
         .login-buttons{display:flex;flex-direction:column;gap:12px}
@@ -29,41 +33,51 @@
         .guardian-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:white}
         .guest-btn{background:linear-gradient(135deg,#4facfe,#00f2fe);color:white}
         .admin-btn{background:linear-gradient(135deg,#11998e,#38ef7d);color:white}
+        
         .modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);justify-content:center;align-items:center}
         .modal.active{display:flex}
         .modal-content{background:white;padding:30px;border-radius:15px;width:90%;max-width:350px;position:relative}
         .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}
         .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
         .google-btn img{width:20px;height:20px}
+        
         .header-section{background:var(--primary-color);padding:15px 20px;position:relative;min-height:130px}
         .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);display:none}
         .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
         .header-center{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0}
         .header-title{color:var(--text-light);font-size:24px;font-weight:700;margin-bottom:3px;text-align:center}
         .header-motto{color:var(--accent-color);font-size:14px;font-weight:500;text-align:center}
-        .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
-        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
+        .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
+        
         .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
         .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
         .tutor-controls{background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;text-align:center}
-        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}
+        
+        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
         .zone-title{font-size:18px;color:var(--primary-color);font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--secondary-color)}
         .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
         .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
-        .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600}
-        .group-btn.hidden{display:none!important}
+        
+        /* FIXED: Ensure buttons always display unless explicitly hidden */
+        .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600; display: block !important;} 
+        .group-btn.hidden{display: none !important;}
+        
         .reviews-section{background:white;padding:20px 15px;margin-top:20px}
         .review-form textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:8px}
         .review-form button{padding:10px 25px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit}
         .reviews-container{margin-top:15px}
         .review-card{background:var(--bg-light);padding:12px;border-radius:8px;margin-bottom:12px}
         .reviewer{font-weight:600;color:var(--primary-color);margin-bottom:6px}
+        
         .ceo-section{background:linear-gradient(135deg,#f8f9fa,#e9ecef);padding:20px 15px;text-align:center;margin-top:20px;border-radius:12px}
         .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}
         .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
         .ceo-info p{font-size:13px;color:#666}
+        
         .footer{padding:20px;text-align:center;background:var(--primary-color);color:white;margin-top:30px;font-size:13px}
+        
         .control-panel{display:none;position:fixed;top:0;left:0;width:100%;max-width:450px;height:100vh;background:white;box-shadow:5px 0 20px rgba(0,0,0,0.2);z-index:9998;overflow-y:auto}
         .control-panel.active{display:block}
         .control-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:var(--primary-color);color:white;position:sticky;top:0;z-index:10}
@@ -82,8 +96,8 @@
         .add-card-btn{background:#28a745;color:white;border:none;padding:10px 15px;border-radius:6px;cursor:pointer;font-size:14px;width:100%;margin-bottom:12px}
         .save-indicator{position:fixed;bottom:20px;right:20px;background:#28a745;color:white;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999;animation:slideIn 0.3s ease}
         @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-        .apply-btn{padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
-        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}
+        .apply-btn{padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}
+        
         @media(max-width:480px){
             .header-title{font-size:20px}
             .header-motto{font-size:12px}
@@ -93,10 +107,12 @@
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p style="margin-top:15px;color:#666;" id="loadingText">Saving...</p>
-    </div>    <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
+    </div>
+    <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
     
     <!-- Login Page -->
     <div id="loginPage" class="page login-page active">
@@ -129,8 +145,7 @@
     <!-- Home Page -->
     <div id="homePage" class="page">
         <header class="header-section">
-            <div class="gear-icon" id="gearIcon" onclick="openControlPanel()">⚙️</div>
-            <div class="header-center">
+            <div class="gear-icon" id="gearIcon" onclick="openControlPanel()">⚙️</div>            <div class="header-center">
                 <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="header-logo" id="logoImage">
                 <h1 class="header-title" id="brandingText">Tutors Valley</h1>
                 <p class="header-motto" id="mottoText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
@@ -145,7 +160,8 @@
             <div id="tutorControls" class="tutor-controls" style="display:none;">
                 <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>
                 <select id="genderSelect" onchange="handleGenderSelect()">
-                    <option value="">-- নির্বাচন করুন --</option>                    <option value="male">পুরুষ</option>
+                    <option value="">-- নির্বাচন করুন --</option>
+                    <option value="male">পুরুষ</option>
                     <option value="female">মহিলা</option>
                 </select>
             </div>
@@ -178,8 +194,7 @@
                 <h4>🏠 Homepage Logo</h4>
                 <img id="logoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png">
                 <input type="text" id="logoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
-                <button class="apply-btn" onclick="applyLogoUrl()">Apply Logo</button>
-                <label style="margin-top:10px;">Logo Size:</label>
+                <button class="apply-btn" onclick="applyLogoUrl()">Apply Logo</button>                <label style="margin-top:10px;">Logo Size:</label>
                 <input type="range" id="logoSize" min="60" max="150" value="80" onchange="updateLogoSize()">
             </div>
             <div class="control-section">
@@ -194,7 +209,8 @@
                 <h4>👤 CEO Image</h4>
                 <img id="ceoPreview" class="image-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
                 <input type="text" id="ceoUrlInput" placeholder="Paste image URL here" style="width:100%;padding:8px;margin:8px 0;">
-                <button class="apply-btn" onclick="applyCeoUrl()">Apply CEO Image</button>            </div>
+                <button class="apply-btn" onclick="applyCeoUrl()">Apply CEO Image</button>
+            </div>
             <div class="control-section">
                 <h4>🎨 Banner Color</h4>
                 <input type="color" id="bannerColor" value="#001f3f" onchange="updateBannerColor()">
@@ -227,8 +243,7 @@
                         <option value="Microsoft Sans Serif, sans-serif">MS Serif</option>
                         <option value="SimSun, sans-serif">SimSun</option>
                         <option value="Tahoma, sans-serif">Tahoma</option>
-                        <option value="Segoe UI, sans-serif">Segoe UI</option>
-                    </optgroup>
+                        <option value="Segoe UI, sans-serif">Segoe UI</option>                    </optgroup>
                     <optgroup label="🇬🇧 English Fonts (১০টি)">
                         <option value="'Roboto', sans-serif">Roboto</option>
                         <option value="'Open Sans', sans-serif">Open Sans</option>
@@ -243,7 +258,8 @@
                     </optgroup>
                 </select>
                 <input type="range" id="fontSize" min="12" max="50" value="24" onchange="updateTextSize()" style="margin-top:8px;">
-                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">            </div>
+                <input type="color" id="fontColor" value="#000000" onchange="updateTextColor()" style="margin-top:8px;">
+            </div>
             <div class="control-section">
                 <h4>📍 Zone Cards</h4>
                 <button class="add-card-btn" onclick="addNewCard()">+ Add New Zone</button>
@@ -276,8 +292,7 @@
         ];
         const DEFAULT_LOGO="https://cdn-icons-png.flaticon.com/512/2995/2995477.png";
         const DEFAULT_CEO="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-        
-        let appSettings={
+                let appSettings={
             bannerColor:"#001f3f",
             logoSize:80,
             loginLogoSize:80,
@@ -292,7 +307,8 @@
         // --- FIXED: INSTANT REDIRECT FOR MESSENGER, WHATSAPP, INSTAGRAM ---
         function checkEmbeddedBrowser(){
             const ua=navigator.userAgent||navigator.vendor||window.opera;
-            const isMessenger=/Messenger/i.test(ua);            const isWhatsapp=/WhatsApp/i.test(ua);
+            const isMessenger=/Messenger/i.test(ua);
+            const isWhatsapp=/WhatsApp/i.test(ua);
             const isInstagram=/Instagram/i.test(ua);
             
             if(isMessenger || isWhatsapp || isInstagram){
@@ -302,6 +318,7 @@
                 overlay.classList.add('active');
                 text.textContent='Opening in Browser...';
                 
+                // Force open in a new window/tab
                 setTimeout(function(){
                     window.open(window.location.href, '_blank');
                     setTimeout(function(){ 
@@ -324,8 +341,7 @@
             if(overlay)setTimeout(()=>overlay.classList.remove('active'),1500);
         }
 
-        function showSaveIndicator(isError=false){
-            const indicator=document.getElementById('saveIndicator');
+        function showSaveIndicator(isError=false){            const indicator=document.getElementById('saveIndicator');
             if(indicator){
                 indicator.textContent=isError?'❌ Save Failed!':'✅ Settings Saved!';
                 indicator.className='save-indicator active'+(isError?' error':'');
@@ -342,6 +358,7 @@
                 hideLoading();
             },1500);
         }
+
         function showLoginModal(type){
             currentUserType=type;
             const modal=document.getElementById('loginModal');
@@ -373,14 +390,14 @@
         }
 
         function guestLogin(){
-            showLoading('Loading...');
-            setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
+            showLoading('Loading...');            setTimeout(function(){currentUserType='guest';isAdmin=false;showPage('homePage');setupHomePage('guest');hideLoading();},1500);
         }
 
         function saveUserData(user,type){
             db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
         }
 
+        // --- FIXED: SETUP HOME PAGE LOGIC ---
         function setupHomePage(userType){
             currentUserType=userType;
             console.log('Setup:',userType,'Admin:',isAdmin);
@@ -390,36 +407,39 @@
             
             const tutorControls=document.getElementById('tutorControls');
             const tutorNote=document.getElementById('tutorNote');
-            const reviewForm=document.getElementById('reviewForm');            const genderSelect=document.getElementById('genderSelect');
+            const reviewForm=document.getElementById('reviewForm');
+            const genderSelect=document.getElementById('genderSelect');
             
             if(genderSelect)genderSelect.value='';
             
-            document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+            // Logic updated:
+            // 1. Guardian & Guest -> Hide ALL buttons immediately
+            // 2. Tutor -> Show NO buttons until gender selected
+            // 3. Admin -> Show ALL buttons
             
             if(userType==='admin'){
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));
             }
             else if(userType==='tutor'){
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden')); // Hide initially
             }
             else if(userType==='guardian'){
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden')); // Hide all
             }
             else{
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
-            }
+                document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden')); // Hide all            }
             
             loadSettings();
             renderZoneCards();
@@ -439,7 +459,8 @@
 
         function renderZoneCards(){
             const container=document.getElementById('cardsContainer');
-            if(!container)return;            container.innerHTML='';
+            if(!container)return;
+            container.innerHTML='';
             zoneCards.forEach(function(card){
                 const cardDiv=document.createElement('div');
                 cardDiv.className='zone-card';
@@ -449,14 +470,15 @@
                 container.appendChild(cardDiv);
             });
             applyAreaTagStyles();
+            
+            // Re-apply user type settings after render (for safety)
             if(currentUserType==='admin'||currentUserType==='guardian'||currentUserType==='guest'){
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});
-            }
-            else if(currentUserType==='tutor'){
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');});
+            }else if(currentUserType==='tutor'){
                 const gender=document.getElementById('genderSelect').value;
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
-                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
-                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');});
+                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');});}
+                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');});}
             }
         }
 
@@ -466,8 +488,7 @@
             areaTags.forEach(function(tag){
                 tag.style.fontFamily=currentFont;
                 tag.style.fontSize=appSettings.areaTagFontSize+'px';
-                tag.style.color=appSettings.areaTagColor;
-                tag.style.background=appSettings.areaTagBg;
+                tag.style.color=appSettings.areaTagColor;                tag.style.background=appSettings.areaTagBg;
             });
         }
 
@@ -488,7 +509,8 @@
                 container.innerHTML='';
                 snapshot.forEach(function(doc){
                     const review=doc.data();
-                    const reviewDiv=document.createElement('div');                    reviewDiv.className='review-card';
+                    const reviewDiv=document.createElement('div');
+                    reviewDiv.className='review-card';
                     reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';
                     container.appendChild(reviewDiv);
                 });
@@ -515,8 +537,7 @@
             const logoImage=document.getElementById('logoImage');
             const logoPreview=document.getElementById('logoPreview');
             if(url){
-                const img=new Image();
-                img.onload=function(){
+                const img=new Image();                img.onload=function(){
                     if(logoImage)logoImage.src=url;
                     if(logoPreview)logoPreview.src=url;
                     appSettings.logoUrl=url;
@@ -537,7 +558,8 @@
                 const img=new Image();
                 img.onload=function(){
                     if(loginLogo)loginLogo.src=url;
-                    if(loginLogoPreview)loginLogoPreview.src=url;                    appSettings.loginLogoUrl=url;
+                    if(loginLogoPreview)loginLogoPreview.src=url;
+                    appSettings.loginLogoUrl=url;
                     console.log('✅ Login Logo applied:',url);
                     instantSave();
                     showSaveIndicator();
@@ -565,7 +587,6 @@
                 img.src=url;
             }else{alert('Please enter an image URL!');}
         }
-
         function updateLogoSize(){
             const size=document.getElementById('logoSize').value;
             const logoImage=document.getElementById('logoImage');
@@ -586,7 +607,8 @@
             instantSave();
         }
 
-        function updateBannerColor(){            const color=document.getElementById('bannerColor').value;
+        function updateBannerColor(){
+            const color=document.getElementById('bannerColor').value;
             document.querySelector('.header-section').style.background=color;
             appSettings.bannerColor=color;
             instantSave();
@@ -613,8 +635,7 @@
 
         function updateTextFont(){
             const section=document.getElementById('textSection').value;
-            const font=document.getElementById('fontFamily').value;
-            document.getElementById(section).style.fontFamily=font;
+            const font=document.getElementById('fontFamily').value;            document.getElementById(section).style.fontFamily=font;
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].font=font;
             instantSave();
@@ -635,7 +656,8 @@
             document.getElementById(section).style.color=color;
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].color=color;
-            instantSave();        }
+            instantSave();
+        }
 
         function updateFbLink(){
             const link=document.getElementById('fbLink').value;
@@ -663,7 +685,6 @@
             renderZoneCards();
             instantSave();
         }
-
         function deleteZoneCard(index){
             if(confirm('Delete this zone?')){
                 zoneCards.splice(index,1);
@@ -684,7 +705,8 @@
             document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;
             document.getElementById('fbLink').value=appSettings.fbLink;
             document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';
-            document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';            document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';
+            document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';
+            document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';
         }
 
         function saveAllSettings(isInstant=false){
@@ -711,8 +733,7 @@
             });
         }
 
-        function loadSettings(){
-            db.collection('settings').doc('main').get().then(function(doc){
+        function loadSettings(){            db.collection('settings').doc('main').get().then(function(doc){
                 if(doc.exists){
                     const data=doc.data();
                     
@@ -733,7 +754,8 @@
                                 
                                 if(key==='tutorNoteText'){
                                     el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
-                                }else{                                    el.textContent=data.texts[key].content;
+                                }else{
+                                    el.textContent=data.texts[key].content;
                                 }
                                 
                                 el.style.fontSize=data.texts[key].size+'px';
@@ -760,8 +782,7 @@
 
         auth.onAuthStateChanged(function(user){if(user){console.log('Signed in:',user.email);if(user.email===ADMIN_EMAIL)isAdmin=true;}else{console.log('Signed out');isAdmin=false;}});
 
-        document.addEventListener('DOMContentLoaded',function(){
-            console.log('Tutors Valley initialized');
+        document.addEventListener('DOMContentLoaded',function(){            console.log('Tutors Valley initialized');
             checkEmbeddedBrowser();
             document.getElementById('logoImage').src=DEFAULT_LOGO;
             document.getElementById('loginLogo').src=DEFAULT_LOGO;
