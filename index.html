@@ -7,117 +7,749 @@
     <meta name="theme-color" content="#001f3f">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
-        body{font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;background:var(--bg-light);min-height:100vh}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        /* EMBEDDED BROWSER WARNING */
-        #embeddedWarning{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);z-index:99999;justify-content:center;align-items:center;text-align:center;padding:20px}
-        #embeddedWarning.active{display:flex}
-        #embeddedWarning .container{background:white;padding:40px 30px;border-radius:20px;max-width:400px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-        #embeddedWarning .icon{font-size:60px;margin-bottom:20px}
-        #embeddedWarning h1{color:#001f3f;font-size:24px;margin-bottom:15px}
-        #embeddedWarning p{color:#666;margin-bottom:25px;font-size:16px;line-height:1.6}
-        #embeddedWarning .btn{background:#0074D9;color:white;padding:18px 30px;border:none;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;text-decoration:none;display:block;width:100%;margin-bottom:15px}
-        #embeddedWarning .btn:hover{background:#0056b3}
-        #embeddedWarning .note{margin-top:20px;padding:15px;background:#fff3cd;border-radius:8px;font-size:14px;color:#856404;text-align:left}
-        #embeddedWarning .note ol{margin-left:20px;margin-top:10px}
-        #embeddedWarning .note li{margin-bottom:8px}
+        :root {
+            --primary-color: #001f3f;
+            --secondary-color: #0074D9;
+            --accent-color: #FFD700;
+            --bg-light: #f8f9fa;
+            --text-light: #ffffff;
+            --card-bg: #ffffff;
+            --tag-bg: #e8e8e8;
+        }
         
-        .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:10000}
-        .loading-overlay.active{display:flex}
-        .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid var(--secondary-color);border-radius:50%;animation:spin 1s linear infinite}
-        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        body {
+            font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
         
-        .page{display:none;min-height:100vh}
-        .page.active{display:block}
+        /* Embedded Browser Warning */
+        #embeddedWarning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
         
-        .login-page{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-        .login-page.active{display:flex}
-        .login-card{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
-        .login-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover;background:#f0f0f0}
-        .header-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 8px;display:block;border:2px solid white;background:white;padding:2px;object-fit:cover;background:#f0f0f0}
+        #embeddedWarning.active {
+            display: flex;
+        }        
+        #embeddedWarning .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
         
-        .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
-        .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
-        .login-buttons{display:flex;flex-direction:column;gap:12px}
-        .login-btn{padding:14px 20px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit}
-        .tutor-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
-        .guardian-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:white}
-        .guest-btn{background:linear-gradient(135deg,#4facfe,#00f2fe);color:white}
-        .admin-btn{background:linear-gradient(135deg,#11998e,#38ef7d);color:white}
+        #embeddedWarning .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
         
-        .modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);justify-content:center;align-items:center}
-        .modal.active{display:flex}
-        .modal-content{background:white;padding:30px;border-radius:15px;width:90%;max-width:350px;position:relative}
-        .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}
-        .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
-        .google-btn img{width:20px;height:20px}
+        #embeddedWarning h1 {
+            color: #001f3f;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
         
-        .header-section{background:var(--primary-color);padding:15px 20px;position:relative;min-height:130px}
-        .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);display:none}
-        .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-        .header-center{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0}
-        .header-title{color:var(--text-light);font-size:24px;font-weight:700;margin-bottom:3px;text-align:center}
-        .header-motto{color:var(--accent-color);font-size:14px;font-weight:500;text-align:center}
-        .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
-        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
+        #embeddedWarning p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
         
-        .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
-        .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
-        .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
-        .tutor-controls{background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;text-align:center}
-        .tutor-controls select{padding:8px 15px;font-size:14px;border:2px solid var(--secondary-color);border-radius:6px;width:100%;max-width:280px;font-family:inherit}
+        #embeddedWarning .btn {
+            background: #0074D9;
+            color: white;
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
         
-        .zone-card{background:var(--card-bg);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-        .zone-title{font-size:18px;color:var(--primary-color);font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--secondary-color)}
-        .area-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-        .area-tag{background:var(--tag-bg);color:#333;padding:6px 12px;border-radius:15px;font-size:13px}
+        #embeddedWarning .btn:hover {
+            background: #0056b3;
+        }
         
-        .group-btn{width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;font-weight:600; transition:all 0.3s ease;} 
-        .group-btn:hover{transform:scale(1.02);}
-        .group-btn.hidden{display: none !important;} 
+        #embeddedWarning .note {
+            margin-top: 20px;
+            padding: 15px;            background: #fff3cd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #856404;
+            text-align: left;
+        }
         
-        .reviews-section{background:white;padding:20px 15px;margin-top:20px}
-        .review-form textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:8px}
-        .review-form button{padding:10px 25px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit}
-        .reviews-container{margin-top:15px}
-        .review-card{background:var(--bg-light);padding:12px;border-radius:8px;margin-bottom:12px}
-        .reviewer{font-weight:600;color:var(--primary-color);margin-bottom:6px}
+        #embeddedWarning .note ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
         
-        .ceo-section{background:linear-gradient(135deg,#f8f9fa,#e9ecef);padding:20px 15px;text-align:center;margin-top:20px;border-radius:12px}
-        .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}
-        .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
-        .ceo-info p{font-size:13px;color:#666}
+        #embeddedWarning .note li {
+            margin-bottom: 8px;
+        }
         
-        .footer{padding:20px;text-align:center;background:var(--primary-color);color:white;margin-top:30px;font-size:13px}
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10000;
+        }
         
-        .control-panel{display:none;position:fixed;top:0;left:0;width:100%;max-width:450px;height:100vh;background:white;box-shadow:5px 0 20px rgba(0,0,0,0.2);z-index:9998;overflow-y:auto}
-        .control-panel.active{display:block}
-        .control-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:var(--primary-color);color:white;position:sticky;top:0;z-index:10}
-        .control-content{padding:20px}
-        .control-section{margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #eee}
-        .control-section h4{font-size:16px;color:var(--primary-color);margin-bottom:10px}
-        .control-section label{display:block;margin:6px 0 4px;font-weight:500;font-size:13px}
-        .control-section input[type="text"],.control-section input[type="email"],.control-section input[type="password"],.control-section input[type="url"],.control-section select{width:100%;padding:8px;border:2px solid #ddd;border-radius:5px;font-size:13px;font-family:inherit}
-        .control-section input[type="color"]{width:45px;height:30px;border:none;cursor:pointer}
-        .control-section input[type="range"]{width:100%;cursor:pointer}
-        .save-btn{width:100%;padding:12px;background:var(--secondary-color);color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:12px;font-family:inherit;font-weight:600}
-        .card-item{background:#f5f5f5;padding:12px;border-radius:6px;margin-bottom:12px}
-        .card-item h5{color:var(--primary-color);margin-bottom:8px}
-        .card-item input{margin-bottom:6px;width:100%;padding:6px;border:1px solid #ddd;border-radius:4px}
-        .delete-btn{background:#dc3545;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;margin-top:8px}
-        .add-card-btn{background:#28a745;color:white;border:none;padding:10px 15px;border-radius:6px;cursor:pointer;font-size:14px;width:100%;margin-bottom:12px}
-        .save-indicator{position:fixed;bottom:20px;right:20px;background:#28a745;color:white;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999;animation:slideIn 0.3s ease}
-        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-        .apply-btn{padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
-        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}
+        .loading-overlay.active {
+            display: flex;
+        }
         
-        @media(max-width:480px){
-            .header-title{font-size:20px}
-            .header-motto{font-size:12px}
-            .control-panel{max-width:100%}
-            .header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Pages */        .page {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-page.active {
+            display: flex;
+        }
+        
+        .login-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+            border: 3px solid var(--primary-color);
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: block;
+            border: 2px solid white;
+            background: white;            padding: 2px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        
+        .login-title {
+            text-align: center;
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .login-btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: inherit;
+        }
+        
+        .tutor-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .guardian-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+        
+        .guest-btn {            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+        
+        .admin-btn {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 350px;
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .google-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 15px;
+            margin-top: 15px;
+            font-family: inherit;
+        }
+        
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Header */
+        .header-section {
+            background: var(--primary-color);
+            padding: 15px 20px;
+            position: relative;
+            min-height: 130px;
+        }
+        
+        .gear-icon {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 22px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
+            display: none;
+        }
+        
+        .header-right {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        
+        .header-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;        }
+        
+        .header-title {
+            color: var(--text-light);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            text-align: center;
+        }
+        
+        .header-motto {
+            color: var(--accent-color);
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .fb-page-btn {
+            background: #1877f2;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 15px 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 22px;
+            color: var(--primary-color);
+            margin-bottom: 15px;            font-weight: 700;
+        }
+        
+        .tutor-note {
+            background: #e3f2fd;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #0277bd;
+            border-left: 3px solid #0277bd;
+        }
+        
+        .tutor-controls {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .tutor-controls select {
+            padding: 8px 15px;
+            font-size: 14px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 6px;
+            width: 100%;
+            max-width: 280px;
+            font-family: inherit;
+        }
+        
+        .zone-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .zone-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .area-tags {
+            display: flex;            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .area-tag {
+            background: var(--tag-bg);
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+        }
+        
+        .group-btn {
+            width: 100%;
+            padding: 10px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .group-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .group-btn.hidden {
+            display: none !important;
+        }
+        
+        .reviews-section {
+            background: white;
+            padding: 20px 15px;
+            margin-top: 20px;
+        }
+        
+        .review-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;            min-height: 80px;
+            margin-bottom: 8px;
+        }
+        
+        .review-form button {
+            padding: 10px 25px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .reviews-container {
+            margin-top: 15px;
+        }
+        
+        .review-card {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .reviewer {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+        }
+        
+        .ceo-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px 15px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 12px;
+        }
+        
+        .ceo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 12px;
+            border: 2px solid var(--secondary-color);
+            object-fit: cover;
+            background: #f0f0f0;
+            margin: 0 auto 12px;
+        }        
+        .ceo-info h3 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+        }
+        
+        .ceo-info p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: var(--primary-color);
+            color: white;
+            margin-top: 30px;
+            font-size: 13px;
+        }
+        
+        /* Control Panel */
+        .control-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.2);
+            z-index: 9998;
+            overflow-y: auto;
+        }
+        
+        .control-panel.active {
+            display: block;
+        }
+        
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;        }
+        
+        .control-content {
+            padding: 20px;
+        }
+        
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .control-section h4 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .control-section label {
+            display: block;
+            margin: 6px 0 4px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .control-section input[type="text"],
+        .control-section input[type="email"],
+        .control-section input[type="password"],
+        .control-section input[type="url"],
+        .control-section select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        
+        .control-section input[type="color"] {
+            width: 45px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .control-section input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+                .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-family: inherit;
+            font-weight: 600;
+        }
+        
+        .card-item {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .card-item h5 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .card-item input {
+            margin-bottom: 6px;
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .add-card-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+        
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .apply-btn {
+            padding: 8px 15px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+        }
+        
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 10px auto;
+            display: block;
+            border: 2px solid #ddd;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        
+        @media (max-width: 480px) {
+            .header-title {                font-size: 20px;
+            }
+            .header-motto {
+                font-size: 12px;
+            }
+            .control-panel {
+                max-width: 100%;
+            }
+            .header-right {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-end;
+            }
         }
     </style>
 </head>
@@ -128,11 +760,7 @@
             <div class="icon">🚀</div>
             <h1>Tutors Valley</h1>
             <p>এই লিংকটি Messenger এ খোলা যাবে না।<br>নিচের বাটনে ক্লিক করে ব্রাউজারে খুলুন।</p>
-            
-            <button class="btn" onclick="forceOpenBrowser()">
-                🌐 ব্রাউজারে খুলুন
-            </button>
-            
+            <button class="btn" onclick="forceOpenBrowser()">🌐 ব্রাউজারে খুলুন</button>
             <div class="note">
                 ⚠️ <b>নির্দেশনা:</b><br>
                 <ol>
@@ -154,8 +782,7 @@
         <div class="login-card">
             <img src="https://cdn-icons-png.flaticon.com/512/2995/2995477.png" alt="Logo" class="login-logo" id="loginLogo">
             <h1 class="login-title" id="loginTitleText">Tutors Valley</h1>
-            <p class="login-subtitle" id="loginSubtitleText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
-            <div class="login-buttons">
+            <p class="login-subtitle" id="loginSubtitleText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>            <div class="login-buttons">
                 <button class="login-btn tutor-btn" onclick="showLoginModal('tutor')">👨‍🏫 Tutor Login</button>
                 <button class="login-btn guardian-btn" onclick="showLoginModal('guardian')">👪 Guardian Login</button>
                 <button class="login-btn guest-btn" onclick="guestLogin()">👤 Continue as Guest</button>
@@ -204,8 +831,7 @@
             <div class="reviews-section">
                 <h2 class="section-title" id="reviewsTitle">রিভিউ</h2>
                 <div id="reviewForm" class="review-form" style="display:none;">
-                    <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..."></textarea>
-                    <button onclick="submitReview()">জমা দিন</button>
+                    <textarea id="reviewText" placeholder="আপনার রিভিউ লিখুন..."></textarea>                    <button onclick="submitReview()">জমা দিন</button>
                 </div>
                 <div id="reviewsContainer" class="reviews-container"></div>
             </div>
@@ -254,8 +880,7 @@
                 <select id="textSection" onchange="loadTextSettings()">
                     <option value="brandingText">Branding</option>
                     <option value="mottoText">Motto</option>
-                    <option value="loginTitleText">Login Title</option>
-                    <option value="loginSubtitleText">Login Subtitle</option>
+                    <option value="loginTitleText">Login Title</option>                    <option value="loginSubtitleText">Login Subtitle</option>
                     <option value="tutorNoteText">Tutor Note</option>
                     <option value="zoneTitle">Zone Title</option>
                     <option value="areaTagText">Area Tag Style</option>
@@ -265,7 +890,6 @@
                     <option value="copyrightText">Copyright</option>
                 </select>
                 <input type="text" id="textContent" placeholder="Text Content" onchange="updateTextContent()" style="margin-top:8px;">
-                
                 <select id="fontFamily" onchange="updateTextFont()" style="margin-top:8px;width:100%;padding:8px;">
                     <optgroup label="🇧🇩 বাংলা ফন্ট (১০টি)">
                         <option value="'Hind Siliguri', sans-serif">Hind Siliguri</option>
@@ -305,14 +929,20 @@
                 <input type="url" id="fbLink" placeholder="Facebook URL" onchange="updateFbLink()">
             </div>
             <button class="save-btn" onclick="saveAllSettings(false)">💾 Save All Settings</button>
-        </div>
-    </div>
+        </div>    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
-        const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
+        const firebaseConfig={
+            apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",
+            authDomain:"tutors-valley-6ddb0.firebaseapp.com",
+            projectId:"tutors-valley-6ddb0",
+            storageBucket:"tutors-valley-6ddb0.firebasestorage.app",
+            messagingSenderId:"377815974425",
+            appId:"1:377815974425:web:3d1254d14640f43516a088"
+        };
         firebase.initializeApp(firebaseConfig);
         const auth=firebase.auth();
         const db=firebase.firestore();
@@ -327,7 +957,6 @@
         ];
         const DEFAULT_LOGO="https://cdn-icons-png.flaticon.com/512/2995/2995477.png";
         const DEFAULT_CEO="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-        
         let appSettings={
             bannerColor:"#001f3f",
             logoSize:80,
@@ -340,74 +969,65 @@
         };
         let isSaving=false;
         let logoutTimer=null;
-        const SESSION_TIMEOUT = 5 * 60 * 1000;
+        const SESSION_TIMEOUT=5*60*1000;
 
-        // === EMBEDDED BROWSER FUNCTIONS ===
+        // EMBEDDED BROWSER FUNCTIONS
         function checkEmbeddedBrowser(){
-            var ua = navigator.userAgent || navigator.vendor || window.opera;
-            var isEmbedded = /FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
-            
+            var ua=navigator.userAgent||navigator.vendor||window.opera;
+            var isEmbedded=/FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
             if(isEmbedded){
                 document.getElementById('embeddedWarning').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
+                document.body.style.overflow='hidden';
+            }        }
 
         function forceOpenBrowser(){
-            var url = window.location.href;
-            
-            // Multiple aggressive attempts
-            var newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-            
+            var url=window.location.href;
+            var newWindow=window.open(url,'_blank','noopener,noreferrer');
             setTimeout(function(){
-                window.location.href = url;
-            }, 100);
-            
+                window.location.href=url;
+            },100);
             setTimeout(function(){
-                var a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
+                var a=document.createElement('a');
+                a.href=url;
+                a.target='_blank';
+                a.rel='noopener noreferrer';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-            }, 200);
-            
+            },200);
             setTimeout(function(){
-                window.open(url, '_blank', 'noopener,noreferrer');
-            }, 300);
-            
+                window.open(url,'_blank','noopener,noreferrer');
+            },300);
             return false;
         }
 
         function resetLogoutTimer(){
             if(logoutTimer)clearTimeout(logoutTimer);
-            if(currentUserType && currentUserType !== 'guest'){
+            if(currentUserType&&currentUserType!=='guest'){
                 logoutTimer=setTimeout(function(){
                     logout();
                     alert('⏰ ৫ মিনিট নিষ্ক্রিয় থাকায় আপনি লগআউট হয়ে গেছেন।');
-                }, SESSION_TIMEOUT);
+                },SESSION_TIMEOUT);
             }
         }
 
         function saveSession(){
-            localStorage.setItem('tutorsValley_session', JSON.stringify({
-                currentUserType: currentUserType,
-                isAdmin: isAdmin,
-                timestamp: Date.now()
+            localStorage.setItem('tutorsValley_session',JSON.stringify({
+                currentUserType:currentUserType,
+                isAdmin:isAdmin,
+                timestamp:Date.now()
             }));
         }
 
         function loadSession(){
             try{
-                const session = JSON.parse(localStorage.getItem('tutorsValley_session'));
-                if(session && session.currentUserType){
-                    currentUserType = session.currentUserType;
-                    isAdmin = session.isAdmin || false;
+                const session=JSON.parse(localStorage.getItem('tutorsValley_session'));
+                if(session&&session.currentUserType){
+                    currentUserType=session.currentUserType;
+                    isAdmin=session.isAdmin||false;
                     return true;
                 }
-            }catch(e){
-                console.log('No saved session');
+            }catch(e){                console.log('No saved session');
             }
             return false;
         }
@@ -418,15 +1038,18 @@
         }
 
         ['click','mousemove','keypress','scroll','touchstart'].forEach(function(event){
-            document.addEventListener(event, function(){
-                if(currentUserType) resetLogoutTimer();
-            }, true);
+            document.addEventListener(event,function(){
+                if(currentUserType)resetLogoutTimer();
+            },true);
         });
 
         function showLoading(text='Saving...'){
             const overlay=document.getElementById('loadingOverlay');
             const loadingText=document.getElementById('loadingText');
-            if(overlay){overlay.classList.add('active');if(loadingText)loadingText.textContent=text;}
+            if(overlay){
+                overlay.classList.add('active');
+                if(loadingText)loadingText.textContent=text;
+            }
         }
 
         function hideLoading(){
@@ -446,9 +1069,14 @@
         function showPage(pageId){
             showLoading('Loading...');
             setTimeout(()=>{
-                document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+                document.querySelectorAll('.page').forEach(p=>{
+                    p.classList.remove('active');
+                    p.style.display='none';
+                });
                 const target=document.getElementById(pageId);
-                if(target){target.classList.add('active');target.style.display=(pageId==='loginPage')?'flex':'block';}
+                if(target){
+                    target.classList.add('active');
+                    target.style.display=(pageId==='loginPage')?'flex':'block';                }
                 hideLoading();
             },1500);
         }
@@ -457,11 +1085,27 @@
             currentUserType=type;
             const modal=document.getElementById('loginModal');
             const modalTitle=document.getElementById('modalTitle');
-            if(modal){modal.classList.add('active');modal.style.display='flex';}
-            if(modalTitle){const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};modalTitle.textContent=titles[type]||'Login';}
+            if(modal){
+                modal.classList.add('active');
+                modal.style.display='flex';
+            }
+            if(modalTitle){
+                const titles={
+                    'admin':'Admin Login',
+                    'tutor':'Tutor Login',
+                    'guardian':'Guardian Login'
+                };
+                modalTitle.textContent=titles[type]||'Login';
+            }
         }
 
-        function closeModal(){const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('active');modal.style.display='none';}}
+        function closeModal(){
+            const modal=document.getElementById('loginModal');
+            if(modal){
+                modal.classList.remove('active');
+                modal.style.display='none';
+            }
+        }
 
         function googleLogin(){
             showLoading('Logging in...');
@@ -469,13 +1113,31 @@
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
                 console.log('Login:',currentUser.email,'Admin:',isAdmin);
-                if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');saveSession();showPage('homePage');setupHomePage('tutor');resetLogoutTimer();}
-                else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');saveSession();showPage('homePage');setupHomePage('guardian');resetLogoutTimer();}
-                else if(currentUserType==='admin'){
-                    if(currentUser.email===ADMIN_EMAIL){saveSession();showPage('homePage');setupHomePage('admin');resetLogoutTimer();}
-                    else{alert('❌ Only owner can login as admin!');logout();return;}
+                if(currentUserType==='tutor'){
+                    saveUserData(currentUser,'tutor');
+                    saveSession();
+                    showPage('homePage');
+                    setupHomePage('tutor');
+                    resetLogoutTimer();
+                }else if(currentUserType==='guardian'){
+                    saveUserData(currentUser,'guardian');
+                    saveSession();
+                    showPage('homePage');
+                    setupHomePage('guardian');
+                    resetLogoutTimer();
+                }else if(currentUserType==='admin'){                    if(currentUser.email===ADMIN_EMAIL){
+                        saveSession();
+                        showPage('homePage');
+                        setupHomePage('admin');
+                        resetLogoutTimer();
+                    }else{
+                        alert('❌ Only owner can login as admin!');
+                        logout();
+                        return;
+                    }
                 }
-                closeModal();hideLoading();
+                closeModal();
+                hideLoading();
             }).catch(function(error){
                 const loginStatus=document.getElementById('loginStatus');
                 if(loginStatus)loginStatus.textContent='Error: '+error.message;
@@ -497,7 +1159,13 @@
         }
 
         function saveUserData(user,type){
-            db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+            db.collection('users').doc(user.uid).set({
+                email:user.email,
+                name:user.displayName,
+                type:type,
+                photoURL:user.photoURL,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            },{merge:true});
         }
 
         function setupHomePage(userType){
@@ -506,8 +1174,7 @@
             
             const gearIcon=document.getElementById('gearIcon');
             if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
-            
-            const tutorControls=document.getElementById('tutorControls');
+                        const tutorControls=document.getElementById('tutorControls');
             const tutorNote=document.getElementById('tutorNote');
             const reviewForm=document.getElementById('reviewForm');
             const genderSelect=document.getElementById('genderSelect');
@@ -519,20 +1186,17 @@
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));
-            }
-            else if(userType==='tutor'){
+            }else if(userType==='tutor'){
                 if(tutorControls)tutorControls.style.display='block';
                 if(tutorNote)tutorNote.style.display='block';
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
-            }
-            else if(userType==='guardian'){
+            }else if(userType==='guardian'){
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='block';
                 document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));
-            }
-            else{
+            }else{
                 if(tutorControls)tutorControls.style.display='none';
                 if(tutorNote)tutorNote.style.display='none';
                 if(reviewForm)reviewForm.style.display='none';
@@ -548,9 +1212,20 @@
             const gender=document.getElementById('genderSelect').value;
             showLoading('Loading...');
             setTimeout(function(){
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
-                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
-                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                    btn.style.display='none';
+                });
+                if(gender==='male'){
+                    document.querySelectorAll('.male-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                        btn.style.display='block';
+                    });
+                }else if(gender==='female'){
+                    document.querySelectorAll('.female-group').forEach(btn=>{
+                        btn.classList.remove('hidden');                        btn.style.display='block';
+                    });
+                }
                 hideLoading();
             },1500);
         }
@@ -563,27 +1238,41 @@
                 const cardDiv=document.createElement('div');
                 cardDiv.className='zone-card';
                 let areaTags='';
-                card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});
-                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
+                card.areas.forEach(function(area){
+                    areaTags+='<span class="area-tag">'+area+'</span>';
+                });
+                cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3>'+
+                    '<div class="area-tags">'+areaTags+'</div>'+
+                    '<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+
+                    '<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';
                 container.appendChild(cardDiv);
             });
             applyAreaTagStyles();
             
             if(currentUserType==='admin'){
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');});
-            }
-            else if(currentUserType==='tutor'){
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.remove('hidden');
+                });
+            }else if(currentUserType==='tutor'){
                 const gender=document.getElementById('genderSelect').value;
-                document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');});
-                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');});}
-                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');});}
+                document.querySelectorAll('.group-btn').forEach(btn=>{
+                    btn.classList.add('hidden');
+                });
+                if(gender==='male'){
+                    document.querySelectorAll('.male-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                    });
+                }else if(gender==='female'){
+                    document.querySelectorAll('.female-group').forEach(btn=>{
+                        btn.classList.remove('hidden');
+                    });
+                }
             }
         }
 
         function applyAreaTagStyles(){
             const areaTags=document.querySelectorAll('.area-tag');
-            const currentFont = appSettings.areaTagFont || "'Hind Siliguri', sans-serif";
-            areaTags.forEach(function(tag){
+            const currentFont=appSettings.areaTagFont||"'Hind Siliguri', sans-serif";            areaTags.forEach(function(tag){
                 tag.style.fontFamily=currentFont;
                 tag.style.fontSize=appSettings.areaTagFontSize+'px';
                 tag.style.color=appSettings.areaTagColor;
@@ -591,14 +1280,38 @@
             });
         }
 
-        function joinGroup(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1500);}
+        function joinGroup(link){
+            showLoading('Opening...');
+            setTimeout(function(){
+                window.open(link,'_blank');
+                hideLoading();
+            },1500);
+        }
 
         function submitReview(){
             const reviewText=document.getElementById('reviewText');
             const text=reviewText?reviewText.value:'';
-            if(!text.trim()){alert('রিভিউ লিখুন');return;}
+            if(!text.trim()){
+                alert('রিভিউ লিখুন');
+                return;
+            }
             showLoading('Submitting...');
-            db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
+            db.collection('reviews').add({
+                text:text,
+                userId:currentUser?currentUser.uid:'guest',
+                userName:currentUser?currentUser.displayName:'Guest',
+                userType:currentUserType,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function(){
+                if(reviewText)reviewText.value='';
+                loadReviews();
+                hideLoading();
+                showSaveIndicator();
+            }).catch(function(error){
+                alert('Error: '+error.message);
+                hideLoading();
+                showSaveIndicator(true);
+            });
         }
 
         function loadReviews(){
@@ -608,16 +1321,19 @@
                 container.innerHTML='';
                 snapshot.forEach(function(doc){
                     const review=doc.data();
-                    const reviewDiv=document.createElement('div');
-                    reviewDiv.className='review-card';
-                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';
+                    const reviewDiv=document.createElement('div');                    reviewDiv.className='review-card';
+                    reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div>'+
+                        '<div class="review-text">'+(review.text||'')+'</div>';
                     container.appendChild(reviewDiv);
                 });
             });
         }
 
         function openControlPanel(){
-            if(!isAdmin){alert('Only admin can access settings!');return;}
+            if(!isAdmin){
+                alert('Only admin can access settings!');
+                return;
+            }
             const controlPanel=document.getElementById('controlPanel');
             if(controlPanel)controlPanel.classList.add('active');
             loadControlSettings();
@@ -629,7 +1345,10 @@
             if(controlPanel)controlPanel.classList.remove('active');
         }
 
-        function instantSave(){if(isSaving)return;saveAllSettings(true);}
+        function instantSave(){
+            if(isSaving)return;
+            saveAllSettings(true);
+        }
 
         function applyLogoUrl(){
             const url=document.getElementById('logoUrlInput').value.trim();
@@ -645,10 +1364,13 @@
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){alert('❌ Invalid image URL!');};
+                img.onerror=function(){
+                    alert('❌ Invalid image URL!');
+                };
                 img.src=url;
-            }else{alert('Please enter an image URL!');}
-        }
+            }else{
+                alert('Please enter an image URL!');
+            }        }
 
         function applyLoginLogoUrl(){
             const url=document.getElementById('loginLogoUrlInput').value.trim();
@@ -664,9 +1386,13 @@
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){alert('❌ Invalid image URL!');};
+                img.onerror=function(){
+                    alert('❌ Invalid image URL!');
+                };
                 img.src=url;
-            }else{alert('Please enter an image URL!');}
+            }else{
+                alert('Please enter an image URL!');
+            }
         }
 
         function applyCeoUrl(){
@@ -683,17 +1409,26 @@
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){alert('❌ Invalid image URL!');};
+                img.onerror=function(){
+                    alert('❌ Invalid image URL!');
+                };
                 img.src=url;
-            }else{alert('Please enter an image URL!');}
+            }else{
+                alert('Please enter an image URL!');
+            }
         }
 
         function updateLogoSize(){
-            const size=document.getElementById('logoSize').value;
-            const logoImage=document.getElementById('logoImage');
+            const size=document.getElementById('logoSize').value;            const logoImage=document.getElementById('logoImage');
             const logoPreview=document.getElementById('logoPreview');
-            if(logoImage){logoImage.style.width=size+'px';logoImage.style.height=size+'px';}
-            if(logoPreview){logoPreview.style.width=size+'px';logoPreview.style.height=size+'px';}
+            if(logoImage){
+                logoImage.style.width=size+'px';
+                logoImage.style.height=size+'px';
+            }
+            if(logoPreview){
+                logoPreview.style.width=size+'px';
+                logoPreview.style.height=size+'px';
+            }
             appSettings.logoSize=size;
             instantSave();
         }
@@ -702,8 +1437,14 @@
             const size=document.getElementById('loginLogoSize').value;
             const loginLogo=document.getElementById('loginLogo');
             const loginLogoPreview=document.getElementById('loginLogoPreview');
-            if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}
-            if(loginLogoPreview){loginLogoPreview.style.width=size+'px';loginLogoPreview.style.height=size+'px';}
+            if(loginLogo){
+                loginLogo.style.width=size+'px';
+                loginLogo.style.height=size+'px';
+            }
+            if(loginLogoPreview){
+                loginLogoPreview.style.width=size+'px';
+                loginLogoPreview.style.height=size+'px';
+            }
             appSettings.loginLogoSize=size;
             instantSave();
         }
@@ -727,8 +1468,13 @@
         function updateTextContent(){
             const section=document.getElementById('textSection').value;
             const content=document.getElementById('textContent').value;
-            const el=document.getElementById(section);
-            if(el){if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}else{el.textContent=content;}}
+            const el=document.getElementById(section);            if(el){
+                if(section==='tutorNoteText'){
+                    el.innerHTML='📌 <b>নোট:</b> '+content;
+                }else{
+                    el.textContent=content;
+                }
+            }
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].content=content;
             instantSave();
@@ -771,18 +1517,28 @@
         function renderCardSettings(){
             const container=document.getElementById('cardSettings');
             if(!container)return;
-            container.innerHTML='';
-            zoneCards.forEach(function(card,index){
+            container.innerHTML='';            zoneCards.forEach(function(card,index){
                 const cardItem=document.createElement('div');
                 cardItem.className='card-item';
-                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+'<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+'<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+'<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+'<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+'<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
+                cardItem.innerHTML='<h5>Zone '+(index+1)+'</h5>'+
+                    '<label>Zone Name:</label><input type="text" value="'+card.zone+'" onchange="updateZoneName('+index+', this.value)">'+
+                    '<label>Areas:</label><input type="text" value="'+card.areas.join(', ')+'" onchange="updateZoneAreas('+index+', this.value)">'+
+                    '<label>Male Group URL:</label><input type="url" value="'+card.maleGroup+'" onchange="updateZoneMaleGroup('+index+', this.value)">'+
+                    '<label>Female Group URL:</label><input type="url" value="'+card.femaleGroup+'" onchange="updateZoneFemaleGroup('+index+', this.value)">'+
+                    '<button class="delete-btn" onclick="deleteZoneCard('+index+')">🗑️ Delete</button>';
                 container.appendChild(cardItem);
             });
         }
 
         function addNewCard(){
             const newId=zoneCards.length+1;
-            zoneCards.push({id:newId,zone:"New Zone",areas:["Area 1"],maleGroup:"https://chat.whatsapp.com/male",femaleGroup:"https://chat.whatsapp.com/female"});
+            zoneCards.push({
+                id:newId,
+                zone:"New Zone",
+                areas:["Area 1"],
+                maleGroup:"https://chat.whatsapp.com/male",
+                femaleGroup:"https://chat.whatsapp.com/female"
+            });
             renderCardSettings();
             renderZoneCards();
             instantSave();
@@ -797,10 +1553,28 @@
             }
         }
 
-        function updateZoneName(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();}
-        function updateZoneAreas(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();}
-        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}
-        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
+        function updateZoneName(index,value){
+            zoneCards[index].zone=value;
+            renderZoneCards();
+            instantSave();
+        }
+
+        function updateZoneAreas(index,value){
+            zoneCards[index].areas=value.split(',').map(a=>a.trim());
+            renderZoneCards();
+            instantSave();
+        }
+
+        function updateZoneMaleGroup(index,value){
+            zoneCards[index].maleGroup=value;            renderZoneCards();
+            instantSave();
+        }
+
+        function updateZoneFemaleGroup(index,value){
+            zoneCards[index].femaleGroup=value;
+            renderZoneCards();
+            instantSave();
+        }
 
         function loadControlSettings(){
             document.getElementById('bannerColor').value=appSettings.bannerColor;
@@ -818,9 +1592,15 @@
             if(!isInstant)showLoading('Saving...');
             
             db.collection('settings').doc('main').set({
-                bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,
-                logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,
-                fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,
+                bannerColor:appSettings.bannerColor,
+                logoSize:appSettings.logoSize,
+                loginLogoSize:appSettings.loginLogoSize,
+                logoUrl:appSettings.logoUrl,
+                loginLogoUrl:appSettings.loginLogoUrl,
+                ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,
+                texts:appSettings.texts,
+                zoneCards:zoneCards,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(){
                 isSaving=false;
@@ -835,34 +1615,83 @@
                 showSaveIndicator(true);
             });
         }
-
         function loadSettings(){
             db.collection('settings').doc('main').get().then(function(doc){
                 if(doc.exists){
                     const data=doc.data();
                     
-                    if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
-                    if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}
-                    if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}
-                    if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}
-                    if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}
-                    if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
-                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
+                    if(data.bannerColor){
+                        document.querySelector('.header-section').style.background=data.bannerColor;
+                        appSettings.bannerColor=data.bannerColor;
+                    }
+                    if(data.logoUrl){
+                        document.getElementById('logoImage').src=data.logoUrl;
+                        const logoPreview=document.getElementById('logoPreview');
+                        if(logoPreview)logoPreview.src=data.logoUrl;
+                        appSettings.logoUrl=data.logoUrl;
+                    }
+                    if(data.logoSize){
+                        const logoImage=document.getElementById('logoImage');
+                        const logoPreview=document.getElementById('logoPreview');
+                        if(logoImage){
+                            logoImage.style.width=data.logoSize+'px';
+                            logoImage.style.height=data.logoSize+'px';
+                        }
+                        if(logoPreview){
+                            logoPreview.style.width=data.logoSize+'px';
+                            logoPreview.style.height=data.logoSize+'px';
+                        }
+                        appSettings.logoSize=data.logoSize;
+                    }
+                    if(data.loginLogoUrl){
+                        document.getElementById('loginLogo').src=data.loginLogoUrl;
+                        const loginLogoPreview=document.getElementById('loginLogoPreview');
+                        if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;
+                        appSettings.loginLogoUrl=data.loginLogoUrl;
+                    }
+                    if(data.loginLogoSize){
+                        const loginLogo=document.getElementById('loginLogo');
+                        const loginLogoPreview=document.getElementById('loginLogoPreview');
+                        if(loginLogo){
+                            loginLogo.style.width=data.loginLogoSize+'px';
+                            loginLogo.style.height=data.loginLogoSize+'px';
+                        }
+                        if(loginLogoPreview){
+                            loginLogoPreview.style.width=data.loginLogoSize+'px';
+                            loginLogoPreview.style.height=data.loginLogoSize+'px';
+                        }
+                        appSettings.loginLogoSize=data.loginLogoSize;
+                    }
+                    if(data.ceoUrl){
+                        document.getElementById('ceoImage').src=data.ceoUrl;
+                        const ceoPreview=document.getElementById('ceoPreview');                        if(ceoPreview)ceoPreview.src=data.ceoUrl;
+                        appSettings.ceoUrl=data.ceoUrl;
+                    }
+                    if(data.fbLink){
+                        document.getElementById('fbButton').href=data.fbLink;
+                        appSettings.fbLink=data.fbLink;
+                    }
                     
                     if(data.texts){
                         appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
                             if(el){
-                                el.style.fontFamily=data.texts[key].font || "'Hind Siliguri', sans-serif";
-                                if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}
-                                else{el.textContent=data.texts[key].content;}
+                                el.style.fontFamily=data.texts[key].font||"'Hind Siliguri', sans-serif";
+                                if(key==='tutorNoteText'){
+                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
+                                }else{
+                                    el.textContent=data.texts[key].content;
+                                }
                                 el.style.fontSize=data.texts[key].size+'px';
                                 el.style.color=data.texts[key].color;
                             }
                         });
                     }
-                    if(data.zoneCards){zoneCards=data.zoneCards;renderZoneCards();}
+                    if(data.zoneCards){
+                        zoneCards=data.zoneCards;
+                        renderZoneCards();
+                    }
                     applyAreaTagStyles();
                 }else{
                     console.log('No settings found, using defaults');
@@ -870,7 +1699,9 @@
                     document.getElementById('loginLogo').src=DEFAULT_LOGO;
                     document.getElementById('ceoImage').src=DEFAULT_CEO;
                 }
-            }).catch(function(error){console.error('❌ Load error:',error);});
+            }).catch(function(error){
+                console.error('❌ Load error:',error);
+            });
         }
 
         function logout(){
@@ -882,7 +1713,9 @@
                 clearSession();
                 showPage('loginPage');
                 hideLoading();
-            }).catch(function(error){alert('Error: '+error.message);hideLoading();});
+            }).catch(function(error){                alert('Error: '+error.message);
+                hideLoading();
+            });
         }
 
         auth.onAuthStateChanged(function(user){
@@ -901,9 +1734,9 @@
             checkEmbeddedBrowser();
             
             if(loadSession()){
-                console.log('Session restored:', currentUserType);
+                console.log('Session restored:',currentUserType);
                 document.getElementById('embeddedWarning').classList.remove('active');
-                document.body.style.overflow = 'auto';
+                document.body.style.overflow='auto';
                 showPage('homePage');
                 setupHomePage(currentUserType);
                 resetLogoutTimer();
@@ -920,7 +1753,10 @@
                 const gearIcon=document.getElementById('gearIcon');
                 if(gearIcon)gearIcon.style.display='none';
                 const loginPage=document.getElementById('loginPage');
-                if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
+                if(loginPage){
+                    loginPage.classList.add('active');
+                    loginPage.style.display='flex';
+                }
             }
         });
     </script>
