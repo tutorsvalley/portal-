@@ -47,7 +47,8 @@
         .login-page.active{display:flex}
         .login-card{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
         .login-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid var(--primary-color);object-fit:cover;background:#f0f0f0}
-        .header-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 8px;display:block;border:2px solid white;background:white;padding:2px;object-fit:cover;background:#f0f0f0}        
+        .header-logo{width:80px;height:80px;border-radius:50%;margin:0 auto 8px;display:block;border:2px solid white;background:white;padding:2px;object-fit:cover;background:#f0f0f0}
+        
         .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
         .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
         .login-buttons{display:flex;flex-direction:column;gap:12px}
@@ -96,7 +97,8 @@
         .reviewer{font-weight:600;color:var(--primary-color);margin-bottom:6px}
         
         .ceo-section{background:linear-gradient(135deg,#f8f9fa,#e9ecef);padding:20px 15px;text-align:center;margin-top:20px;border-radius:12px}
-        .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}        .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
+        .ceo-img{width:80px;height:80px;border-radius:50%;margin-bottom:12px;border:2px solid var(--secondary-color);object-fit:cover;background:#f0f0f0;margin:0 auto 12px}
+        .ceo-info h3{font-size:18px;color:var(--primary-color);margin-bottom:6px}
         .ceo-info p{font-size:13px;color:#666}
         
         .footer{padding:20px;text-align:center;background:var(--primary-color);color:white;margin-top:30px;font-size:13px}
@@ -145,7 +147,8 @@
             <div class="login-buttons">
                 <button class="login-btn tutor-btn" onclick="showLoginModal('tutor')">👨‍🏫 Tutor Login</button>
                 <button class="login-btn guardian-btn" onclick="showLoginModal('guardian')">👪 Guardian Login</button>
-                <button class="login-btn guest-btn" onclick="guestLogin()">👤 Continue as Guest</button>                <button class="login-btn admin-btn" onclick="showLoginModal('admin')">⚙️ Admin Login</button>
+                <button class="login-btn guest-btn" onclick="guestLogin()">👤 Continue as Guest</button>
+                <button class="login-btn admin-btn" onclick="showLoginModal('admin')">⚙️ Admin Login</button>
             </div>
         </div>
     </div>
@@ -194,7 +197,8 @@
                     <button onclick="submitReview()">জমা দিন</button>
                 </div>
                 <div id="reviewsContainer" class="reviews-container"></div>
-            </div>            <div class="ceo-section">
+            </div>
+            <div class="ceo-section">
                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="CEO" class="ceo-img" id="ceoImage">
                 <div class="ceo-info"><h3 id="ceoName">CEO Name</h3><p id="ceoDescription">CEO Description</p></div>
             </div>
@@ -243,7 +247,8 @@
                     <option value="loginSubtitleText">Login Subtitle</option>
                     <option value="tutorNoteText">Tutor Note</option>
                     <option value="zoneTitle">Zone Title</option>
-                    <option value="areaTagText">Area Tag Style</option>                    <option value="reviewsTitle">Reviews Title</option>
+                    <option value="areaTagText">Area Tag Style</option>
+                    <option value="reviewsTitle">Reviews Title</option>
                     <option value="ceoName">CEO Name</option>
                     <option value="ceoDescription">CEO Description</option>
                     <option value="copyrightText">Copyright</option>
@@ -292,7 +297,8 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
@@ -342,6 +348,7 @@
                 setTimeout(()=>indicator.classList.remove('active'),3000);
             }
         }
+
         function showPage(pageId){
             showLoading('Loading...');
             setTimeout(()=>{
@@ -390,6 +397,7 @@
         function saveUserData(user,type){
             db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
         }
+
         function setupHomePage(userType){
             currentUserType=userType;
             console.log('Setup:',userType,'Admin:',isAdmin);
@@ -439,7 +447,8 @@
             showLoading('Loading...');
             setTimeout(function(){
                 document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});
-                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
+                else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}
                 hideLoading();
             },1500);
         }
@@ -489,6 +498,7 @@
             showLoading('Submitting...');
             db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});
         }
+
         function loadReviews(){
             const container=document.getElementById('reviewsContainer');
             if(!container)return;
@@ -537,6 +547,7 @@
                 img.src=url;
             }else{alert('Please enter an image URL!');}
         }
+
         function applyLoginLogoUrl(){
             const url=document.getElementById('loginLogoUrlInput').value.trim();
             const loginLogo=document.getElementById('loginLogo');
@@ -586,7 +597,8 @@
         }
 
         function updateLoginLogoSize(){
-            const size=document.getElementById('loginLogoSize').value;            const loginLogo=document.getElementById('loginLogo');
+            const size=document.getElementById('loginLogoSize').value;
+            const loginLogo=document.getElementById('loginLogo');
             const loginLogoPreview=document.getElementById('loginLogoPreview');
             if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}
             if(loginLogoPreview){loginLogoPreview.style.width=size+'px';loginLogoPreview.style.height=size+'px';}
@@ -635,7 +647,8 @@
             document.getElementById(section).style.fontSize=size+'px';
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].size=size;
-            instantSave();        }
+            instantSave();
+        }
 
         function updateTextColor(){
             const section=document.getElementById('textSection').value;
@@ -684,7 +697,8 @@
 
         function updateZoneName(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();}
         function updateZoneAreas(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();}
-        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
+        function updateZoneMaleGroup(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();}
+        function updateZoneFemaleGroup(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();}
 
         function loadControlSettings(){
             document.getElementById('bannerColor').value=appSettings.bannerColor;
@@ -733,7 +747,8 @@
                     if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
                     if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
                     
-                    if(data.texts){                        appSettings.texts=data.texts;
+                    if(data.texts){
+                        appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
                             if(el){
@@ -782,7 +797,8 @@
             if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
             const gearIcon=document.getElementById('gearIcon');
             if(gearIcon)gearIcon.style.display='none';
-            const loginPage=document.getElementById('loginPage');            if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
+            const loginPage=document.getElementById('loginPage');
+            if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}
         });
     </script>
 </body>
