@@ -6,44 +6,27 @@
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <meta name="theme-color" content="#001f3f">
     
-    <!-- INSTANT REDIRECT FOR EMBEDDED BROWSERS -->
+    <!-- OPTIMIZED INSTANT REDIRECT FOR EMBEDDED BROWSERS -->
     <script>
         (function(){
             var ua = navigator.userAgent || navigator.vendor || window.opera;
-            var isFacebook = /FBAN|FBAV/i.test(ua);
-            var isMessenger = /Messenger/i.test(ua);
-            var isInstagram = /Instagram/i.test(ua);
-            var isEmbedded = isFacebook || isMessenger || isInstagram;
+            var isEmbedded = /FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
             
             if(isEmbedded && !sessionStorage.getItem('redirected')){
                 sessionStorage.setItem('redirected', 'true');
                 
-                // Multiple attempts to force external browser
+                // Trigger Messenger's native "Open in Browser" dialog
                 var currentUrl = window.location.href;
                 
-                // Method 1: window.open
-                window.open(currentUrl, '_blank', 'noopener,noreferrer');
+                // Method 1: Open in new window (triggers native dialog)
+                var newWindow = window.open(currentUrl, '_blank', 'noopener,noreferrer');
                 
-                // Method 2: location change
+                // Method 2: Location change (fallback)
                 setTimeout(function(){
-                    window.location.href = currentUrl;
-                }, 100);
-                
-                // Method 3: Create and click link
-                setTimeout(function(){
-                    var a = document.createElement('a');
-                    a.href = currentUrl;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                }, 200);
-                
-                // Method 4: Another window.open
-                setTimeout(function(){
-                    window.open(currentUrl, '_blank', 'noopener,noreferrer');
-                }, 300);
+                    if(!newWindow || newWindow.closed){
+                        window.location.href = currentUrl;
+                    }
+                }, 500);
             }
         })();
     </script>
@@ -155,7 +138,7 @@
     </div>
     
     <!-- SAVE INDICATOR -->
-    <div id="saveIndicator" class="save-indicator">✅ Settings Saved!</div>
+    <div id="saveIndicator" class="save-indicator">✅ Saved!</div>
     
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="page login-page active">
@@ -285,7 +268,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     
-    <!-- MAIN JAVASCRIPT -->
+    <!-- OPTIMIZED JAVASCRIPT -->
     <script>
         console.log('🚀 Tutors Valley Loading...');
         
@@ -300,13 +283,7 @@
         };
         
         // Initialize Firebase
-        try{
-            firebase.initializeApp(firebaseConfig);
-            console.log('✅ Firebase initialized successfully');
-        }catch(error){
-            console.error('❌ Firebase initialization error:',error);
-        }
-        
+        firebase.initializeApp(firebaseConfig);
         const auth=firebase.auth();
         const db=firebase.firestore();
         const storage=firebase.storage();
@@ -327,12 +304,54 @@
         let appSettings={bannerColor:"#001f3f",logoSize:80,loginLogoSize:80,logoUrl:DEFAULT_LOGO,loginLogoUrl:DEFAULT_LOGO,ceoUrl:DEFAULT_CEO,fbLink:"https://facebook.com/tutorsvalley",texts:{}};
         let isSaving=false;
         let logoutTimer=null;
+        let saveTimeout=null;
         const SESSION_TIMEOUT=5*60*1000;
+
+        // ==================== OPTIMIZED SAVE FUNCTIONS ====================
+        
+        // Debounced instant save - prevents multiple rapid saves
+        window.instantSave=function(){
+            if(saveTimeout)clearTimeout(saveTimeout);
+            saveTimeout=setTimeout(function(){
+                saveAllSettings(true);
+            },300); // Wait 300ms after last change
+        };
+
+        // Optimized save with batch operations
+        window.saveAllSettings=function(isInstant=false){
+            if(isSaving)return;
+            isSaving=true;
+            
+            if(!isInstant)showLoading('Saving...');
+            
+            // Optimized single write operation
+            db.collection('settings').doc('main').set({
+                bannerColor:appSettings.bannerColor,
+                logoSize:appSettings.logoSize,
+                loginLogoSize:appSettings.loginLogoSize,
+                logoUrl:appSettings.logoUrl,
+                loginLogoUrl:appSettings.loginLogoUrl,
+                ceoUrl:appSettings.ceoUrl,
+                fbLink:appSettings.fbLink,
+                texts:appSettings.texts,
+                zoneCards:zoneCards,
+                updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+            },{merge:true}).then(function(){
+                isSaving=false;
+                if(!isInstant)hideLoading();
+                showSaveIndicator(false);
+                console.log('✅ Settings saved!');
+            }).catch(function(error){
+                isSaving=false;
+                console.error('❌ Save error:',error);
+                if(!isInstant)hideLoading();
+                showSaveIndicator(true);
+            });
+        };
 
         // ==================== LOGIN FUNCTIONS ====================
         
         window.showLoginModal=function(type){
-            console.log('🔐 showLoginModal called with type:',type);
             currentUserType=type;
             const modal=document.getElementById('loginModal');
             const modalTitle=document.getElementById('modalTitle');
@@ -340,23 +359,15 @@
             if(modal){
                 modal.classList.add('active');
                 modal.style.display='flex';
-                console.log('✅ Modal opened');
-            }else{
-                console.error('❌ Modal element not found');
             }
             
             if(modalTitle){
-                const titles={
-                    'admin':'Admin Login',
-                    'tutor':'Tutor Login',
-                    'guardian':'Guardian Login'
-                };
+                const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};
                 modalTitle.textContent=titles[type]||'Login';
             }
         };
 
         window.closeModal=function(){
-            console.log('❌ closeModal called');
             const modal=document.getElementById('loginModal');
             if(modal){
                 modal.classList.remove('active');
@@ -365,11 +376,9 @@
         };
 
         window.googleLogin=function(){
-            console.log('🔑 googleLogin called');
             showLoading('Logging in...');
             
             auth.signInWithPopup(provider).then(function(result){
-                console.log('✅ Login successful:',result.user.email);
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
                 
@@ -400,7 +409,6 @@
                 closeModal();
                 hideLoading();
             }).catch(function(error){
-                console.error('❌ Login error:',error);
                 const loginStatus=document.getElementById('loginStatus');
                 if(loginStatus)loginStatus.textContent='Error: '+error.message;
                 hideLoading();
@@ -408,7 +416,6 @@
         };
 
         window.guestLogin=function(){
-            console.log('👤 guestLogin called');
             showLoading('Loading...');
             setTimeout(function(){
                 currentUserType='guest';
@@ -418,8 +425,7 @@
                 setupHomePage('guest');
                 resetLogoutTimer();
                 hideLoading();
-                console.log('✅ Guest login successful');
-            },1500);
+            },1000);
         };
 
         // ==================== UTILITY FUNCTIONS ====================
@@ -435,20 +441,19 @@
 
         window.hideLoading=function(){
             const overlay=document.getElementById('loadingOverlay');
-            if(overlay)setTimeout(()=>overlay.classList.remove('active'),1500);
+            if(overlay)setTimeout(()=>overlay.classList.remove('active'),1000);
         };
 
         window.showSaveIndicator=function(isError=false){
             const indicator=document.getElementById('saveIndicator');
             if(indicator){
-                indicator.textContent=isError?'❌ Save Failed!':'✅ Settings Saved!';
+                indicator.textContent=isError?'❌ Save Failed!':'✅ Saved!';
                 indicator.className='save-indicator active'+(isError?' error':'');
-                setTimeout(()=>indicator.classList.remove('active'),3000);
+                setTimeout(()=>indicator.classList.remove('active'),2000);
             }
         };
 
         window.showPage=function(pageId){
-            console.log('📄 showPage called:',pageId);
             showLoading('Loading...');
             setTimeout(()=>{
                 document.querySelectorAll('.page').forEach(p=>{
@@ -461,18 +466,19 @@
                     target.style.display=(pageId==='loginPage')?'flex':'block';
                 }
                 hideLoading();
-            },1500);
+            },1000);
         };
 
         // ==================== SESSION MANAGEMENT ====================
         
         window.saveSession=function(){
-            localStorage.setItem('tutorsValley_session',JSON.stringify({
-                currentUserType:currentUserType,
-                isAdmin:isAdmin,
-                timestamp:Date.now()
-            }));
-            console.log('💾 Session saved:',currentUserType);
+            try{
+                localStorage.setItem('tutorsValley_session',JSON.stringify({
+                    currentUserType:currentUserType,
+                    isAdmin:isAdmin,
+                    timestamp:Date.now()
+                }));
+            }catch(e){console.log('Session save failed');}
         };
 
         window.loadSession=function(){
@@ -481,19 +487,15 @@
                 if(session&&session.currentUserType){
                     currentUserType=session.currentUserType;
                     isAdmin=session.isAdmin||false;
-                    console.log('💾 Session loaded:',currentUserType);
                     return true;
                 }
-            }catch(e){
-                console.log('No saved session');
-            }
+            }catch(e){}
             return false;
         };
 
         window.clearSession=function(){
-            localStorage.removeItem('tutorsValley_session');
+            try{localStorage.removeItem('tutorsValley_session');}catch(e){}
             if(logoutTimer)clearTimeout(logoutTimer);
-            console.log('🗑️ Session cleared');
         };
 
         window.resetLogoutTimer=function(){
@@ -516,11 +518,9 @@
         
         auth.onAuthStateChanged(function(user){
             if(user){
-                console.log('✅ Signed in:',user.email);
                 if(user.email===ADMIN_EMAIL)isAdmin=true;
                 resetLogoutTimer();
             }else{
-                console.log('❌ Signed out');
                 isAdmin=false;
             }
         });
@@ -528,7 +528,6 @@
         // ==================== LOGOUT ====================
         
         window.logout=function(){
-            console.log('🚪 logout called');
             showLoading('Logging out...');
             auth.signOut().then(function(){
                 currentUser=null;
@@ -546,15 +545,11 @@
         // ==================== INITIALIZATION ====================
         
         document.addEventListener('DOMContentLoaded',function(){
-            console.log('🎯 DOMContentLoaded fired');
-            
             if(loadSession()){
-                console.log('✅ Session restored:',currentUserType);
                 showPage('homePage');
                 setupHomePage(currentUserType);
                 resetLogoutTimer();
             }else{
-                console.log('ℹ️ No session, showing login page');
                 document.getElementById('logoImage').src=DEFAULT_LOGO;
                 document.getElementById('loginLogo').src=DEFAULT_LOGO;
                 document.getElementById('ceoImage').src=DEFAULT_CEO;
@@ -564,8 +559,6 @@
                     loginPage.style.display='flex';
                 }
             }
-            
-            console.log('✅ Tutors Valley initialized successfully');
         });
 
         // ==================== OTHER FUNCTIONS ====================
@@ -582,7 +575,6 @@
 
         window.setupHomePage=function(userType){
             currentUserType=userType;
-            console.log('🏠 setupHomePage:',userType);
             
             const gearIcon=document.getElementById('gearIcon');
             if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';
@@ -641,7 +633,7 @@
                     });
                 }
                 hideLoading();
-            },1500);
+            },1000);
         };
 
         window.renderZoneCards=function(){
@@ -700,7 +692,7 @@
             setTimeout(function(){
                 window.open(link,'_blank');
                 hideLoading();
-            },1500);
+            },1000);
         };
 
         window.submitReview=function(){
@@ -761,11 +753,7 @@
             if(controlPanel)controlPanel.classList.remove('active');
         };
 
-        window.instantSave=function(){
-            if(isSaving)return;
-            saveAllSettings(true);
-        };
-
+        // Image and settings functions
         window.applyLogoUrl=function(){
             const url=document.getElementById('logoUrlInput').value.trim();
             const logoImage=document.getElementById('logoImage');
@@ -776,17 +764,12 @@
                     if(logoImage)logoImage.src=url;
                     if(logoPreview)logoPreview.src=url;
                     appSettings.logoUrl=url;
-                    console.log('✅ Logo applied:',url);
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){
-                    alert('❌ Invalid image URL!');
-                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
                 img.src=url;
-            }else{
-                alert('Please enter an image URL!');
-            }
+            }else{alert('Please enter an image URL!');}
         };
 
         window.applyLoginLogoUrl=function(){
@@ -799,17 +782,12 @@
                     if(loginLogo)loginLogo.src=url;
                     if(loginLogoPreview)loginLogoPreview.src=url;
                     appSettings.loginLogoUrl=url;
-                    console.log('✅ Login Logo applied:',url);
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){
-                    alert('❌ Invalid image URL!');
-                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
                 img.src=url;
-            }else{
-                alert('Please enter an image URL!');
-            }
+            }else{alert('Please enter an image URL!');}
         };
 
         window.applyCeoUrl=function(){
@@ -822,31 +800,20 @@
                     if(ceoImage)ceoImage.src=url;
                     if(ceoPreview)ceoPreview.src=url;
                     appSettings.ceoUrl=url;
-                    console.log('✅ CEO Image applied:',url);
                     instantSave();
                     showSaveIndicator();
                 };
-                img.onerror=function(){
-                    alert('❌ Invalid image URL!');
-                };
+                img.onerror=function(){alert('❌ Invalid image URL!');};
                 img.src=url;
-            }else{
-                alert('Please enter an image URL!');
-            }
+            }else{alert('Please enter an image URL!');}
         };
 
         window.updateLogoSize=function(){
             const size=document.getElementById('logoSize').value;
             const logoImage=document.getElementById('logoImage');
             const logoPreview=document.getElementById('logoPreview');
-            if(logoImage){
-                logoImage.style.width=size+'px';
-                logoImage.style.height=size+'px';
-            }
-            if(logoPreview){
-                logoPreview.style.width=size+'px';
-                logoPreview.style.height=size+'px';
-            }
+            if(logoImage){logoImage.style.width=size+'px';logoImage.style.height=size+'px';}
+            if(logoPreview){logoPreview.style.width=size+'px';logoPreview.style.height=size+'px';}
             appSettings.logoSize=size;
             instantSave();
         };
@@ -855,14 +822,8 @@
             const size=document.getElementById('loginLogoSize').value;
             const loginLogo=document.getElementById('loginLogo');
             const loginLogoPreview=document.getElementById('loginLogoPreview');
-            if(loginLogo){
-                loginLogo.style.width=size+'px';
-                loginLogo.style.height=size+'px';
-            }
-            if(loginLogoPreview){
-                loginLogoPreview.style.width=size+'px';
-                loginLogoPreview.style.height=size+'px';
-            }
+            if(loginLogo){loginLogo.style.width=size+'px';loginLogo.style.height=size+'px';}
+            if(loginLogoPreview){loginLogoPreview.style.width=size+'px';loginLogoPreview.style.height=size+'px';}
             appSettings.loginLogoSize=size;
             instantSave();
         };
@@ -888,11 +849,8 @@
             const content=document.getElementById('textContent').value;
             const el=document.getElementById(section);
             if(el){
-                if(section==='tutorNoteText'){
-                    el.innerHTML='📌 <b>নোট:</b> '+content;
-                }else{
-                    el.textContent=content;
-                }
+                if(section==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+content;}
+                else{el.textContent=content;}
             }
             if(!appSettings.texts[section])appSettings.texts[section]={};
             appSettings.texts[section].content=content;
@@ -952,13 +910,7 @@
 
         window.addNewCard=function(){
             const newId=zoneCards.length+1;
-            zoneCards.push({
-                id:newId,
-                zone:"New Zone",
-                areas:["Area 1"],
-                maleGroup:"https://chat.whatsapp.com/male",
-                femaleGroup:"https://chat.whatsapp.com/female"
-            });
+            zoneCards.push({id:newId,zone:"New Zone",areas:["Area 1"],maleGroup:"https://chat.whatsapp.com/male",femaleGroup:"https://chat.whatsapp.com/female"});
             renderCardSettings();
             renderZoneCards();
             instantSave();
@@ -973,29 +925,10 @@
             }
         };
 
-        window.updateZoneName=function(index,value){
-            zoneCards[index].zone=value;
-            renderZoneCards();
-            instantSave();
-        };
-
-        window.updateZoneAreas=function(index,value){
-            zoneCards[index].areas=value.split(',').map(a=>a.trim());
-            renderZoneCards();
-            instantSave();
-        };
-
-        window.updateZoneMaleGroup=function(index,value){
-            zoneCards[index].maleGroup=value;
-            renderZoneCards();
-            instantSave();
-        };
-
-        window.updateZoneFemaleGroup=function(index,value){
-            zoneCards[index].femaleGroup=value;
-            renderZoneCards();
-            instantSave();
-        };
+        window.updateZoneName=function(index,value){zoneCards[index].zone=value;renderZoneCards();instantSave();};
+        window.updateZoneAreas=function(index,value){zoneCards[index].areas=value.split(',').map(a=>a.trim());renderZoneCards();instantSave();};
+        window.updateZoneMaleGroup=function(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();};
+        window.updateZoneFemaleGroup=function(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();};
 
         window.loadControlSettings=function(){
             document.getElementById('bannerColor').value=appSettings.bannerColor;
@@ -1007,122 +940,39 @@
             document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';
         };
 
-        window.saveAllSettings=function(isInstant=false){
-            if(isSaving)return;
-            isSaving=true;
-            if(!isInstant)showLoading('Saving...');
-            
-            db.collection('settings').doc('main').set({
-                bannerColor:appSettings.bannerColor,
-                logoSize:appSettings.logoSize,
-                loginLogoSize:appSettings.loginLogoSize,
-                logoUrl:appSettings.logoUrl,
-                loginLogoUrl:appSettings.loginLogoUrl,
-                ceoUrl:appSettings.ceoUrl,
-                fbLink:appSettings.fbLink,
-                texts:appSettings.texts,
-                zoneCards:zoneCards,
-                updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-            }).then(function(){
-                isSaving=false;
-                if(!isInstant)hideLoading();
-                showSaveIndicator(false);
-                console.log('✅ Settings saved!');
-            }).catch(function(error){
-                isSaving=false;
-                console.error('❌ Save error:',error);
-                alert('Save Failed: '+error.message);
-                if(!isInstant)hideLoading();
-                showSaveIndicator(true);
-            });
-        };
-
         window.loadSettings=function(){
             db.collection('settings').doc('main').get().then(function(doc){
                 if(doc.exists){
                     const data=doc.data();
-                    if(data.bannerColor){
-                        document.querySelector('.header-section').style.background=data.bannerColor;
-                        appSettings.bannerColor=data.bannerColor;
-                    }
-                    if(data.logoUrl){
-                        document.getElementById('logoImage').src=data.logoUrl;
-                        const logoPreview=document.getElementById('logoPreview');
-                        if(logoPreview)logoPreview.src=data.logoUrl;
-                        appSettings.logoUrl=data.logoUrl;
-                    }
-                    if(data.logoSize){
-                        const logoImage=document.getElementById('logoImage');
-                        const logoPreview=document.getElementById('logoPreview');
-                        if(logoImage){
-                            logoImage.style.width=data.logoSize+'px';
-                            logoImage.style.height=data.logoSize+'px';
-                        }
-                        if(logoPreview){
-                            logoPreview.style.width=data.logoSize+'px';
-                            logoPreview.style.height=data.logoSize+'px';
-                        }
-                        appSettings.logoSize=data.logoSize;
-                    }
-                    if(data.loginLogoUrl){
-                        document.getElementById('loginLogo').src=data.loginLogoUrl;
-                        const loginLogoPreview=document.getElementById('loginLogoPreview');
-                        if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;
-                        appSettings.loginLogoUrl=data.loginLogoUrl;
-                    }
-                    if(data.loginLogoSize){
-                        const loginLogo=document.getElementById('loginLogo');
-                        const loginLogoPreview=document.getElementById('loginLogoPreview');
-                        if(loginLogo){
-                            loginLogo.style.width=data.loginLogoSize+'px';
-                            loginLogo.style.height=data.loginLogoSize+'px';
-                        }
-                        if(loginLogoPreview){
-                            loginLogoPreview.style.width=data.loginLogoSize+'px';
-                            loginLogoPreview.style.height=data.loginLogoSize+'px';
-                        }
-                        appSettings.loginLogoSize=data.loginLogoSize;
-                    }
-                    if(data.ceoUrl){
-                        document.getElementById('ceoImage').src=data.ceoUrl;
-                        const ceoPreview=document.getElementById('ceoPreview');
-                        if(ceoPreview)ceoPreview.src=data.ceoUrl;
-                        appSettings.ceoUrl=data.ceoUrl;
-                    }
-                    if(data.fbLink){
-                        document.getElementById('fbButton').href=data.fbLink;
-                        appSettings.fbLink=data.fbLink;
-                    }
+                    if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}
+                    if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}
+                    if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}
+                    if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}
+                    if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}
+                    if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}
+                    if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}
                     if(data.texts){
                         appSettings.texts=data.texts;
                         Object.keys(data.texts).forEach(function(key){
                             const el=document.getElementById(key);
                             if(el){
                                 el.style.fontFamily=data.texts[key].font||"'Hind Siliguri', sans-serif";
-                                if(key==='tutorNoteText'){
-                                    el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;
-                                }else{
-                                    el.textContent=data.texts[key].content;
-                                }
+                                if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}
+                                else{el.textContent=data.texts[key].content;}
                                 el.style.fontSize=data.texts[key].size+'px';
                                 el.style.color=data.texts[key].color;
                             }
                         });
                     }
-                    if(data.zoneCards){
-                        zoneCards=data.zoneCards;
-                    }
+                    if(data.zoneCards){zoneCards=data.zoneCards;}
                     applyAreaTagStyles();
                     renderZoneCards();
                 }else{
-                    console.log('No settings found, using defaults');
                     document.getElementById('logoImage').src=DEFAULT_LOGO;
                     document.getElementById('loginLogo').src=DEFAULT_LOGO;
                     document.getElementById('ceoImage').src=DEFAULT_CEO;
                 }
-            }).catch(function(error){
-                console.error('❌ Load error:',error);
-            });
+            }).catch(function(error){console.error('❌ Load error:',error);});
         };
 
         // Image upload functions
@@ -1132,20 +982,16 @@
             if(!file){alert('Please select an image file first!');return;}
             if(!file.type.startsWith('image/')){alert('Please select an image file!');return;}
             if(file.size>5*1024*1024){alert('File size should be less than 5MB!');return;}
-            showLoading('Uploading image to Firebase Storage...');
+            showLoading('Uploading...');
             const timestamp=Date.now();
             const fileName='logos/logo_'+timestamp+'_'+file.name;
             const uploadTask=storageRef.child(fileName).put(file);
-            uploadTask.on('state_changed',function(snapshot){
-                const progress=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-                console.log('Upload is '+progress+'% done');
-            },function(error){
+            uploadTask.on('state_changed',null,function(error){
                 console.error('Upload error:',error);
                 alert('Upload failed: '+error.message);
                 hideLoading();
             },function(){
                 uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
-                    console.log('File available at',downloadURL);
                     const logoImage=document.getElementById('logoImage');
                     const logoPreview=document.getElementById('logoPreview');
                     if(logoImage)logoImage.src=downloadURL;
@@ -1155,10 +1001,9 @@
                     showSaveIndicator();
                     hideLoading();
                     fileInput.value='';
-                    alert('✅ Image uploaded successfully to Firebase Storage (FREE)!');
+                    alert('✅ Image uploaded!');
                 }).catch(function(error){
-                    console.error('Error getting download URL:',error);
-                    alert('Failed to get image URL: '+error.message);
+                    alert('Failed: '+error.message);
                     hideLoading();
                 });
             });
@@ -1170,15 +1015,11 @@
             if(!file){alert('Please select an image file first!');return;}
             if(!file.type.startsWith('image/')){alert('Please select an image file!');return;}
             if(file.size>5*1024*1024){alert('File size should be less than 5MB!');return;}
-            showLoading('Uploading image to Firebase Storage...');
+            showLoading('Uploading...');
             const timestamp=Date.now();
             const fileName='logos/login_logo_'+timestamp+'_'+file.name;
             const uploadTask=storageRef.child(fileName).put(file);
-            uploadTask.on('state_changed',function(snapshot){
-                const progress=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-                console.log('Upload is '+progress+'% done');
-            },function(error){
-                console.error('Upload error:',error);
+            uploadTask.on('state_changed',null,function(error){
                 alert('Upload failed: '+error.message);
                 hideLoading();
             },function(){
@@ -1192,10 +1033,9 @@
                     showSaveIndicator();
                     hideLoading();
                     fileInput.value='';
-                    alert('✅ Image uploaded successfully to Firebase Storage (FREE)!');
+                    alert('✅ Image uploaded!');
                 }).catch(function(error){
-                    console.error('Error getting download URL:',error);
-                    alert('Failed to get image URL: '+error.message);
+                    alert('Failed: '+error.message);
                     hideLoading();
                 });
             });
@@ -1207,15 +1047,11 @@
             if(!file){alert('Please select an image file first!');return;}
             if(!file.type.startsWith('image/')){alert('Please select an image file!');return;}
             if(file.size>5*1024*1024){alert('File size should be less than 5MB!');return;}
-            showLoading('Uploading image to Firebase Storage...');
+            showLoading('Uploading...');
             const timestamp=Date.now();
             const fileName='ceo/ceo_'+timestamp+'_'+file.name;
             const uploadTask=storageRef.child(fileName).put(file);
-            uploadTask.on('state_changed',function(snapshot){
-                const progress=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-                console.log('Upload is '+progress+'% done');
-            },function(error){
-                console.error('Upload error:',error);
+            uploadTask.on('state_changed',null,function(error){
                 alert('Upload failed: '+error.message);
                 hideLoading();
             },function(){
@@ -1229,16 +1065,15 @@
                     showSaveIndicator();
                     hideLoading();
                     fileInput.value='';
-                    alert('✅ Image uploaded successfully to Firebase Storage (FREE)!');
+                    alert('✅ Image uploaded!');
                 }).catch(function(error){
-                    console.error('Error getting download URL:',error);
-                    alert('Failed to get image URL: '+error.message);
+                    alert('Failed: '+error.message);
                     hideLoading();
                 });
             });
         };
 
-        console.log('✅ All functions defined and ready!');
+        console.log('✅ Optimized code loaded!');
     </script>
 </body>
 </html>
