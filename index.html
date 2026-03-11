@@ -5,23 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutors Valley - ঢাকার সেরা টিউটর</title>
     <meta name="theme-color" content="#001f3f">
+    
+    <!-- INSTANT REDIRECT FOR EMBEDDED BROWSERS -->
+    <script>
+        (function(){
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            var isFacebook = /FBAN|FBAV/i.test(ua);
+            var isMessenger = /Messenger/i.test(ua);
+            var isInstagram = /Instagram/i.test(ua);
+            var isEmbedded = isFacebook || isMessenger || isInstagram;
+            
+            if(isEmbedded && !sessionStorage.getItem('redirected')){
+                sessionStorage.setItem('redirected', 'true');
+                
+                // Multiple attempts to force external browser
+                var currentUrl = window.location.href;
+                
+                // Method 1: window.open
+                window.open(currentUrl, '_blank', 'noopener,noreferrer');
+                
+                // Method 2: location change
+                setTimeout(function(){
+                    window.location.href = currentUrl;
+                }, 100);
+                
+                // Method 3: Create and click link
+                setTimeout(function(){
+                    var a = document.createElement('a');
+                    a.href = currentUrl;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, 200);
+                
+                // Method 4: Another window.open
+                setTimeout(function(){
+                    window.open(currentUrl, '_blank', 'noopener,noreferrer');
+                }, 300);
+            }
+        })();
+    </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--primary-color:#001f3f;--secondary-color:#0074D9;--accent-color:#FFD700;--bg-light:#f8f9fa;--text-light:#ffffff;--card-bg:#ffffff;--tag-bg:#e8e8e8}
         body{font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;background:var(--bg-light);min-height:100vh}
-        
-        #embeddedWarning{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);z-index:99999;justify-content:center;align-items:center;text-align:center;padding:20px}
-        #embeddedWarning.active{display:flex}
-        #embeddedWarning .container{background:white;padding:40px 30px;border-radius:20px;max-width:400px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-        #embeddedWarning .icon{font-size:60px;margin-bottom:20px}
-        #embeddedWarning h1{color:#001f3f;font-size:24px;margin-bottom:15px}
-        #embeddedWarning p{color:#666;margin-bottom:25px;font-size:16px;line-height:1.6}
-        #embeddedWarning .btn{background:#0074D9;color:white;padding:18px 30px;border:none;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;text-decoration:none;display:block;width:100%;margin-bottom:15px}
-        #embeddedWarning .btn:hover{background:#0056b3}
-        #embeddedWarning .note{margin-top:20px;padding:15px;background:#fff3cd;border-radius:8px;font-size:14px;color:#856404;text-align:left}
-        #embeddedWarning .note ol{margin-left:20px;margin-top:10px}
-        #embeddedWarning .note li{margin-bottom:8px}
         
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:10000}
         .loading-overlay.active{display:flex}
@@ -117,17 +148,6 @@
     </style>
 </head>
 <body>
-    <!-- EMBEDDED BROWSER WARNING -->
-    <div id="embeddedWarning">
-        <div class="container">
-            <div class="icon">🚀</div>
-            <h1>Tutors Valley</h1>
-            <p>এই লিংকটি Messenger এ খোলা যাবে না।<br>নিচের বাটনে ক্লিক করে ব্রাউজারে খুলুন।</p>
-            <button class="btn" onclick="forceOpenBrowser()">🌐 ব্রাউজারে খুলুন</button>
-            <div class="note">⚠️ <b>নির্দেশনা:</b><br><ol><li>উপরের বাটনে ক্লিক করুন</li><li>"Leave App" বা "Open in Browser" এ ক্লিক করুন</li><li>তাহলেই সাইট খুলবে</li></ol></div>
-        </div>
-    </div>
-
     <!-- LOADING OVERLAY -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
@@ -311,7 +331,6 @@
 
         // ==================== LOGIN FUNCTIONS ====================
         
-        // Show Login Modal
         window.showLoginModal=function(type){
             console.log('🔐 showLoginModal called with type:',type);
             currentUserType=type;
@@ -336,7 +355,6 @@
             }
         };
 
-        // Close Modal
         window.closeModal=function(){
             console.log('❌ closeModal called');
             const modal=document.getElementById('loginModal');
@@ -346,7 +364,6 @@
             }
         };
 
-        // Google Login
         window.googleLogin=function(){
             console.log('🔑 googleLogin called');
             showLoading('Logging in...');
@@ -390,7 +407,6 @@
             });
         };
 
-        // Guest Login
         window.guestLogin=function(){
             console.log('👤 guestLogin called');
             showLoading('Loading...');
@@ -490,7 +506,6 @@
             }
         };
 
-        // Add event listeners for activity
         ['click','mousemove','keypress','scroll','touchstart'].forEach(function(event){
             document.addEventListener(event,function(){
                 if(currentUserType)resetLogoutTimer();
@@ -528,45 +543,13 @@
             });
         };
 
-        // ==================== EMBEDDED BROWSER ====================
-        
-        window.checkEmbeddedBrowser=function(){
-            var ua=navigator.userAgent||navigator.vendor||window.opera;
-            var isEmbedded=/FBAN|FBAV|Messenger|Instagram|WhatsApp/i.test(ua);
-            if(isEmbedded){
-                console.log('📱 Embedded browser detected');
-                document.getElementById('embeddedWarning').classList.add('active');
-                document.body.style.overflow='hidden';
-            }
-        };
-
-        window.forceOpenBrowser=function(){
-            var url=window.location.href;
-            var newWindow=window.open(url,'_blank','noopener,noreferrer');
-            setTimeout(function(){window.location.href=url;},100);
-            setTimeout(function(){
-                var a=document.createElement('a');
-                a.href=url;
-                a.target='_blank';
-                a.rel='noopener noreferrer';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            },200);
-            setTimeout(function(){window.open(url,'_blank','noopener,noreferrer');},300);
-            return false;
-        };
-
         // ==================== INITIALIZATION ====================
         
         document.addEventListener('DOMContentLoaded',function(){
             console.log('🎯 DOMContentLoaded fired');
-            checkEmbeddedBrowser();
             
             if(loadSession()){
                 console.log('✅ Session restored:',currentUserType);
-                document.getElementById('embeddedWarning').classList.remove('active');
-                document.body.style.overflow='auto';
                 showPage('homePage');
                 setupHomePage(currentUserType);
                 resetLogoutTimer();
@@ -575,14 +558,6 @@
                 document.getElementById('logoImage').src=DEFAULT_LOGO;
                 document.getElementById('loginLogo').src=DEFAULT_LOGO;
                 document.getElementById('ceoImage').src=DEFAULT_CEO;
-                const logoPreview=document.getElementById('logoPreview');
-                const loginLogoPreview=document.getElementById('loginLogoPreview');
-                const ceoPreview=document.getElementById('ceoPreview');
-                if(logoPreview)logoPreview.src=DEFAULT_LOGO;
-                if(loginLogoPreview)loginLogoPreview.src=DEFAULT_LOGO;
-                if(ceoPreview)ceoPreview.src=DEFAULT_CEO;
-                const gearIcon=document.getElementById('gearIcon');
-                if(gearIcon)gearIcon.style.display='none';
                 const loginPage=document.getElementById('loginPage');
                 if(loginPage){
                     loginPage.classList.add('active');
@@ -593,8 +568,7 @@
             console.log('✅ Tutors Valley initialized successfully');
         });
 
-        // ==================== OTHER FUNCTIONS (Placeholders) ====================
-        // Add remaining functions here as needed...
+        // ==================== OTHER FUNCTIONS ====================
         
         window.saveUserData=function(user,type){
             db.collection('users').doc(user.uid).set({
@@ -792,7 +766,6 @@
             saveAllSettings(true);
         };
 
-        // Add remaining admin functions as needed...
         window.applyLogoUrl=function(){
             const url=document.getElementById('logoUrlInput').value.trim();
             const logoImage=document.getElementById('logoImage');
