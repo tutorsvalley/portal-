@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutors Valley</title>
+    <meta name="theme-color" content="#001f3f">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Hind Siliguri',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;padding:20px}
+        .container{background:white;padding:40px 30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.3);max-width:400px;width:100%}
+        .icon{font-size:60px;margin-bottom:20px}
+        h1{color:#001f3f;font-size:24px;margin-bottom:15px}
+        p{color:#666;margin-bottom:25px;font-size:16px;line-height:1.6}
+        .btn{background:#0074D9;color:white;padding:18px 30px;border:none;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;text-decoration:none;display:block;width:100%;margin-bottom:15px}
+        .btn:hover{background:#0056b3}
+        .note{margin-top:20px;padding:15px;background:#fff3cd;border-radius:8px;font-size:14px;color:#856404;text-align:left}
+        .note ol{margin-left:20px;margin-top:10px}
+        .note li{margin-bottom:8px}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚀</div>
+        <h1>Tutors Valley</h1>
+        <p>এই লিংকটি Messenger এ খোলা যাবে না।<br>নিচের বাটনে ক্লিক করুন।</p>
+        
+        <a href="https://tutorsvalley.github.io/portal-/" 
+           class="btn" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           id="openBrowserBtn"
+           onclick="tryOpenBrowser()">
+            🌐 ব্রাউজারে খুলুন
+        </a>
+        
+        <div class="note">
+            ⚠️ <b>গুরুত্বপূর্ণ:</b><br>
+            <ol>
+                <li>উপরের বাটনে ক্লিক করুন</li>
+                <li>উপরে ডানদিকে <b>তিন ডট (⋮)</b> দেখতে পাবেন</li>
+                <li>সেখানে ক্লিক করুন</li>
+                <li><b>"Open in Browser"</b> বা <b>"ব্রাউজারে খুলুন"</b> সিলেক্ট করুন</li>
+                <li>তাহলেই Chrome/Safari তে খুলবে</li>
+            </ol>
+        </div>
+    </div>
 
+    <script>
+        // Detect if in Messenger/Facebook/Instagram
+        var ua = navigator.userAgent || navigator.vendor || window.opera;
+        var isMessenger = /Messenger/i.test(ua);
+        var isFacebook = /FBAN|FBAV/i.test(ua);
+        var isInstagram = /Instagram/i.test(ua);
+        var isEmbedded = isMessenger || isFacebook || isInstagram;
+        
+        // If NOT in embedded browser, redirect immediately
+        if(!isEmbedded){
+            window.location.href = 'https://tutorsvalley.github.io/portal-/';
+        }
+        
+        // Function to try opening browser
+        function tryOpenBrowser(){
+            var url = "https://tutorsvalley.github.io/portal-/";
+            
+            // Method 1: Open in new window/tab
+            var newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+            
+            // Method 2: Location change (after delay)
+            setTimeout(function(){
+                window.location.href = url;
+            }, 1000);
+            
+            // Method 3: Create and click link
+            setTimeout(function(){
+                var a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }, 1500);
+            
+            // Prevent default
+            return false;
+        }
+        
+        // Auto-trigger after 2 seconds
+        setTimeout(function(){
+            if(isEmbedded){
+                tryOpenBrowser();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
