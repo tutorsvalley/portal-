@@ -34,7 +34,8 @@
         
         .modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);justify-content:center;align-items:center}
         .modal.active{display:flex}
-        .modal-content{background:white;padding:30px;border-radius:15px;width:90%;max-width:350px;position:relative}
+        .modal-content{background:white;padding:30px;border-radius:15px;width:90%;max-width:350px;position:relative;animation:slideIn 0.3s ease}
+        @keyframes slideIn{from{transform:translateY(-50px);opacity:0}to{transform:translateY(0);opacity:1}}
         .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}
         .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
         .google-btn img{width:20px;height:20px}
@@ -46,8 +47,7 @@
         .header-title{color:var(--text-light);font-size:24px;font-weight:700;margin-bottom:3px;text-align:center}
         .header-motto{color:var(--accent-color);font-size:14px;font-weight:500;text-align:center}
         .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
-        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
-        
+        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}        
         .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
         .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
@@ -96,8 +96,7 @@
         @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
         .apply-btn{padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
         .upload-btn{padding:8px 15px;background:#28a745;color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
-        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}
-        .upload-section{margin:15px 0;padding:15px;background:#f8f9fa;border-radius:8px;border:2px dashed #0074D9}
+        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}        .upload-section{margin:15px 0;padding:15px;background:#f8f9fa;border-radius:8px;border:2px dashed #0074D9}
         
         @media(max-width:480px){.header-title{font-size:20px}.header-motto{font-size:12px}.control-panel{max-width:100%}.header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}}
     </style>
@@ -108,7 +107,7 @@
     
     <div id="loginPage" class="page login-page active">
         <div class="login-card">
-            <img src="https://i.ibb.co/cXwkBxsK/logo.png" alt="Logo" class="login-logo" id="loginLogo">
+            <img src="https://i.ibb.co/bg15fd4c/logo.png" alt="Logo" class="login-logo" id="loginLogo">
             <h1 class="login-title" id="loginTitleText">Tutors Valley</h1>
             <p class="login-subtitle" id="loginSubtitleText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             <div class="login-buttons">
@@ -124,7 +123,10 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle" style="text-align:center;color:var(--primary-color);margin-bottom:20px;">Login</h2>
-            <button class="google-btn" onclick="googleLogin()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">Sign in with Google</button>
+            <button class="google-btn" onclick="googleLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
             <p id="loginStatus" style="color:red;margin-top:10px;text-align:center;"></p>
         </div>
     </div>
@@ -133,7 +135,7 @@
         <header class="header-section">
             <div class="gear-icon" id="gearIcon" onclick="openControlPanel()">⚙️</div>
             <div class="header-center">
-                <img src="https://i.ibb.co/cXwkBxsK/logo.png" alt="Logo" class="header-logo" id="logoImage">
+                <img src="https://i.ibb.co/bg15fd4c/logo.png" alt="Logo" class="header-logo" id="logoImage">
                 <h1 class="header-title" id="brandingText">Tutors Valley</h1>
                 <p class="header-motto" id="mottoText">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
             </div>
@@ -143,8 +145,7 @@
             </div>
         </header>
         <div class="main-content">
-            <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>
-            <div id="tutorControls" class="tutor-controls" style="display:none;">
+            <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>            <div id="tutorControls" class="tutor-controls" style="display:none;">
                 <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>
                 <select id="genderSelect" onchange="handleGenderSelect()"><option value="">-- নির্বাচন করুন --</option><option value="male">পুরুষ</option><option value="female">মহিলা</option></select>
             </div>
@@ -168,7 +169,7 @@
         <div class="control-content">
             <div class="control-section">
                 <h4>🏠 Homepage Logo</h4>
-                <img id="logoPreview" class="image-preview" src="https://i.ibb.co/cXwkBxsK/logo.png">
+                <img id="logoPreview" class="image-preview" src="https://i.ibb.co/bg15fd4c/logo.png">
                 <input type="text" id="logoUrlInput" placeholder="Or paste image URL" style="width:100%;padding:8px;margin:8px 0;">
                 <button class="apply-btn" onclick="applyLogoUrl()">Apply from URL</button>
                 <div class="upload-section">
@@ -182,7 +183,7 @@
             </div>
             <div class="control-section">
                 <h4>🔐 Login Page Logo</h4>
-                <img id="loginLogoPreview" class="image-preview" src="https://i.ibb.co/cXwkBxsK/logo.png">
+                <img id="loginLogoPreview" class="image-preview" src="https://i.ibb.co/bg15fd4c/logo.png">
                 <input type="text" id="loginLogoUrlInput" placeholder="Or paste image URL" style="width:100%;padding:8px;margin:8px 0;">
                 <button class="apply-btn" onclick="applyLoginLogoUrl()">Apply from URL</button>
                 <div class="upload-section">
@@ -193,8 +194,7 @@
                 </div>
                 <label style="margin-top:10px;">Login Logo Size:</label>
                 <input type="range" id="loginLogoSize" min="60" max="150" value="80" onchange="updateLoginLogoSize()">
-            </div>
-            <div class="control-section">
+            </div>            <div class="control-section">
                 <h4>👤 CEO Image</h4>
                 <img id="ceoPreview" class="image-preview" src="https://i.ibb.co/YFbKc3zb/ceo.png">
                 <input type="text" id="ceoUrlInput" placeholder="Or paste image URL" style="width:100%;padding:8px;margin:8px 0;">
@@ -238,13 +238,12 @@
         let isAdmin=false;
         const ADMIN_EMAIL="kabirhasanat7@gmail.com";
         let zoneCards=[{id:1,zone:"জোন-১",areas:["খিলগাঁও","মালিবাগ"],maleGroup:"https://chat.whatsapp.com/male1",femaleGroup:"https://chat.whatsapp.com/female1"},{id:2,zone:"জোন-২",areas:["মিরপুর ১","মিরপুর ২"],maleGroup:"https://chat.whatsapp.com/male2",femaleGroup:"https://chat.whatsapp.com/female2"}];
-        const DEFAULT_LOGO="https://i.ibb.co/cXwkBxsK/logo.png";
+        const DEFAULT_LOGO="https://i.ibb.co/bg15fd4c/logo.png";
         const DEFAULT_CEO="https://i.ibb.co/YFbKc3zb/ceo.png";
         let appSettings={bannerColor:"#001f3f",logoSize:80,loginLogoSize:80,logoUrl:DEFAULT_LOGO,loginLogoUrl:DEFAULT_LOGO,ceoUrl:DEFAULT_CEO,fbLink:"https://facebook.com/tutorsvalley",texts:{}};
         let isSaving=false;
         let logoutTimer=null;
-        let saveTimeout=null;
-        const SESSION_TIMEOUT=5*60*1000;
+        let saveTimeout=null;        const SESSION_TIMEOUT=5*60*1000;
 
         // IMAGE COMPRESSION & UPLOAD
         function compressImage(file,maxWidth=400,maxHeight=400){
@@ -294,7 +293,6 @@
                 hideLoading();
             }
         };
-
         window.uploadLoginLogoBase64=async function(){
             const fileInput=document.getElementById('loginLogoFileInput');
             const file=fileInput.files[0];
@@ -343,8 +341,7 @@
             }
         };
 
-        // OPTIMIZED SAVE
-        window.instantSave=function(){
+        // OPTIMIZED SAVE        window.instantSave=function(){
             if(saveTimeout)clearTimeout(saveTimeout);
             saveTimeout=setTimeout(function(){saveAllSettings(true);},300);
         };
@@ -356,11 +353,99 @@
             db.collection('settings').doc('main').set({bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).then(function(){isSaving=false;if(!isInstant)hideLoading();showSaveIndicator(false);console.log('✅ Settings saved!');}).catch(function(error){isSaving=false;console.error('❌ Save error:',error);if(!isInstant)hideLoading();showSaveIndicator(true);});
         };
 
-        // LOGIN FUNCTIONS
-        window.showLoginModal=function(type){currentUserType=type;const modal=document.getElementById('loginModal');const modalTitle=document.getElementById('modalTitle');if(modal){modal.classList.add('active');modal.style.display='flex';}if(modalTitle){const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};modalTitle.textContent=titles[type]||'Login';}};
-        window.closeModal=function(){const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('active');modal.style.display='none';}};
-        window.googleLogin=function(){showLoading('Logging in...');auth.signInWithPopup(provider).then(function(result){currentUser=result.user;isAdmin=(currentUser.email===ADMIN_EMAIL);if(currentUserType==='tutor'){saveUserData(currentUser,'tutor');saveSession();showPage('homePage');setupHomePage('tutor');resetLogoutTimer();}else if(currentUserType==='guardian'){saveUserData(currentUser,'guardian');saveSession();showPage('homePage');setupHomePage('guardian');resetLogoutTimer();}else if(currentUserType==='admin'){if(currentUser.email===ADMIN_EMAIL){saveSession();showPage('homePage');setupHomePage('admin');resetLogoutTimer();}else{alert('❌ Only owner can login as admin!');logout();return;}}closeModal();hideLoading();}).catch(function(error){const loginStatus=document.getElementById('loginStatus');if(loginStatus)loginStatus.textContent='Error: '+error.message;hideLoading();});};
-        window.guestLogin=function(){showLoading('Loading...');setTimeout(function(){currentUserType='guest';isAdmin=false;saveSession();showPage('homePage');setupHomePage('guest');resetLogoutTimer();hideLoading();},1000);};
+        // LOGIN FUNCTIONS - FIXED
+        window.showLoginModal=function(type){
+            console.log('Opening login modal for:',type);
+            currentUserType=type;
+            const modal=document.getElementById('loginModal');
+            const modalTitle=document.getElementById('modalTitle');
+            const loginStatus=document.getElementById('loginStatus');
+            
+            // Clear any previous error
+            if(loginStatus)loginStatus.textContent='';
+            
+            if(modal){
+                modal.classList.add('active');
+                modal.style.display='flex';
+                console.log('✅ Modal opened successfully');
+            }else{
+                console.error('❌ Modal element not found');
+            }
+            
+            if(modalTitle){
+                const titles={'admin':'Admin Login','tutor':'Tutor Login','guardian':'Guardian Login'};
+                modalTitle.textContent=titles[type]||'Login';
+            }
+        };
+
+        window.closeModal=function(){
+            console.log('Closing modal');
+            const modal=document.getElementById('loginModal');
+            const loginStatus=document.getElementById('loginStatus');
+            if(loginStatus)loginStatus.textContent='';
+            if(modal){
+                modal.classList.remove('active');
+                modal.style.display='none';
+            }
+        };
+
+        window.googleLogin=function(){
+            console.log('Google login clicked');            showLoading('Logging in...');
+            
+            auth.signInWithPopup(provider).then(function(result){
+                console.log('✅ Login successful:',result.user.email);
+                currentUser=result.user;
+                isAdmin=(currentUser.email===ADMIN_EMAIL);
+                
+                if(currentUserType==='tutor'){
+                    saveUserData(currentUser,'tutor');
+                    saveSession();
+                    showPage('homePage');
+                    setupHomePage('tutor');
+                    resetLogoutTimer();
+                }else if(currentUserType==='guardian'){
+                    saveUserData(currentUser,'guardian');
+                    saveSession();
+                    showPage('homePage');
+                    setupHomePage('guardian');
+                    resetLogoutTimer();
+                }else if(currentUserType==='admin'){
+                    if(currentUser.email===ADMIN_EMAIL){
+                        saveSession();
+                        showPage('homePage');
+                        setupHomePage('admin');
+                        resetLogoutTimer();
+                    }else{
+                        alert('❌ Only owner can login as admin!');
+                        logout();
+                        return;
+                    }
+                }
+                closeModal();
+                hideLoading();
+            }).catch(function(error){
+                console.error('❌ Login error:',error);
+                const loginStatus=document.getElementById('loginStatus');
+                if(loginStatus){
+                    loginStatus.textContent='Error: '+error.message;
+                }
+                hideLoading();
+            });
+        };
+
+        window.guestLogin=function(){
+            console.log('Guest login clicked');
+            showLoading('Loading...');
+            setTimeout(function(){
+                currentUserType='guest';
+                isAdmin=false;
+                saveSession();                showPage('homePage');
+                setupHomePage('guest');
+                resetLogoutTimer();
+                hideLoading();
+                console.log('✅ Guest login successful');
+            },1000);
+        };
 
         // UTILITY FUNCTIONS
         window.showLoading=function(text='Saving...'){const overlay=document.getElementById('loadingOverlay');const loadingText=document.getElementById('loadingText');if(overlay){overlay.classList.add('active');if(loadingText)loadingText.textContent=text;}};
@@ -382,12 +467,28 @@
         window.logout=function(){showLoading('Logging out...');auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;clearSession();showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});};
 
         // INITIALIZATION
-        document.addEventListener('DOMContentLoaded',function(){if(loadSession()){showPage('homePage');setupHomePage(currentUserType);resetLogoutTimer();}else{document.getElementById('logoImage').src=DEFAULT_LOGO;document.getElementById('loginLogo').src=DEFAULT_LOGO;document.getElementById('ceoImage').src=DEFAULT_CEO;const loginPage=document.getElementById('loginPage');if(loginPage){loginPage.classList.add('active');loginPage.style.display='flex';}}});
+        document.addEventListener('DOMContentLoaded',function(){
+            console.log('✅ DOMContentLoaded');
+            if(loadSession()){
+                console.log('Session restored:',currentUserType);
+                showPage('homePage');
+                setupHomePage(currentUserType);
+                resetLogoutTimer();
+            }else{
+                document.getElementById('logoImage').src=DEFAULT_LOGO;
+                document.getElementById('loginLogo').src=DEFAULT_LOGO;
+                document.getElementById('ceoImage').src=DEFAULT_CEO;
+                const loginPage=document.getElementById('loginPage');
+                if(loginPage){
+                    loginPage.classList.add('active');
+                    loginPage.style.display='flex';
+                }
+            }
+        });
 
         // OTHER FUNCTIONS
         window.saveUserData=function(user,type){db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});};
-        window.setupHomePage=function(userType){currentUserType=userType;const gearIcon=document.getElementById('gearIcon');if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';const tutorControls=document.getElementById('tutorControls');const tutorNote=document.getElementById('tutorNote');const reviewForm=document.getElementById('reviewForm');const genderSelect=document.getElementById('genderSelect');if(genderSelect)genderSelect.value='';if(userType==='admin'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));}else if(userType==='tutor'){if(tutorControls)tutorControls.style.display='block';if(tutorNote)tutorNote.style.display='block';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else if(userType==='guardian'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else{if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='none';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}loadSettings();renderZoneCards();loadReviews();};
-        window.handleGenderSelect=function(){const gender=document.getElementById('genderSelect').value;showLoading('Loading...');setTimeout(function(){document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}hideLoading();},1000);};
+        window.setupHomePage=function(userType){currentUserType=userType;const gearIcon=document.getElementById('gearIcon');if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';const tutorControls=document.getElementById('tutorControls');const tutorNote=document.getElementById('tutorNote');const reviewForm=document.getElementById('reviewForm');const genderSelect=document.getElementById('genderSelect');if(genderSelect)genderSelect.value='';if(userType==='admin'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));}else if(userType==='tutor'){if(tutorControls)tutorControls.style.display='block';if(tutorNote)tutorNote.style.display='block';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else if(userType==='guardian'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else{if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='none';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}loadSettings();renderZoneCards();loadReviews();};        window.handleGenderSelect=function(){const gender=document.getElementById('genderSelect').value;showLoading('Loading...');setTimeout(function(){document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}hideLoading();},1000);};
         window.renderZoneCards=function(){const container=document.getElementById('cardsContainer');if(!container)return;container.innerHTML='';zoneCards.forEach(function(card){const cardDiv=document.createElement('div');cardDiv.className='zone-card';let areaTags='';card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';container.appendChild(cardDiv);});applyAreaTagStyles();if(currentUserType==='admin'){document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');});}else if(currentUserType==='tutor'){const gender=document.getElementById('genderSelect').value;document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');});if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');});}else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');});}}};
         window.applyAreaTagStyles=function(){const areaTags=document.querySelectorAll('.area-tag');const currentFont=appSettings.areaTagFont||"'Hind Siliguri', sans-serif";areaTags.forEach(function(tag){tag.style.fontFamily=currentFont;tag.style.fontSize=appSettings.areaTagFontSize+'px';tag.style.color=appSettings.areaTagColor;tag.style.background=appSettings.areaTagBg;});};
         window.joinGroup=function(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1000);};
