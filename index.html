@@ -26,7 +26,8 @@
         .login-title{text-align:center;font-size:28px;color:var(--primary-color);margin-bottom:10px}
         .login-subtitle{text-align:center;font-size:16px;color:#666;margin-bottom:30px}
         .login-buttons{display:flex;flex-direction:column;gap:12px}
-        .login-btn{padding:14px 20px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit}
+        .login-btn{padding:14px 20px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:transform 0.2s}
+        .login-btn:active{transform:scale(0.98)}
         .tutor-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
         .guardian-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:white}
         .guest-btn{background:linear-gradient(135deg,#4facfe,#00f2fe);color:white}
@@ -39,6 +40,7 @@
         .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}
         .google-btn{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin-top:15px;font-family:inherit}
         .google-btn img{width:20px;height:20px}
+        .google-btn:disabled{opacity:0.6;cursor:not-allowed}
         
         .header-section{background:var(--primary-color);padding:15px 20px;position:relative;min-height:130px}
         .gear-icon{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:rgba(255,255,255,0.7);display:none}
@@ -47,7 +49,8 @@
         .header-title{color:var(--text-light);font-size:24px;font-weight:700;margin-bottom:3px;text-align:center}
         .header-motto{color:var(--accent-color);font-size:14px;font-weight:500;text-align:center}
         .fb-page-btn{background:#1877f2;color:white;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block}
-        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}        
+        .logout-btn{background:#dc3545;color:white;padding:8px 20px;border-radius:6px;border:none;font-size:14px;cursor:pointer;font-family:inherit}
+        
         .main-content{padding:15px 15px;max-width:800px;margin:0 auto}
         .section-title{text-align:center;font-size:22px;color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .tutor-note{background:#e3f2fd;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0277bd;border-left:3px solid #0277bd}
@@ -96,7 +99,8 @@
         @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
         .apply-btn{padding:8px 15px;background:var(--secondary-color);color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
         .upload-btn{padding:8px 15px;background:#28a745;color:white;border:none;border-radius:5px;cursor:pointer;margin-top:8px;width:100%}
-        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}        .upload-section{margin:15px 0;padding:15px;background:#f8f9fa;border-radius:8px;border:2px dashed #0074D9}
+        .image-preview{width:80px;height:80px;border-radius:50%;margin:10px auto;display:block;border:2px solid #ddd;object-fit:cover;background:#f0f0f0}
+        .upload-section{margin:15px 0;padding:15px;background:#f8f9fa;border-radius:8px;border:2px dashed #0074D9}
         
         @media(max-width:480px){.header-title{font-size:20px}.header-motto{font-size:12px}.control-panel{max-width:100%}.header-right{position:absolute;top:15px;right:15px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}}
     </style>
@@ -123,7 +127,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle" style="text-align:center;color:var(--primary-color);margin-bottom:20px;">Login</h2>
-            <button class="google-btn" onclick="googleLogin()">
+            <button class="google-btn" id="googleLoginBtn" onclick="googleLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                 Sign in with Google
             </button>
@@ -145,7 +149,8 @@
             </div>
         </header>
         <div class="main-content">
-            <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>            <div id="tutorControls" class="tutor-controls" style="display:none;">
+            <div id="tutorNote" class="tutor-note" style="display:none;">📌 <b>নোট:</b> শুধুমাত্র টিউটরদের জন্য - লিঙ্গ নির্বাচন করে আপনার গ্রুপে জয়েন করুন</div>
+            <div id="tutorControls" class="tutor-controls" style="display:none;">
                 <label style="display:block;margin-bottom:8px;font-weight:600;">আপনার লিঙ্গ নির্বাচন করুন:</label>
                 <select id="genderSelect" onchange="handleGenderSelect()"><option value="">-- নির্বাচন করুন --</option><option value="male">পুরুষ</option><option value="female">মহিলা</option></select>
             </div>
@@ -194,7 +199,8 @@
                 </div>
                 <label style="margin-top:10px;">Login Logo Size:</label>
                 <input type="range" id="loginLogoSize" min="60" max="150" value="80" onchange="updateLoginLogoSize()">
-            </div>            <div class="control-section">
+            </div>
+            <div class="control-section">
                 <h4>👤 CEO Image</h4>
                 <img id="ceoPreview" class="image-preview" src="https://i.ibb.co/YFbKc3zb/ceo.png">
                 <input type="text" id="ceoUrlInput" placeholder="Or paste image URL" style="width:100%;padding:8px;margin:8px 0;">
@@ -228,10 +234,20 @@
         console.log('🚀 Tutors Valley Loading...');
         
         const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
-        firebase.initializeApp(firebaseConfig);
-        const auth=firebase.auth();
-        const db=firebase.firestore();
-        const provider=new firebase.auth.GoogleAuthProvider();
+        
+        // Initialize Firebase with error handling
+        let firebaseInitialized = false;
+        try{
+            firebase.initializeApp(firebaseConfig);
+            firebaseInitialized = true;
+            console.log('✅ Firebase initialized');
+        }catch(e){
+            console.error('❌ Firebase init error:',e);
+        }
+        
+        const auth = firebaseInitialized ? firebase.auth() : null;
+        const db = firebaseInitialized ? firebase.firestore() : null;
+        const provider = firebaseInitialized ? new firebase.auth.GoogleAuthProvider() : null;
         
         let currentUser=null;
         let currentUserType=null;
@@ -243,7 +259,8 @@
         let appSettings={bannerColor:"#001f3f",logoSize:80,loginLogoSize:80,logoUrl:DEFAULT_LOGO,loginLogoUrl:DEFAULT_LOGO,ceoUrl:DEFAULT_CEO,fbLink:"https://facebook.com/tutorsvalley",texts:{}};
         let isSaving=false;
         let logoutTimer=null;
-        let saveTimeout=null;        const SESSION_TIMEOUT=5*60*1000;
+        let saveTimeout=null;
+        const SESSION_TIMEOUT=5*60*1000;
 
         // IMAGE COMPRESSION & UPLOAD
         function compressImage(file,maxWidth=400,maxHeight=400){
@@ -293,6 +310,7 @@
                 hideLoading();
             }
         };
+
         window.uploadLoginLogoBase64=async function(){
             const fileInput=document.getElementById('loginLogoFileInput');
             const file=fileInput.files[0];
@@ -341,35 +359,39 @@
             }
         };
 
-        // OPTIMIZED SAVE        window.instantSave=function(){
+        // OPTIMIZED SAVE
+        window.instantSave=function(){
             if(saveTimeout)clearTimeout(saveTimeout);
             saveTimeout=setTimeout(function(){saveAllSettings(true);},300);
         };
 
         window.saveAllSettings=function(isInstant=false){
-            if(isSaving)return;
+            if(isSaving || !db) return;
             isSaving=true;
             if(!isInstant)showLoading('Saving...');
             db.collection('settings').doc('main').set({bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).then(function(){isSaving=false;if(!isInstant)hideLoading();showSaveIndicator(false);console.log('✅ Settings saved!');}).catch(function(error){isSaving=false;console.error('❌ Save error:',error);if(!isInstant)hideLoading();showSaveIndicator(true);});
         };
 
-        // LOGIN FUNCTIONS - FIXED
+        // === FIXED LOGIN FUNCTIONS ===
         window.showLoginModal=function(type){
-            console.log('Opening login modal for:',type);
+            console.log('🔐 showLoginModal:',type);
+            if(!firebaseInitialized){
+                alert('❌ Firebase not initialized. Check console for details.');
+                return;
+            }
             currentUserType=type;
             const modal=document.getElementById('loginModal');
             const modalTitle=document.getElementById('modalTitle');
             const loginStatus=document.getElementById('loginStatus');
+            const googleBtn=document.getElementById('googleLoginBtn');
             
-            // Clear any previous error
             if(loginStatus)loginStatus.textContent='';
+            if(googleBtn)googleBtn.disabled=false;
             
             if(modal){
                 modal.classList.add('active');
                 modal.style.display='flex';
-                console.log('✅ Modal opened successfully');
-            }else{
-                console.error('❌ Modal element not found');
+                console.log('✅ Modal opened');
             }
             
             if(modalTitle){
@@ -379,10 +401,12 @@
         };
 
         window.closeModal=function(){
-            console.log('Closing modal');
+            console.log('❌ closeModal');
             const modal=document.getElementById('loginModal');
             const loginStatus=document.getElementById('loginStatus');
+            const googleBtn=document.getElementById('googleLoginBtn');
             if(loginStatus)loginStatus.textContent='';
+            if(googleBtn)googleBtn.disabled=false;
             if(modal){
                 modal.classList.remove('active');
                 modal.style.display='none';
@@ -390,10 +414,24 @@
         };
 
         window.googleLogin=function(){
-            console.log('Google login clicked');            showLoading('Logging in...');
+            console.log('🔑 googleLogin clicked');
+            if(!firebaseInitialized || !auth || !provider){
+                alert('❌ Firebase not ready. Please check Firebase Console settings.');
+                return;
+            }
+            
+            const googleBtn=document.getElementById('googleLoginBtn');
+            if(googleBtn)googleBtn.disabled=true;
+            
+            showLoading('Connecting to Google...');
+            
+            // Enable popup and redirect
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
             
             auth.signInWithPopup(provider).then(function(result){
-                console.log('✅ Login successful:',result.user.email);
+                console.log('✅ Login success:',result.user.email);
                 currentUser=result.user;
                 isAdmin=(currentUser.email===ADMIN_EMAIL);
                 
@@ -424,22 +462,36 @@
                 closeModal();
                 hideLoading();
             }).catch(function(error){
-                console.error('❌ Login error:',error);
+                console.error('❌ Login error code:',error.code,'message:',error.message);
                 const loginStatus=document.getElementById('loginStatus');
-                if(loginStatus){
-                    loginStatus.textContent='Error: '+error.message;
+                
+                let errorMsg='';
+                if(error.code==='auth/popup-blocked'){
+                    errorMsg='🚫 Popup blocked! Please allow popups for this site.';
+                }else if(error.code==='auth/popup-closed-by-user'){
+                    errorMsg='❌ Login cancelled by user.';
+                }else if(error.code==='auth/unauthorized-domain'){
+                    errorMsg='❌ Domain not authorized. Contact admin.';
+                }else if(error.code==='auth/network-request-failed'){
+                    errorMsg='🌐 Network error. Check your connection.';
+                }else{
+                    errorMsg='Error: '+error.message;
                 }
+                
+                if(loginStatus)loginStatus.textContent=errorMsg;
+                if(googleBtn)googleBtn.disabled=false;
                 hideLoading();
             });
         };
 
         window.guestLogin=function(){
-            console.log('Guest login clicked');
+            console.log('👤 guestLogin clicked');
             showLoading('Loading...');
             setTimeout(function(){
                 currentUserType='guest';
                 isAdmin=false;
-                saveSession();                showPage('homePage');
+                saveSession();
+                showPage('homePage');
                 setupHomePage('guest');
                 resetLogoutTimer();
                 hideLoading();
@@ -461,14 +513,53 @@
         ['click','mousemove','keypress','scroll','touchstart'].forEach(function(event){document.addEventListener(event,function(){if(currentUserType)resetLogoutTimer();},true);});
 
         // AUTH STATE
-        auth.onAuthStateChanged(function(user){if(user){if(user.email===ADMIN_EMAIL)isAdmin=true;resetLogoutTimer();}else{isAdmin=false;}});
+        if(auth){
+            auth.onAuthStateChanged(function(user){
+                if(user){
+                    console.log('✅ Signed in:',user.email);
+                    if(user.email===ADMIN_EMAIL)isAdmin=true;
+                    resetLogoutTimer();
+                }else{
+                    console.log('❌ Signed out');
+                    isAdmin=false;
+                }
+            });
+        }
 
         // LOGOUT
-        window.logout=function(){showLoading('Logging out...');auth.signOut().then(function(){currentUser=null;currentUserType=null;isAdmin=false;clearSession();showPage('loginPage');hideLoading();}).catch(function(error){alert('Error: '+error.message);hideLoading();});};
+        window.logout=function(){
+            console.log('🚪 logout clicked');
+            showLoading('Logging out...');
+            if(auth){
+                auth.signOut().then(function(){
+                    currentUser=null;
+                    currentUserType=null;
+                    isAdmin=false;
+                    clearSession();
+                    showPage('loginPage');
+                    hideLoading();
+                }).catch(function(error){
+                    alert('Error: '+error.message);
+                    hideLoading();
+                });
+            }else{
+                currentUser=null;
+                currentUserType=null;
+                isAdmin=false;
+                clearSession();
+                showPage('loginPage');
+                hideLoading();
+            }
+        };
 
         // INITIALIZATION
         document.addEventListener('DOMContentLoaded',function(){
             console.log('✅ DOMContentLoaded');
+            if(!firebaseInitialized){
+                console.error('❌ Firebase failed to initialize!');
+                alert('⚠️ Firebase connection error. Please check console (F12) for details.');
+            }
+            
             if(loadSession()){
                 console.log('Session restored:',currentUserType);
                 showPage('homePage');
@@ -487,13 +578,14 @@
         });
 
         // OTHER FUNCTIONS
-        window.saveUserData=function(user,type){db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});};
-        window.setupHomePage=function(userType){currentUserType=userType;const gearIcon=document.getElementById('gearIcon');if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';const tutorControls=document.getElementById('tutorControls');const tutorNote=document.getElementById('tutorNote');const reviewForm=document.getElementById('reviewForm');const genderSelect=document.getElementById('genderSelect');if(genderSelect)genderSelect.value='';if(userType==='admin'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));}else if(userType==='tutor'){if(tutorControls)tutorControls.style.display='block';if(tutorNote)tutorNote.style.display='block';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else if(userType==='guardian'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else{if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='none';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}loadSettings();renderZoneCards();loadReviews();};        window.handleGenderSelect=function(){const gender=document.getElementById('genderSelect').value;showLoading('Loading...');setTimeout(function(){document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}hideLoading();},1000);};
+        window.saveUserData=function(user,type){if(!db)return;db.collection('users').doc(user.uid).set({email:user.email,name:user.displayName,type:type,photoURL:user.photoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});};
+        window.setupHomePage=function(userType){currentUserType=userType;const gearIcon=document.getElementById('gearIcon');if(gearIcon)gearIcon.style.display=isAdmin?'block':'none';const tutorControls=document.getElementById('tutorControls');const tutorNote=document.getElementById('tutorNote');const reviewForm=document.getElementById('reviewForm');const genderSelect=document.getElementById('genderSelect');if(genderSelect)genderSelect.value='';if(userType==='admin'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.remove('hidden'));}else if(userType==='tutor'){if(tutorControls)tutorControls.style.display='block';if(tutorNote)tutorNote.style.display='block';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else if(userType==='guardian'){if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='block';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}else{if(tutorControls)tutorControls.style.display='none';if(tutorNote)tutorNote.style.display='none';if(reviewForm)reviewForm.style.display='none';document.querySelectorAll('.group-btn').forEach(btn=>btn.classList.add('hidden'));}loadSettings();renderZoneCards();loadReviews();};
+        window.handleGenderSelect=function(){const gender=document.getElementById('genderSelect').value;showLoading('Loading...');setTimeout(function(){document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');btn.style.display='none';});if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');btn.style.display='block';});}hideLoading();},1000);};
         window.renderZoneCards=function(){const container=document.getElementById('cardsContainer');if(!container)return;container.innerHTML='';zoneCards.forEach(function(card){const cardDiv=document.createElement('div');cardDiv.className='zone-card';let areaTags='';card.areas.forEach(function(area){areaTags+='<span class="area-tag">'+area+'</span>';});cardDiv.innerHTML='<h3 class="zone-title">'+card.zone+'</h3><div class="area-tags">'+areaTags+'</div>'+'<button class="group-btn male-group hidden" onclick="joinGroup(\''+card.maleGroup+'\')">💬 Join Male Group</button>'+'<button class="group-btn female-group hidden" onclick="joinGroup(\''+card.femaleGroup+'\')">💬 Join Female Group</button>';container.appendChild(cardDiv);});applyAreaTagStyles();if(currentUserType==='admin'){document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.remove('hidden');});}else if(currentUserType==='tutor'){const gender=document.getElementById('genderSelect').value;document.querySelectorAll('.group-btn').forEach(btn=>{btn.classList.add('hidden');});if(gender==='male'){document.querySelectorAll('.male-group').forEach(btn=>{btn.classList.remove('hidden');});}else if(gender==='female'){document.querySelectorAll('.female-group').forEach(btn=>{btn.classList.remove('hidden');});}}};
         window.applyAreaTagStyles=function(){const areaTags=document.querySelectorAll('.area-tag');const currentFont=appSettings.areaTagFont||"'Hind Siliguri', sans-serif";areaTags.forEach(function(tag){tag.style.fontFamily=currentFont;tag.style.fontSize=appSettings.areaTagFontSize+'px';tag.style.color=appSettings.areaTagColor;tag.style.background=appSettings.areaTagBg;});};
         window.joinGroup=function(link){showLoading('Opening...');setTimeout(function(){window.open(link,'_blank');hideLoading();},1000);};
-        window.submitReview=function(){const reviewText=document.getElementById('reviewText');const text=reviewText?reviewText.value:'';if(!text.trim()){alert('রিভিউ লিখুন');return;}showLoading('Submitting...');db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});};
-        window.loadReviews=function(){const container=document.getElementById('reviewsContainer');if(!container)return;db.collection('reviews').orderBy('createdAt','desc').limit(20).onSnapshot(function(snapshot){container.innerHTML='';snapshot.forEach(function(doc){const review=doc.data();const reviewDiv=document.createElement('div');reviewDiv.className='review-card';reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';container.appendChild(reviewDiv);});});};
+        window.submitReview=function(){const reviewText=document.getElementById('reviewText');const text=reviewText?reviewText.value:'';if(!text.trim()){alert('রিভিউ লিখুন');return;}showLoading('Submitting...');if(db){db.collection('reviews').add({text:text,userId:currentUser?currentUser.uid:'guest',userName:currentUser?currentUser.displayName:'Guest',userType:currentUserType,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(reviewText)reviewText.value='';loadReviews();hideLoading();showSaveIndicator();}).catch(function(error){alert('Error: '+error.message);hideLoading();showSaveIndicator(true);});}};
+        window.loadReviews=function(){const container=document.getElementById('reviewsContainer');if(!container||!db)return;db.collection('reviews').orderBy('createdAt','desc').limit(20).onSnapshot(function(snapshot){container.innerHTML='';snapshot.forEach(function(doc){const review=doc.data();const reviewDiv=document.createElement('div');reviewDiv.className='review-card';reviewDiv.innerHTML='<div class="reviewer">'+(review.userName||'Anonymous')+' ('+(review.userType||'guest')+')</div><div class="review-text">'+(review.text||'')+'</div>';container.appendChild(reviewDiv);});});};
         window.openControlPanel=function(){if(!isAdmin){alert('Only admin can access settings!');return;}const controlPanel=document.getElementById('controlPanel');if(controlPanel)controlPanel.classList.add('active');loadControlSettings();renderCardSettings();};
         window.closeControlPanel=function(){const controlPanel=document.getElementById('controlPanel');if(controlPanel)controlPanel.classList.remove('active');};
         window.applyLogoUrl=function(){const url=document.getElementById('logoUrlInput').value.trim();const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(url){const img=new Image();img.onload=function(){if(logoImage)logoImage.src=url;if(logoPreview)logoPreview.src=url;appSettings.logoUrl=url;instantSave();showSaveIndicator();};img.onerror=function(){alert('❌ Invalid image URL!');};img.src=url;}else{alert('Please enter an image URL!');}};
@@ -516,7 +608,7 @@
         window.updateZoneMaleGroup=function(index,value){zoneCards[index].maleGroup=value;renderZoneCards();instantSave();};
         window.updateZoneFemaleGroup=function(index,value){zoneCards[index].femaleGroup=value;renderZoneCards();instantSave();};
         window.loadControlSettings=function(){document.getElementById('bannerColor').value=appSettings.bannerColor;document.getElementById('logoSize').value=appSettings.logoSize;document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;document.getElementById('fbLink').value=appSettings.fbLink;document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';};
-        window.loadSettings=function(){db.collection('settings').doc('main').get().then(function(doc){if(doc.exists){const data=doc.data();if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}if(data.texts){appSettings.texts=data.texts;Object.keys(data.texts).forEach(function(key){const el=document.getElementById(key);if(el){el.style.fontFamily=data.texts[key].font||"'Hind Siliguri', sans-serif";if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}});}if(data.zoneCards){zoneCards=data.zoneCards;}applyAreaTagStyles();renderZoneCards();}else{document.getElementById('logoImage').src=DEFAULT_LOGO;document.getElementById('loginLogo').src=DEFAULT_LOGO;document.getElementById('ceoImage').src=DEFAULT_CEO;}}).catch(function(error){console.error('❌ Load error:',error);});};
+        window.loadSettings=function(){if(!db)return;db.collection('settings').doc('main').get().then(function(doc){if(doc.exists){const data=doc.data();if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}if(data.texts){appSettings.texts=data.texts;Object.keys(data.texts).forEach(function(key){const el=document.getElementById(key);if(el){el.style.fontFamily=data.texts[key].font||"'Hind Siliguri', sans-serif";if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}});}if(data.zoneCards){zoneCards=data.zoneCards;}applyAreaTagStyles();renderZoneCards();}else{document.getElementById('logoImage').src=DEFAULT_LOGO;document.getElementById('loginLogo').src=DEFAULT_LOGO;document.getElementById('ceoImage').src=DEFAULT_CEO;}}).catch(function(error){console.error('❌ Load error:',error);});};
 
         console.log('✅ All functions loaded!');
     </script>
