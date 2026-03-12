@@ -235,7 +235,6 @@
         
         const firebaseConfig={apiKey:"AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",authDomain:"tutors-valley-6ddb0.firebaseapp.com",projectId:"tutors-valley-6ddb0",storageBucket:"tutors-valley-6ddb0.firebasestorage.app",messagingSenderId:"377815974425",appId:"1:377815974425:web:3d1254d14640f43516a088"};
         
-        // Initialize Firebase with error handling
         let firebaseInitialized = false;
         try{
             firebase.initializeApp(firebaseConfig);
@@ -261,6 +260,51 @@
         let logoutTimer=null;
         let saveTimeout=null;
         const SESSION_TIMEOUT=5*60*1000;
+
+        // === REDIRECT AUTHENTICATION (Option 2) ===
+        // Check for redirect result on page load
+        document.addEventListener('DOMContentLoaded', function(){
+            if(auth){
+                auth.getRedirectResult().then(function(result){
+                    if(result.user){
+                        console.log('✅ Redirect login successful:',result.user.email);
+                        currentUser = result.user;
+                        isAdmin = (currentUser.email === ADMIN_EMAIL);
+                        
+                        if(currentUserType === 'tutor'){
+                            saveUserData(currentUser,'tutor');
+                            saveSession();
+                            showPage('homePage');
+                            setupHomePage('tutor');
+                            resetLogoutTimer();
+                        }else if(currentUserType === 'guardian'){
+                            saveUserData(currentUser,'guardian');
+                            saveSession();
+                            showPage('homePage');
+                            setupHomePage('guardian');
+                            resetLogoutTimer();
+                        }else if(currentUserType === 'admin'){
+                            if(currentUser.email === ADMIN_EMAIL){
+                                saveSession();
+                                showPage('homePage');
+                                setupHomePage('admin');
+                                resetLogoutTimer();
+                            }else{
+                                alert('❌ Only owner can login as admin!');
+                                logout();
+                            }
+                        }
+                        closeModal();
+                        hideLoading();
+                    }
+                }).catch(function(error){
+                    console.error('❌ Redirect login error:',error);
+                    const loginStatus = document.getElementById('loginStatus');
+                    if(loginStatus) loginStatus.textContent = 'Error: ' + error.message;
+                    hideLoading();
+                });
+            }
+        });
 
         // IMAGE COMPRESSION & UPLOAD
         function compressImage(file,maxWidth=400,maxHeight=400){
@@ -372,7 +416,7 @@
             db.collection('settings').doc('main').set({bannerColor:appSettings.bannerColor,logoSize:appSettings.logoSize,loginLogoSize:appSettings.loginLogoSize,logoUrl:appSettings.logoUrl,loginLogoUrl:appSettings.loginLogoUrl,ceoUrl:appSettings.ceoUrl,fbLink:appSettings.fbLink,texts:appSettings.texts,zoneCards:zoneCards,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).then(function(){isSaving=false;if(!isInstant)hideLoading();showSaveIndicator(false);console.log('✅ Settings saved!');}).catch(function(error){isSaving=false;console.error('❌ Save error:',error);if(!isInstant)hideLoading();showSaveIndicator(true);});
         };
 
-        // === FIXED LOGIN FUNCTIONS ===
+        // === FIXED LOGIN FUNCTIONS (Redirect Method) ===
         window.showLoginModal=function(type){
             console.log('🔐 showLoginModal:',type);
             if(!firebaseInitialized){
@@ -413,8 +457,9 @@
             }
         };
 
+        // === KEY CHANGE: Using signInWithRedirect instead of signInWithPopup ===
         window.googleLogin=function(){
-            console.log('🔑 googleLogin clicked');
+            console.log('🔑 googleLogin clicked (Redirect method)');
             if(!firebaseInitialized || !auth || !provider){
                 alert('❌ Firebase not ready. Please check Firebase Console settings.');
                 return;
@@ -425,60 +470,16 @@
             
             showLoading('Connecting to Google...');
             
-            // Enable popup and redirect
+            // Set custom parameters
             provider.setCustomParameters({
                 prompt: 'select_account'
             });
             
-            auth.signInWithPopup(provider).then(function(result){
-                console.log('✅ Login success:',result.user.email);
-                currentUser=result.user;
-                isAdmin=(currentUser.email===ADMIN_EMAIL);
-                
-                if(currentUserType==='tutor'){
-                    saveUserData(currentUser,'tutor');
-                    saveSession();
-                    showPage('homePage');
-                    setupHomePage('tutor');
-                    resetLogoutTimer();
-                }else if(currentUserType==='guardian'){
-                    saveUserData(currentUser,'guardian');
-                    saveSession();
-                    showPage('homePage');
-                    setupHomePage('guardian');
-                    resetLogoutTimer();
-                }else if(currentUserType==='admin'){
-                    if(currentUser.email===ADMIN_EMAIL){
-                        saveSession();
-                        showPage('homePage');
-                        setupHomePage('admin');
-                        resetLogoutTimer();
-                    }else{
-                        alert('❌ Only owner can login as admin!');
-                        logout();
-                        return;
-                    }
-                }
-                closeModal();
-                hideLoading();
-            }).catch(function(error){
-                console.error('❌ Login error code:',error.code,'message:',error.message);
+            // KEY CHANGE: Using redirect instead of popup
+            auth.signInWithRedirect(provider).catch(function(error){
+                console.error('❌ Redirect error:',error);
                 const loginStatus=document.getElementById('loginStatus');
-                
-                let errorMsg='';
-                if(error.code==='auth/popup-blocked'){
-                    errorMsg='🚫 Popup blocked! Please allow popups for this site.';
-                }else if(error.code==='auth/popup-closed-by-user'){
-                    errorMsg='❌ Login cancelled by user.';
-                }else if(error.code==='auth/unauthorized-domain'){
-                    errorMsg='❌ Domain not authorized. Contact admin.';
-                }else if(error.code==='auth/network-request-failed'){
-                    errorMsg='🌐 Network error. Check your connection.';
-                }else{
-                    errorMsg='Error: '+error.message;
-                }
-                
-                if(loginStatus)loginStatus.textContent=errorMsg;
+                if(loginStatus)loginStatus.textContent='Error: '+error.message;
                 if(googleBtn)googleBtn.disabled=false;
                 hideLoading();
             });
@@ -610,7 +611,7 @@
         window.loadControlSettings=function(){document.getElementById('bannerColor').value=appSettings.bannerColor;document.getElementById('logoSize').value=appSettings.logoSize;document.getElementById('loginLogoSize').value=appSettings.loginLogoSize;document.getElementById('fbLink').value=appSettings.fbLink;document.getElementById('logoUrlInput').value=appSettings.logoUrl||'';document.getElementById('loginLogoUrlInput').value=appSettings.loginLogoUrl||'';document.getElementById('ceoUrlInput').value=appSettings.ceoUrl||'';};
         window.loadSettings=function(){if(!db)return;db.collection('settings').doc('main').get().then(function(doc){if(doc.exists){const data=doc.data();if(data.bannerColor){document.querySelector('.header-section').style.background=data.bannerColor;appSettings.bannerColor=data.bannerColor;}if(data.logoUrl){document.getElementById('logoImage').src=data.logoUrl;const logoPreview=document.getElementById('logoPreview');if(logoPreview)logoPreview.src=data.logoUrl;appSettings.logoUrl=data.logoUrl;}if(data.logoSize){const logoImage=document.getElementById('logoImage');const logoPreview=document.getElementById('logoPreview');if(logoImage){logoImage.style.width=data.logoSize+'px';logoImage.style.height=data.logoSize+'px';}if(logoPreview){logoPreview.style.width=data.logoSize+'px';logoPreview.style.height=data.logoSize+'px';}appSettings.logoSize=data.logoSize;}if(data.loginLogoUrl){document.getElementById('loginLogo').src=data.loginLogoUrl;const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogoPreview)loginLogoPreview.src=data.loginLogoUrl;appSettings.loginLogoUrl=data.loginLogoUrl;}if(data.loginLogoSize){const loginLogo=document.getElementById('loginLogo');const loginLogoPreview=document.getElementById('loginLogoPreview');if(loginLogo){loginLogo.style.width=data.loginLogoSize+'px';loginLogo.style.height=data.loginLogoSize+'px';}if(loginLogoPreview){loginLogoPreview.style.width=data.loginLogoSize+'px';loginLogoPreview.style.height=data.loginLogoSize+'px';}appSettings.loginLogoSize=data.loginLogoSize;}if(data.ceoUrl){document.getElementById('ceoImage').src=data.ceoUrl;const ceoPreview=document.getElementById('ceoPreview');if(ceoPreview)ceoPreview.src=data.ceoUrl;appSettings.ceoUrl=data.ceoUrl;}if(data.fbLink){document.getElementById('fbButton').href=data.fbLink;appSettings.fbLink=data.fbLink;}if(data.texts){appSettings.texts=data.texts;Object.keys(data.texts).forEach(function(key){const el=document.getElementById(key);if(el){el.style.fontFamily=data.texts[key].font||"'Hind Siliguri', sans-serif";if(key==='tutorNoteText'){el.innerHTML='📌 <b>নোট:</b> '+data.texts[key].content;}else{el.textContent=data.texts[key].content;}el.style.fontSize=data.texts[key].size+'px';el.style.color=data.texts[key].color;}});}if(data.zoneCards){zoneCards=data.zoneCards;}applyAreaTagStyles();renderZoneCards();}else{document.getElementById('logoImage').src=DEFAULT_LOGO;document.getElementById('loginLogo').src=DEFAULT_LOGO;document.getElementById('ceoImage').src=DEFAULT_CEO;}}).catch(function(error){console.error('❌ Load error:',error);});};
 
-        console.log('✅ All functions loaded!');
+        console.log('✅ All functions loaded with Redirect Authentication!');
     </script>
 </body>
 </html>
