@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutors Valley - Login & Sign Up</title>
+    <meta name="theme-color" content="#001f3f">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Hind Siliguri',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+        .container{background:white;padding:40px 30px;border-radius:20px;width:100%;max-width:450px;box-shadow:0 15px 40px rgba(0,0,0,0.3)}
+        .logo{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:block;border:3px solid #001f3f;object-fit:cover;background:#f0f0f0}
+        h1{text-align:center;color:#001f3f;margin-bottom:10px;font-size:26px}
+        .subtitle{text-align:center;color:#666;margin-bottom:25px;font-size:14px}
+        
+        .step-indicator{display:flex;justify-content:center;margin-bottom:25px;gap:10px}
+        .step{width:35px;height:35px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-weight:600;color:#666;font-size:14px}
+        .step.active{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+        .step.completed{background:#28a745;color:white}
+        
+        .form-section{display:none}
+        .form-section.active{display:block;animation:fadeIn 0.3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        
+        .role-cards{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
+        .role-card{padding:20px 15px;border:2px solid #e0e0e0;border-radius:12px;text-align:center;cursor:pointer;transition:all 0.3s}
+        .role-card:hover{border-color:#667eea;transform:translateY(-3px)}
+        .role-card.selected{border-color:#667eea;background:linear-gradient(135deg,#667eea15,#764ba215)}
+        .role-icon{font-size:35px;margin-bottom:10px}
+        .role-title{font-size:15px;font-weight:600;color:#001f3f}
+        
+        .input-group{margin-bottom:15px}
+        .input-group label{display:block;margin-bottom:6px;color:#333;font-weight:500;font-size:14px}
+        .input-group input{width:100%;padding:13px;border:2px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:inherit;transition:border-color 0.3s}
+        .input-group input:focus{border-color:#667eea;outline:none}
+        .input-group input::placeholder{color:#aaa}
+        
+        .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.3s}
+        .btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+        .btn-primary:hover{opacity:0.9;transform:translateY(-2px)}
+        .btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+        .btn-secondary{background:#f5f5f5;color:#333;margin-top:10px}
+        .btn-secondary:hover{background:#e0e0e0}
+        
+        .toggle-text{text-align:center;margin-top:20px;color:#666;font-size:14px}
+        .toggle-text a{color:#667eea;text-decoration:none;font-weight:600;cursor:pointer}
+        .toggle-text a:hover{text-decoration:underline}
+        
+        .alert{padding:13px;border-radius:10px;margin-bottom:15px;font-size:14px;display:none}        .alert.error{background:#fee;color:#c00;border:1px solid #fcc}
+        .alert.success{background:#efe;color:#090;border:1px solid #cfc}
+        
+        .loading{display:none;text-align:center;padding:30px}
+        .loading.active{display:block}
+        .spinner{width:45px;height:45px;border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        
+        .password-strength{margin-top:8px;font-size:12px}
+        .strength-bar{height:4px;background:#e0e0e0;border-radius:2px;margin-top:5px;overflow:hidden}
+        .strength-fill{height:100%;width:0%;transition:all 0.3s}
+        .strength-fill.weak{background:#dc3545;width:33%}
+        .strength-fill.medium{background:#ffc107;width:66%}
+        .strength-fill.strong{background:#28a745;width:100%}
+        
+        .back-btn{background:none;border:none;color:#667eea;font-size:14px;cursor:pointer;margin-bottom:15px;display:flex;align-items:center;gap:5px}
+        .back-btn:hover{text-decoration:underline}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://i.ibb.co/bg15fd4c/logo.png" alt="Logo" class="logo">
+        <h1>Tutors Valley</h1>
+        <p class="subtitle">ঢাকার শহরে আমরাই দিচ্ছি সেরা টিউটর</p>
+        
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+        </div>
+        
+        <!-- Alert Messages -->
+        <div id="alertBox" class="alert"></div>
+        
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="color:#666;" id="loadingText">লোড হচ্ছে...</p>
+        </div>
+        
+        <!-- STEP 1: Role Selection -->
+        <div id="step1Form" class="form-section active">
+            <h2 style="text-align:center;color:#001f3f;margin-bottom:10px;">আপনি কে?</h2>
+            <p style="text-align:center;color:#666;margin-bottom:25px;font-size:14px;">আপনার পরিচয় নির্বাচন করুন</p>
+            
+            <div class="role-cards">
+                <div class="role-card" onclick="selectRole('tutor')" id="tutorCard">
+                    <div class="role-icon">👨‍🏫</div>
+                    <div class="role-title">টিউটর</div>                </div>
+                <div class="role-card" onclick="selectRole('guardian')" id="guardianCard">
+                    <div class="role-icon">👪</div>
+                    <div class="role-title">অভিভাবক</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="goToStep2()" id="continueBtn" disabled>পরবর্তী →</button>
+        </div>
+        
+        <!-- STEP 2: Sign Up or Login -->
+        <div id="step2Form" class="form-section">
+            <button class="back-btn" onclick="goToStep1()">← পেছনে যান</button>
+            <h2 style="text-align:center;color:#001f3f;margin-bottom:10px;">একাউন্ট</h2>
+            <p style="text-align:center;color:#666;margin-bottom:25px;font-size:14px;">আপনি কি নতুন নাকি পুরনো ব্যবহারকারী?</p>
+            
+            <button class="btn btn-primary" onclick="goToStep3('signup')">📝 নতুন একাউন্ট খুলুন (Sign Up)</button>
+            <button class="btn btn-secondary" onclick="goToStep3('login')">🔐 লগইন করুন (Login)</button>
+        </div>
+        
+        <!-- STEP 3: Sign Up Form -->
+        <div id="step3Signup" class="form-section">
+            <button class="back-btn" onclick="goToStep2()">← পেছনে যান</button>
+            <h2 style="text-align:center;color:#001f3f;margin-bottom:10px;">নতুন একাউন্ট</h2>
+            <p style="text-align:center;color:#666;margin-bottom:25px;font-size:14px;">আপনার তথ্য দিন</p>
+            
+            <div class="input-group">
+                <label>📧 ইমেইল</label>
+                <input type="email" id="signupEmail" placeholder="আপনার ইমেইল দিন">
+            </div>
+            
+            <div class="input-group">
+                <label>🔒 পাসওয়ার্ড</label>
+                <input type="password" id="signupPassword" placeholder="পাসওয়ার্ড দিন (কমপক্ষে ৬ সংখ্যা)" oninput="checkPasswordStrength()">
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span id="strengthText" style="margin-top:3px;display:block;"></span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>🔒 পাসওয়ার্ড নিশ্চিত করুন</label>
+                <input type="password" id="signupConfirmPassword" placeholder="পাসওয়ার্ড আবার দিন">
+            </div>
+            
+            <button class="btn btn-primary" onclick="signUp()">✅ একাউন্ট খুলুন</button>
+        </div>
+                <!-- STEP 3: Login Form -->
+        <div id="step3Login" class="form-section">
+            <button class="back-btn" onclick="goToStep2()">← পেছনে যান</button>
+            <h2 style="text-align:center;color:#001f3f;margin-bottom:10px;">লগইন</h2>
+            <p style="text-align:center;color:#666;margin-bottom:25px;font-size:14px;">আপনার একাউন্টে প্রবেশ করুন</p>
+            
+            <div class="input-group">
+                <label>📧 ইমেইল</label>
+                <input type="email" id="loginEmail" placeholder="আপনার ইমেইল দিন">
+            </div>
+            
+            <div class="input-group">
+                <label>🔒 পাসওয়ার্ড</label>
+                <input type="password" id="loginPassword" placeholder="আপনার পাসওয়ার্ড দিন">
+            </div>
+            
+            <button class="btn btn-primary" onclick="login()">🔐 লগইন করুন</button>
+            
+            <div class="toggle-text">
+                <a onclick="goToStep3('signup')">নতুন একাউন্ট খুলবেন?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAefwWwlc0kqDRPXmDNYrxPuKOUf3t8Va8",
+            authDomain: "tutors-valley-6ddb0.firebaseapp.com",
+            projectId: "tutors-valley-6ddb0",
+            storageBucket: "tutors-valley-6ddb0.firebasestorage.app",
+            messagingSenderId: "377815974425",
+            appId: "1:377815974425:web:3d1254d14640f43516a088"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        let selectedRole = null;
+        let selectedAction = null;
+        
+        function showAlert(message, type='error'){
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = 'alert ' + type;            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+        }
+        
+        function showLoading(show, text='লোড হচ্ছে...'){
+            document.getElementById('loading').className = 'loading' + (show ? ' active' : '');
+            document.getElementById('loadingText').textContent = text;
+            document.querySelectorAll('.form-section').forEach(form => {
+                form.style.display = show ? 'none' : 'block';
+            });
+            if(show){
+                document.getElementById('loading').style.display = 'block';
+            }else{
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        function goToStep1(){
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            document.getElementById('step1Form').classList.add('active');
+            updateSteps(1);
+        }
+        
+        function goToStep2(){
+            if(!selectedRole){
+                showAlert('❌ দয়া করে টিউটর বা অভিভাবক সিলেক্ট করুন!');
+                return;
+            }
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            document.getElementById('step2Form').classList.add('active');
+            updateSteps(2);
+        }
+        
+        function goToStep3(action){
+            selectedAction = action;
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            
+            if(action === 'signup'){
+                document.getElementById('step3Signup').classList.add('active');
+            }else{
+                document.getElementById('step3Login').classList.add('active');
+            }
+            updateSteps(3);
+        }
+        
+        function updateSteps(step){
+            for(let i=1; i<=3; i++){
+                const stepEl = document.getElementById('step'+i);
+                stepEl.classList.remove('active', 'completed');
+                if(i < step) stepEl.classList.add('completed');                if(i === step) stepEl.classList.add('active');
+            }
+        }
+        
+        function selectRole(role){
+            selectedRole = role;
+            
+            document.getElementById('tutorCard').classList.remove('selected');
+            document.getElementById('guardianCard').classList.remove('selected');
+            
+            if(role === 'tutor'){
+                document.getElementById('tutorCard').classList.add('selected');
+            }else{
+                document.getElementById('guardianCard').classList.add('selected');
+            }
+            
+            document.getElementById('continueBtn').disabled = false;
+        }
+        
+        function checkPasswordStrength(){
+            const password = document.getElementById('signupPassword').value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            if(password.length >= 6) strength++;
+            if(password.length >= 10) strength++;
+            if(/[A-Z]/.test(password)) strength++;
+            if(/[0-9]/.test(password)) strength++;
+            if(/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            strengthFill.className = 'strength-fill';
+            if(strength <= 2){
+                strengthFill.classList.add('weak');
+                strengthText.textContent = 'দুর্বল পাসওয়ার্ড';
+                strengthText.style.color = '#dc3545';
+            }else if(strength <= 4){
+                strengthFill.classList.add('medium');
+                strengthText.textContent = 'মাঝারি পাসওয়ার্ড';
+                strengthText.style.color = '#ffc107';
+            }else{
+                strengthFill.classList.add('strong');
+                strengthText.textContent = 'শক্তিশালী পাসওয়ার্ড';
+                strengthText.style.color = '#28a745';
+            }
+        }
+        
+        function signUp(){
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            
+            if(!email || !password){
+                showAlert('❌ ইমেইল এবং পাসওয়ার্ড দিন!');
+                return;
+            }
+            
+            if(password !== confirmPassword){
+                showAlert('❌ পাসওয়ার্ড মিলছে না!');
+                return;
+            }
+            
+            if(password.length < 6){
+                showAlert('❌ পাসওয়ার্ড কমপক্ষে ৬ সংখ্যার হতে হবে!');
+                return;
+            }
+            
+            showLoading(true, 'একাউন্ট তৈরি হচ্ছে...');
+            
+            auth.createUserWithEmailAndPassword(email, password).then(function(userCredential){
+                console.log('✅ Sign Up successful:', userCredential.user.email);
+                
+                db.collection('users').doc(userCredential.user.uid).set({
+                    email: email,
+                    role: selectedRole,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(function(){
+                    localStorage.setItem('tutorsValley_session', JSON.stringify({
+                        userEmail: email,
+                        userRole: selectedRole,
+                        timestamp: Date.now()
+                    }));
+                    
+                    showAlert('✅ একাউন্ট তৈরি হয়েছে! Redirecting...', 'success');
+                    
+                    setTimeout(function(){
+                        window.location.href = 'home.html';
+                    }, 2000);
+                }).catch(function(error){
+                    console.error('Firestore error:', error);
+                    showAlert('✅ একাউন্ট তৈরি হয়েছে!', 'success');
+                    setTimeout(function(){
+                        window.location.href = 'home.html';
+                    }, 2000);
+                });
+                
+            }).catch(function(error){
+                console.error('❌ Sign Up error:', error);
+                showLoading(false);                
+                let errorMsg = '❌ ';
+                if(error.code === 'auth/email-already-in-use'){
+                    errorMsg += 'এই ইমেইল দিয়ে আগেই একাউন্ট আছে। Login করুন!';
+                }else if(error.code === 'auth/invalid-email'){
+                    errorMsg += 'ভুল ইমেইল ফরম্যাট!';
+                }else if(error.code === 'auth/weak-password'){
+                    errorMsg += 'পাসওয়ার্ড খুব দুর্বল!';
+                }else{
+                    errorMsg += error.message;
+                }
+                
+                showAlert(errorMsg);
+            });
+        }
+        
+        function login(){
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if(!email || !password){
+                showAlert('❌ ইমেইল এবং পাসওয়ার্ড দিন!');
+                return;
+            }
+            
+            showLoading(true, 'লগইন হচ্ছে...');
+            
+            auth.signInWithEmailAndPassword(email, password).then(function(userCredential){
+                console.log('✅ Login successful:', userCredential.user.email);
+                
+                db.collection('users').doc(userCredential.user.uid).get().then(function(doc){
+                    if(doc.exists){
+                        const userData = doc.data();
+                        selectedRole = userData.role || 'tutor';
+                        
+                        localStorage.setItem('tutorsValley_session', JSON.stringify({
+                            userEmail: email,
+                            userRole: selectedRole,
+                            timestamp: Date.now()
+                        }));
+                        
+                        showAlert('✅ লগইন সফল! Redirecting...', 'success');
+                        
+                        setTimeout(function(){
+                            window.location.href = 'home.html';
+                        }, 1500);
+                    }else{
+                        localStorage.setItem('tutorsValley_session', JSON.stringify({
+                            userEmail: email,
+                            userRole: 'tutor',                            timestamp: Date.now()
+                        }));
+                        
+                        showAlert('✅ লগইন সফল!', 'success');
+                        setTimeout(function(){
+                            window.location.href = 'home.html';
+                        }, 1500);
+                    }
+                }).catch(function(error){
+                    console.error('Firestore error:', error);
+                    showAlert('✅ লগইন সফল!', 'success');
+                    setTimeout(function(){
+                        window.location.href = 'home.html';
+                    }, 1500);
+                });
+                
+            }).catch(function(error){
+                console.error('❌ Login error:', error);
+                showLoading(false);
+                
+                let errorMsg = '❌ ';
+                if(error.code === 'auth/user-not-found'){
+                    errorMsg += 'এই ইমেইল দিয়ে কোনো একাউন্ট নেই। Sign Up করুন!';
+                }else if(error.code === 'auth/wrong-password'){
+                    errorMsg += 'ভুল পাসওয়ার্ড!';
+                }else if(error.code === 'auth/invalid-email'){
+                    errorMsg += 'ভুল ইমেইল ফরম্যাট!';
+                }else if(error.code === 'auth/too-many-requests'){
+                    errorMsg += 'অনেকবার চেষ্টা করেছেন। কিছুক্ষণ পর আবার চেষ্টা করুন।';
+                }else{
+                    errorMsg += error.message;
+                }
+                
+                showAlert(errorMsg);
+            });
+        }
+        
+        auth.onAuthStateChanged(function(user){
+            if(user){
+                console.log('✅ User already logged in:', user.email);
+                const session = JSON.parse(localStorage.getItem('tutorsValley_session'));
+                if(session){
+                    window.location.href = 'home.html';
+                }
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function(){
+            console.log('✅ Page loaded');
+                        // Note show করার কোড মুছে ফেলা হয়েছে
+            // এখন কোনো note দেখাবে না
+            
+            const user = auth.currentUser;
+            if(user){
+                const session = JSON.parse(localStorage.getItem('tutorsValley_session'));
+                if(session){
+                    window.location.href = 'home.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
